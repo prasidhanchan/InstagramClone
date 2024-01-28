@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="email_or_username">Email or username</string>
+    <string name="password">Password</string>
+    <string name="forgot_your_login_details">"Forgot your login details? "</string>
+    <string name="get_help_logging_in">Get help logging in.</string>
+    <string name="log_in_with_facebook">Log in with Facebook</string>
+    <string name="or">OR</string>
+    <string name="don_t_have_an_account">"Don't have an account? "</string>
+    <string name="already_have_an_account">"Already have an account? "</string>
+    <string name="sign_up">Sign up.</string>
+    <string name="log_in">Log in.</string>
+    <string name="username">Username</string>
+    <string name="choose_username">Choose username</string>
+    <string name="you_can_change_it_later">You can always change it later.</string>
+    <string name="username_already_exists">A user with that username already exists.</string>
+    <string name="available">Available</string>
+    <string name="next">Next</string>
+    <string name="create_password">Create a password</string>
+    <string name="your_password_must_be">For security, your password must be 6 characters or more.</string>
+    <string name="welcome_message">"Let's start customizing your experience"</string>
+    <string name="email">Email</string>
+    <string name="email_caps">EMAIL</string>
+    <string name="add_a_photo">Add a photo</string>
+    <string name="add_profile_photo">Add profile photo</string>
+    <string name="add_profile_photo_message">Add a profile photo so your friends know it\'s you.</string>
+    <string name="skip">Skip</string>
+    <string name="user_already_exist">User already exists.</string>
+    <string name="please_enter_a_valid_email">Please enter a valid email.</string>
+    <string name="welcome_to_instagram">Welcome to Instagram,\n %1$s</string>
+    <string name="incorrect_username_or_password">Incorrect username or password</string>
+    <string name="incorrect_username_or_password_message">The username or password you entered doesn\'t appear to belong to an account. Please check your username or password and try again.</string>
+    <string name="try_again">Try Again</string>
+    <string name="sign_up_dialog">Sign Up</string>
+    <string name="email_already_exits">Email already exits.</string>
+    <string name="complete_sign_up">Complete sign up</string>
+    <string name="registering">Registering...</string>
+    <string name="change_profile_photo">Change profile photo</string>
+    <string name="cancel">Cancel</string>
+    <string name="choose_from_library">Choose from library</string>
+    <string name="profile_photo_added">Profile photo added</string>
+    <string name="change_photo">Change photo</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="usernames_can_only_contain_letter_numbers_underscores_and_periods">Usernames can only contain letter, numbers, underscores and periods.</string>
+    <string name="log_in_placeholder">Log in</string>
+</resources>
