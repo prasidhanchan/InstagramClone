@@ -17,6 +17,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +56,7 @@ fun IGTextBox(
     onConfirm: KeyboardActionScope.() -> Unit
 ) {
     val focusRequester = FocusRequester()
+    val interactionSource = remember { MutableInteractionSource() }
     TextField(
         modifier = modifier
             .height(50.dp)
@@ -107,7 +109,7 @@ fun IGTextBox(
                         .clip(CircleShape)
                         .clickable(
                             indication = null,
-                            interactionSource = MutableInteractionSource(),
+                            interactionSource = interactionSource,
                             onClick = clearText
                         ),
                     contentAlignment = Alignment.Center
@@ -116,10 +118,10 @@ fun IGTextBox(
                         modifier = if (
                             isErrorOrSuccess == stringResource(id = R.string.username_already_exists) ||
                             isErrorOrSuccess == stringResource(id = R.string.email_already_exits)
-                            ) {
+                        ) {
                             Modifier.clickable(
                                 indication = null,
-                                interactionSource = MutableInteractionSource(),
+                                interactionSource = interactionSource,
                                 onClick = clearText
                             )
                         } else {

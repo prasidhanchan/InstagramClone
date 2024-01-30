@@ -14,6 +14,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.instagramclone.android.SplashScreen
 import com.instagramclone.auth.AuthViewModel
 import com.instagramclone.auth.login.LoginScreen
+import com.instagramclone.auth.loginhelp.AccessAccountScreen
+import com.instagramclone.auth.loginhelp.LoginHelpScreen
 import com.instagramclone.auth.signup.AddEmailScreen
 import com.instagramclone.auth.signup.AddProfileScreen
 import com.instagramclone.auth.signup.ChooseUsernameScreen
@@ -57,7 +59,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             LoginScreen(
                 uiState = uiState,
                 navigateToSignUp = { navController.navigate(NavScreens.AddEmailScreen.route) },
-                onForgotPasswordClicked = { },
+                onForgotPasswordClicked = { navController.navigate(NavScreens.LoginHelpScreen.route) },
                 onFaceBookClicked = { },
                 onEmailOrUserNameChange = { viewModel.setEmailOrUsername(emailOrUsername = it) },
                 onPasswordChange = { viewModel.setPassword(password = it) },
@@ -65,18 +67,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                     viewModel.setDialog(value = false)
                     navController.navigate(NavScreens.AddEmailScreen.route)
                 },
-                onDismiss = { viewModel.setDialog(value = false) }
-            ) {
-                viewModel.loginUser(
-                    email = uiState.emailOrUsername.trim(),
-                    password = uiState.password.trim(),
-                    context = context,
-                    onSuccess = {
-                        navController.navigate(NavScreens.HomeScreen.route)
-                        viewModel.clearUiState()
-                    }
-                )
-            }
+                onDismiss = { viewModel.setDialog(value = false) },
+                onLogin = {
+                    viewModel.loginUser(
+                        email = uiState.emailOrUsername.trim(),
+                        password = uiState.password.trim(),
+                        context = context,
+                        onSuccess = {
+                            navController.navigate(NavScreens.HomeScreen.route)
+                            viewModel.clearUiState()
+                        }
+                    )
+                }
+            )
         }
         composable(NavScreens.AddEmailScreen.route) {
             val uiState by viewModel.uiState.collectAsState()
@@ -293,6 +296,37 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                     viewModel.setProfileImage(profileImage = null)
                     navController.popBackStack()
                 }
+            )
+        }
+        composable(NavScreens.LoginHelpScreen.route) {
+            val uiState by viewModel.uiState.collectAsState()
+            LaunchedEffect(key1 = Unit) {
+                viewModel.getAllUsers()
+            }
+
+            LoginHelpScreen(
+                uiState = uiState,
+                onValueChange = { viewModel.setEmailOrUsername(emailOrUsername = it) },
+                onFacebookClicked = { navController.navigate(NavScreens.LoginHelpScreen.route) },
+                onNextClicked = {
+                    viewModel.filterUser(
+                        onSuccess = {
+                            navController.navigate(NavScreens.AccessAccountScreen.route)
+                            viewModel.clearErrorOrSuccess()
+                                    },
+                        onError = { viewModel.setErrorOrSuccess(errorOrSuccess = context.getString(R.string.no_user_found)) }
+                    )
+                }
+            )
+        }
+        composable(NavScreens.AccessAccountScreen.route) {
+            val uiState by viewModel.uiState.collectAsState()
+
+            AccessAccountScreen(
+                uiState = uiState,
+                setDialog = { viewModel.setDialog(value = it) },
+                popBack = { navController.popBackStack() },
+                onSendEmailClicked = { viewModel.sendPasswordResetEmail(email = uiState.email) }
             )
         }
 

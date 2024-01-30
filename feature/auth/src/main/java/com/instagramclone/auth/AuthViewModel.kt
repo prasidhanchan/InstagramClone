@@ -2,6 +2,7 @@ package com.instagramclone.auth
 
 import android.content.Context
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -29,8 +30,10 @@ class AuthViewModel @Inject constructor(
     var emailList = _emailList.asStateFlow()
 
 
-    private var _usernameList = MutableStateFlow<List<String>?>(null)
-    var usernameList = _usernameList.asStateFlow()
+    private val _usernameList = MutableStateFlow<List<String>?>(null)
+    val usernameList = _usernameList.asStateFlow()
+
+    private val _users = MutableStateFlow<List<IGUser>?>(null)
 
     init {
         getAllEmails()
@@ -100,6 +103,31 @@ class AuthViewModel @Inject constructor(
                                 errorSubTitle = context.getString(com.instagramclone.ui.R.string.incorrect_username_or_password_message)
                             )
                         }
+                    }
+                }
+            )
+        }
+    }
+
+    fun sendPasswordResetEmail(email: String) {
+        uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
+            authRepository.sendPasswordResetEmail(
+                email = email,
+                onSuccess = {
+                    uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            showDialog = true
+                        )
+                    }
+                },
+                onError = { error ->
+                    uiState.update {
+                        it.copy(
+                            errorOrSuccess = error,
+                            isLoading = false
+                        )
                     }
                 }
             )
@@ -219,6 +247,57 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun getAllUsers() {
+        uiState.update { it.copy(showDialog = true) }
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = authRepository.getAllUsers()
+
+            delay(1000L)
+            withContext(Dispatchers.Main) {
+                if (result.data != null && result.e == null) {
+                    _users.update { result.data }
+                    uiState.update { it.copy(showDialog = false) }
+                } else {
+                    uiState.update {
+                        it.copy(
+                            errorOrSuccess = result.e?.message.toString(),
+                            showDialog = false
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun filterUser(
+        onSuccess: () -> Unit,
+        onError: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.Main) {
+            uiState.update { it.copy(isLoading = true) }
+            val users = if (uiState.value.emailOrUsername.matches(Regex("^[a-zA-Z0-9_.]+|[a-zA-Z]+\$\n"))) {
+                _users.value?.filter { it.username == uiState.value.emailOrUsername }
+            } else {
+                _users.value?.filter { it.email == uiState.value.emailOrUsername }
+            }
+            delay(1000L)
+            if (!users.isNullOrEmpty()) {
+                uiState.update { uiState ->
+                    uiState.copy(
+                        profileImage = users.first().profileImage.toUri(),
+                        email = users.first().email,
+                        username = users.first().username,
+                        isLoading = false
+                    )
+                }
+                onSuccess()
+            } else {
+                onError()
+                uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
     fun setEmailOrUsername(emailOrUsername: String) {
         uiState.update { it.copy(emailOrUsername = emailOrUsername) }
     }
@@ -243,6 +322,9 @@ class AuthViewModel @Inject constructor(
         uiState.update { it.copy(showDialog = value) }
     }
 
+    fun setErrorOrSuccess(errorOrSuccess: String) {
+        uiState.update { it.copy(errorOrSuccess = errorOrSuccess) }
+    }
     fun setErrorOrSuccessEmail(errorOrSuccessEmail: String) {
         uiState.update { it.copy(errorOrSuccessEmail = errorOrSuccessEmail) }
     }

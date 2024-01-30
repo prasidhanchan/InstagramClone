@@ -41,6 +41,16 @@ class AuthRepositoryImpl : AuthRepository {
             }
     }
 
+    override fun sendPasswordResetEmail(
+        email: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { onError(it.message.toString()) }
+    }
+
     override fun logOut() {
         FirebaseAuth.getInstance().signOut()
     }
@@ -123,6 +133,23 @@ class AuthRepositoryImpl : AuthRepository {
             .await()
             .asFlow()
         dataOrException.isLoading = false
+        return dataOrException
+    }
+
+    override suspend fun getAllUsers(): DataOrException<List<IGUser>, Boolean, Exception> {
+        val dataOrException: DataOrException<List<IGUser>, Boolean, Exception> = DataOrException()
+        dataOrException.isLoading = true
+        dbUser.get().addOnSuccessListener {  querySnap ->
+            dataOrException.data = querySnap.documents.map { docSnap ->
+                docSnap.toObject(IGUser::class.java)!!
+            }
+            dataOrException.isLoading = false
+        }.addOnFailureListener {
+            dataOrException.e = it
+            dataOrException.isLoading = false
+        }
+            .await()
+            .asFlow()
         return dataOrException
     }
 }

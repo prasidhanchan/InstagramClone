@@ -31,10 +31,12 @@ import com.instagramclone.util.constants.Utils
 
 @Composable
 fun IGDialog(
+    modifier: Modifier = Modifier,
     title: String,
     subTitle: String = "",
     showDialog: Boolean,
     showBlueButton: Boolean,
+    showWhiteButton: Boolean = true,
     button1Text: String,
     button2Text: String = "",
     onBlueClick: () -> Unit,
@@ -64,7 +66,7 @@ fun IGDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        modifier = Modifier.padding(start = 25.dp, end = 25.dp, top = 25.dp),
+                        modifier = modifier.padding(start = 25.dp, end = 25.dp, top = 25.dp),
                         text = title,
                         style = TextStyle(
                             fontSize = 20.sp,
@@ -75,7 +77,7 @@ fun IGDialog(
                     )
                     if (subTitle != "") {
                         Text(
-                            modifier = Modifier.padding(top = 10.dp, start = 25.dp, end = 25.dp),
+                            modifier = modifier.padding(top = 10.dp, start = 25.dp, end = 25.dp),
                             text = subTitle,
                             style = TextStyle(
                                 fontSize = 14.sp,
@@ -88,7 +90,8 @@ fun IGDialog(
 
                     Divider(
                         modifier = Modifier.padding(top = 30.dp),
-                        thickness = 0.5.dp
+                        thickness = 0.5.dp,
+                        color = Color.White.copy(alpha = 0.2f)
                     )
 
                     if (showBlueButton) {
@@ -111,24 +114,28 @@ fun IGDialog(
                         }
                     }
 
-                    Divider(thickness = 0.5.dp)
-                    
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = onWhiteClick),
-                        contentAlignment = Alignment.BottomCenter
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(vertical = 15.dp),
-                            text = button1Text,
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Normal,
-                                color = Color.White,
-                                textAlign = TextAlign.Center
-                            )
+                    if (showWhiteButton) {
+                        Divider(
+                            thickness = 0.5.dp,
+                            color = Color.White.copy(alpha = 0.2f)
                         )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(onClick = onWhiteClick),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(vertical = 15.dp),
+                                text = button1Text,
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -144,6 +151,7 @@ fun IGDialogPreview() {
         subTitle = "The username or password you entered doesn't appear to belong to an account. Please check your username or password and try again.",
         showDialog = true,
         showBlueButton = true,
+        showWhiteButton = false,
         button1Text = "Sign Up",
         button2Text = "Try Again",
         onBlueClick = {  },
