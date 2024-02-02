@@ -58,4 +58,6 @@
     <string name="loading">Loading...</string>
     <string name="ok">OK</string>
     <string name="email_sent">Email Sent</string>
+    <string name="some_internal_error_occurred">Some internal error occurred!</string>
+
 </resources>

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -21,7 +23,15 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val properties = Properties()
+        properties.load(project.rootProject.file("gradle.properties").inputStream())
+
+        resValue("string", "facebook_app_id", "\"${properties.getProperty("facebook_app_id")}\"")
+        resValue("string", "facebook_login_protocol_scheme", "\"${properties.getProperty("facebook_login_protocol_scheme")}\"")
+        resValue("string", "facebook_client_token", "\"${properties.getProperty("facebook_client_token")}\"")
     }
+
 
     buildTypes {
         release {
@@ -41,6 +51,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = AndroidConfig.kotlinCompilerExtensionVersion
@@ -78,6 +89,9 @@ dependencies {
 
     // Firebase Storage
     implementation (libs.firebase.storage)
+
+    // Facebook SDK
+    implementation(libs.facebook.sdk)
 
     // Room DB
     implementation(libs.androidx.room.runtime)

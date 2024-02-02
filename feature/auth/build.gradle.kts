@@ -60,6 +60,9 @@ dependencies {
     // Firebase Authentication
     implementation(libs.firebase.authentication)
 
+    // Facebook SDK
+    implementation(libs.facebook.sdk)
+
     implementation(libs.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

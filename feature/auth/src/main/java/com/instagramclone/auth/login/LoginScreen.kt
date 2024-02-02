@@ -182,7 +182,7 @@ fun LoginScreen(
                     modifier = Modifier.padding(horizontal = 5.dp),
                     painter = painterResource(id = R.drawable.facebook),
                     tint = Utils.IgBlue,
-                    contentDescription = "Facebook Login"
+                    contentDescription = stringResource(id = R.string.facebook_login)
                 )
                 Text(
                     modifier = Modifier.clickable(onClick = onFaceBookClicked),

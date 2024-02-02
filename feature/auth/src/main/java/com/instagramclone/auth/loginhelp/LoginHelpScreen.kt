@@ -34,7 +34,8 @@ import com.instagramclone.util.constants.Utils
 fun LoginHelpScreen(
     uiState: UiState,
     onValueChange: (String) -> Unit,
-    onFacebookClicked: () -> Unit,
+    onSuccess: () -> Unit,
+    onError: (Exception) -> Unit,
     onNextClicked: () -> Unit
 ) {
     Scaffold(
@@ -150,7 +151,8 @@ fun LoginHelpScreen(
             IGFacebookButton(
                 modifier = Modifier.padding(vertical = 10.dp),
                 text = stringResource(id = R.string.log_in_with_facebook),
-                onClick = onFacebookClicked
+                onSuccess = onSuccess,
+                onError = onError
             )
         }
         IGWaitDialog(
@@ -166,7 +168,8 @@ fun LoginHelpScreenPreview() {
     LoginHelpScreen(
         uiState = UiState(),
         onValueChange = {  },
-        onFacebookClicked = {  },
+        onSuccess = {  },
+        onError = {  },
         onNextClicked = {  }
     )
 }

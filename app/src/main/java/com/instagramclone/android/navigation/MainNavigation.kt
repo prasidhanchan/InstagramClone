@@ -1,15 +1,19 @@
 package com.instagramclone.android.navigation
 
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.facebook.CallbackManager
+import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.instagramclone.android.SplashScreen
 import com.instagramclone.auth.AuthViewModel
@@ -25,6 +29,7 @@ import com.instagramclone.auth.signup.WelcomeScreen
 import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.home.HomeScreen
 import com.instagramclone.ui.R
+import com.instagramclone.util.constants.FacebookLogin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -55,12 +60,50 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         }
         composable(NavScreens.LoginScreen.route) {
             val uiState by viewModel.uiState.collectAsState()
+            val emailList by viewModel.emailList.collectAsState()
+
+            val loginManager = LoginManager.getInstance()
+            val callBack = remember { CallbackManager.Factory.create() }
+            val launcher = rememberLauncherForActivityResult(
+                contract = loginManager.createLogInActivityResultContract(callBack),
+                onResult = {  }
+            )
+
+            FacebookLogin(
+                loginManager = loginManager,
+                callBack = callBack,
+                context = context,
+                onSuccess = {
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    val displayName = currentUser?.displayName?.lowercase()?.replace(oldValue = " ", newValue = "_")
+
+                    if (emailList?.contains(currentUser?.email) == true) {
+                        navController.popBackStack()
+                        navController.navigate(NavScreens.HomeScreen.route)
+                        viewModel.clearUiState()
+                    } else {
+                        viewModel.addUserToDB(
+                            igUser = IGUser(
+                                username = displayName!!,
+                                email = currentUser.email!!,
+                                password = context.getString(R.string.facebook_login)
+                            ),
+                            onSuccess = {
+                                navController.popBackStack()
+                                navController.navigate(NavScreens.HomeScreen.route)
+                                viewModel.clearUiState()
+                            }
+                        )
+                    }
+                },
+                onError = { viewModel.setErrorOrSuccess(errorOrSuccess = it.message.toString()) }
+            )
 
             LoginScreen(
                 uiState = uiState,
                 navigateToSignUp = { navController.navigate(NavScreens.AddEmailScreen.route) },
                 onForgotPasswordClicked = { navController.navigate(NavScreens.LoginHelpScreen.route) },
-                onFaceBookClicked = { },
+                onFaceBookClicked = { launcher.launch(listOf("email", "public_profile")) },
                 onEmailOrUserNameChange = { viewModel.setEmailOrUsername(emailOrUsername = it) },
                 onPasswordChange = { viewModel.setPassword(password = it) },
                 onConfirm = {
@@ -300,6 +343,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         }
         composable(NavScreens.LoginHelpScreen.route) {
             val uiState by viewModel.uiState.collectAsState()
+            val emailList by viewModel.emailList.collectAsState()
             LaunchedEffect(key1 = Unit) {
                 viewModel.getAllUsers()
             }
@@ -307,13 +351,37 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             LoginHelpScreen(
                 uiState = uiState,
                 onValueChange = { viewModel.setEmailOrUsername(emailOrUsername = it) },
-                onFacebookClicked = { navController.navigate(NavScreens.LoginHelpScreen.route) },
+                onSuccess = {
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    val displayName = currentUser?.displayName?.lowercase()?.replace(oldValue = " ", newValue = "_")
+
+                    if (emailList?.contains(currentUser?.email) == true) {
+                        navController.popBackStack()
+                        navController.navigate(NavScreens.HomeScreen.route)
+                        viewModel.clearUiState()
+                    } else {
+                        viewModel.addUserToDB(
+                            igUser = IGUser(
+                                email = currentUser?.email!!,
+                                password = context.getString(R.string.facebook_login),
+                                username = displayName!!
+                            ),
+                            onSuccess = {
+                                navController.popBackStack()
+                                navController.navigate(NavScreens.HomeScreen.route)
+                                viewModel.clearUiState()
+                            }
+                        )
+                    }
+                },
+                onError = {
+                    viewModel.setErrorOrSuccess(errorOrSuccess = it.message.toString()) },
                 onNextClicked = {
                     viewModel.filterUser(
                         onSuccess = {
                             navController.navigate(NavScreens.AccessAccountScreen.route)
                             viewModel.clearErrorOrSuccess()
-                                    },
+                        },
                         onError = { viewModel.setErrorOrSuccess(errorOrSuccess = context.getString(R.string.no_user_found)) }
                     )
                 }

@@ -45,6 +45,15 @@ android {
 
 dependencies {
 
+    // Firebase BoM
+    implementation(platform(libs.firebase.bom))
+
+    // Firebase Authentication
+    implementation(libs.firebase.authentication)
+
+    // Facebook SDK
+    implementation(libs.facebook.sdk)
+
     implementation(libs.compose.preview)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.compose.bom))

@@ -247,6 +247,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    /** Function to get all users from Firebase Firestore */
     fun getAllUsers() {
         uiState.update { it.copy(showDialog = true) }
         viewModelScope.launch(Dispatchers.IO) {
@@ -269,6 +270,10 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    /** Function to check if a with the entered Email or Username exists or not
+     * @param onSuccess on Success lambda triggered when a user is found
+     * @param onError on Error lambda triggered wen a user is not found
+     */
     fun filterUser(
         onSuccess: () -> Unit,
         onError: () -> Unit
