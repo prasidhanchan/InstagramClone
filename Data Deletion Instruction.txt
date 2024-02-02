@@ -1,0 +1,21 @@
+Instructions to Delete User Data in the App:
+
+To delete your user data from the IGClone app, follow these steps:
+
+Open the App: Launch the IGClone app on your device.
+
+Navigate to Settings: Tap on the "Settings" option located in the app's menu or navigation drawer. This typically appears as a hamburger icon and is usually found in the top-right corner of the app's interface.
+
+Access Accounts Center: Within the Settings menu, locate and select the "Accounts Center" option. This section is where you can manage your account settings and preferences.
+
+Delete Account: In the Accounts Center, you should find the option to "Delete Account" or a similar option that allows you to remove your user data from the app.
+
+Confirmation: Once you select the "Delete Account" option, the app may prompt you to confirm your decision. Confirm that you indeed want to delete your account and associated data from the app.
+
+Follow Instructions: Follow any additional instructions provided by the app to complete the account deletion process. This may include confirming your identity or providing a reason for deleting your account.
+
+Data Deletion: After confirming your decision, the app will proceed to delete your account and associated data from its servers. This process may take a few moments to complete.
+
+Confirmation Message: Once your account and data have been successfully deleted, you may receive a confirmation message from the app. This confirms that your user data has been removed from the IGClone app.
+
+By following these steps, you can delete your user data from the IGClone app and ensure that your information is no longer stored within the app's database.
