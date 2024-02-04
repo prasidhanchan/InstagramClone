@@ -15,5 +15,6 @@ sealed class NavScreens(
     data object ProfileAddedScreen: NavScreens(name = "ProfileAdded", route = "ProfileAddedScreen")
     data object LoginHelpScreen: NavScreens(name = "LoginHelp", route = "LoginHelpScreen")
     data object AccessAccountScreen: NavScreens(name = "AccessAccount", route = "AccessAccountScreen")
+    data object InnerScreenHolder: NavScreens(name = "InnerScreen", route = "InnerScreenHolder")
     data object HomeScreen: NavScreens(name = "Home", route = "HomeScreen")
 }

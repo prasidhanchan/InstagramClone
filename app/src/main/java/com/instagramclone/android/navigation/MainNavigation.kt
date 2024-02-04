@@ -29,7 +29,6 @@ import com.instagramclone.auth.signup.CreatePasswordScreen
 import com.instagramclone.auth.signup.ProfileAddedScreen
 import com.instagramclone.auth.signup.WelcomeScreen
 import com.instagramclone.firebase.models.IGUser
-import com.instagramclone.home.HomeScreen
 import com.instagramclone.ui.R
 import com.instagramclone.util.constants.FacebookLogin
 import com.instagramclone.util.constants.toIGUsername
@@ -51,10 +50,10 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
 
             LaunchedEffect(key1 = true) {
                 if (currentUser != null) {
-                    startDestination = NavScreens.HomeScreen.route
+                    startDestination = NavScreens.InnerScreenHolder.route
                     delay(1000)
                     navController.popBackStack()
-                    navController.navigate(NavScreens.HomeScreen.route)
+                    navController.navigate(NavScreens.InnerScreenHolder.route)
                 } else {
                     startDestination = NavScreens.LoginScreen.route
                     delay(1000)
@@ -85,7 +84,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
 
                     if (emailList?.contains(currentUser?.email) == true) {
                         navController.popBackStack()
-                        navController.navigate(NavScreens.HomeScreen.route) {
+                        navController.navigate(NavScreens.InnerScreenHolder.route) {
                             navController.graph.startDestinationRoute?.let { it1 -> popUpTo(it1) }
                         }
                         viewModel.clearUiState()
@@ -98,7 +97,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                             ),
                             onSuccess = {
                                 navController.popBackStack()
-                                navController.navigate(NavScreens.HomeScreen.route) {
+                                navController.navigate(NavScreens.InnerScreenHolder.route) {
                                     navController.graph.startDestinationRoute?.let { it1 -> popUpTo(it1) }
                                 }
                                 viewModel.clearUiState()
@@ -127,7 +126,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                         password = uiState.password.trim(),
                         context = context,
                         onSuccess = {
-                            navController.navigate(NavScreens.HomeScreen.route) {
+                            navController.navigate(NavScreens.InnerScreenHolder.route) {
                                 navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
                             }
                             viewModel.clearUiState()
@@ -320,7 +319,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                     }
                 },
                 onSkipClicked = {
-                    navController.navigate(NavScreens.HomeScreen.route) {
+                    navController.navigate(NavScreens.InnerScreenHolder.route) {
                         navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
                     }
                     viewModel.clearUiState()
@@ -338,7 +337,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                         onSuccess = {
                             viewModel.updateProfileImage(
                                 onSuccess = {
-                                    navController.navigate(NavScreens.HomeScreen.route) {
+                                    navController.navigate(NavScreens.InnerScreenHolder.route) {
                                         popUpTo(navController.graph.startDestinationId)
                                     }
                                     viewModel.clearUiState()
@@ -369,7 +368,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
 
                     if (emailList?.contains(currentUser?.email) == true) {
                         navController.popBackStack()
-                        navController.navigate(NavScreens.HomeScreen.route)
+                        navController.navigate(NavScreens.InnerScreenHolder.route)
                         viewModel.clearUiState()
                     } else {
                         viewModel.addUserToDB(
@@ -379,7 +378,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                                 username = displayName!!
                             ),
                             onSuccess = {
-                                navController.navigate(NavScreens.HomeScreen.route) {
+                                navController.navigate(NavScreens.InnerScreenHolder.route) {
                                     navController.graph.startDestinationRoute?.let { route -> popUpTo(route)
                                     }
                                 }
@@ -412,16 +411,9 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             )
         }
 
-        composable(NavScreens.HomeScreen.route) {
-            startDestination = NavScreens.HomeScreen.route
-            HomeScreen(
-                logOut = {
-                    viewModel.logOut()
-                    navController.popBackStack()
-                    navController.navigate(NavScreens.LoginScreen.route)
-                    viewModel.clearUiState()
-                }
-            )
+        composable(NavScreens.InnerScreenHolder.route) {
+            startDestination = NavScreens.InnerScreenHolder.route
+            InnerScreenHolder()
         }
     }
 }

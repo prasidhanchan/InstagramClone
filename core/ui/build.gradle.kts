@@ -45,6 +45,9 @@ android {
 
 dependencies {
 
+    // Coil
+    implementation(libs.coil.compose)
+
     // Firebase BoM
     implementation(platform(libs.firebase.bom))
 

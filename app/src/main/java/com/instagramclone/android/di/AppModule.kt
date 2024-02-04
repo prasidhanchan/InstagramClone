@@ -1,6 +1,7 @@
 package com.instagramclone.android.di
 
 import com.instagramclone.firebase.repository.AuthRepositoryImpl
+import com.instagramclone.firebase.repository.HomeRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,4 +14,8 @@ object AppModule {
     @Singleton
     @Provides
     fun provideAuthRepository() = AuthRepositoryImpl()
+
+    @Singleton
+    @Provides
+    fun provideHomeRepository() = HomeRepositoryImpl()
 }

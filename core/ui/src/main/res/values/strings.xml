@@ -59,5 +59,11 @@
     <string name="ok">OK</string>
     <string name="email_sent">Email Sent</string>
     <string name="some_internal_error_occurred">Some internal error occurred!</string>
+    <string name="instagram_logo">Instagram Logo</string>
+    <string name="notifications">Notifications</string>
+    <string name="messenger">Messenger</string>
+    <string name="add_story">Add Story</string>
+    <string name="story_placeholder">%1$s\'s Story</string>
+    <string name="your_story">Your story</string>
 
 </resources>
