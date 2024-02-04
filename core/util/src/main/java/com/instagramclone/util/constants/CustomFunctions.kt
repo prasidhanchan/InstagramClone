@@ -68,3 +68,8 @@ fun FacebookLogin(
         }
     }
 }
+
+/** Function to convert a normal display name to IG username which includes underscores and lowercase letters
+ * @return Returns a String converted to username formatted to UG username
+ */
+fun String?.toIGUsername(): String? = this?.lowercase()?.replace(oldValue = " ", newValue = "_")

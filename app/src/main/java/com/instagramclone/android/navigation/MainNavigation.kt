@@ -5,8 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -30,6 +32,7 @@ import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.home.HomeScreen
 import com.instagramclone.ui.R
 import com.instagramclone.util.constants.FacebookLogin
+import com.instagramclone.util.constants.toIGUsername
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -37,20 +40,23 @@ import kotlinx.coroutines.launch
 fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
     val navController = rememberNavController()
     val context = LocalContext.current
+    var startDestination by remember { mutableStateOf(NavScreens.SplashScreen.route) }
 
     NavHost(
         navController = navController,
-        startDestination = NavScreens.SplashScreen.route
+        startDestination = startDestination
     ) {
         composable(NavScreens.SplashScreen.route) {
             val currentUser = FirebaseAuth.getInstance().currentUser
 
             LaunchedEffect(key1 = true) {
                 if (currentUser != null) {
+                    startDestination = NavScreens.HomeScreen.route
                     delay(1000)
                     navController.popBackStack()
                     navController.navigate(NavScreens.HomeScreen.route)
                 } else {
+                    startDestination = NavScreens.LoginScreen.route
                     delay(1000)
                     navController.popBackStack()
                     navController.navigate(NavScreens.LoginScreen.route)
@@ -75,11 +81,13 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 context = context,
                 onSuccess = {
                     val currentUser = FirebaseAuth.getInstance().currentUser
-                    val displayName = currentUser?.displayName?.lowercase()?.replace(oldValue = " ", newValue = "_")
+                    val displayName = currentUser?.displayName?.toIGUsername() //Prasidh Anchan -> prasidh_anchan
 
                     if (emailList?.contains(currentUser?.email) == true) {
                         navController.popBackStack()
-                        navController.navigate(NavScreens.HomeScreen.route)
+                        navController.navigate(NavScreens.HomeScreen.route) {
+                            navController.graph.startDestinationRoute?.let { it1 -> popUpTo(it1) }
+                        }
                         viewModel.clearUiState()
                     } else {
                         viewModel.addUserToDB(
@@ -90,7 +98,9 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                             ),
                             onSuccess = {
                                 navController.popBackStack()
-                                navController.navigate(NavScreens.HomeScreen.route)
+                                navController.navigate(NavScreens.HomeScreen.route) {
+                                    navController.graph.startDestinationRoute?.let { it1 -> popUpTo(it1) }
+                                }
                                 viewModel.clearUiState()
                             }
                         )
@@ -117,7 +127,9 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                         password = uiState.password.trim(),
                         context = context,
                         onSuccess = {
-                            navController.navigate(NavScreens.HomeScreen.route)
+                            navController.navigate(NavScreens.HomeScreen.route) {
+                                navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
+                            }
                             viewModel.clearUiState()
                         }
                     )
@@ -217,7 +229,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                             }
                         } else {
                             viewModel.setErrorOrSuccessUsername(
-                                errorOrSuccessUsername = context.getString(R.string.usernames_can_only_contain_letter_numbers_underscores_and_periods)
+                                errorOrSuccessUsername = context.getString(R.string.username_format_incorrect)
                             )
                         }
                     }
@@ -246,7 +258,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                         }
                     } else {
                         viewModel.setErrorOrSuccessUsername(
-                            errorOrSuccessUsername = context.getString(R.string.usernames_can_only_contain_letter_numbers_underscores_and_periods)
+                            errorOrSuccessUsername = context.getString(R.string.username_format_incorrect)
                         )
                     }
                 }
@@ -309,7 +321,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 },
                 onSkipClicked = {
                     navController.navigate(NavScreens.HomeScreen.route) {
-                        popUpTo(navController.graph.startDestinationId)
+                        navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
                     }
                     viewModel.clearUiState()
                 }
@@ -353,7 +365,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 onValueChange = { viewModel.setEmailOrUsername(emailOrUsername = it) },
                 onSuccess = {
                     val currentUser = FirebaseAuth.getInstance().currentUser
-                    val displayName = currentUser?.displayName?.lowercase()?.replace(oldValue = " ", newValue = "_")
+                    val displayName = currentUser?.displayName?.toIGUsername() //Prasidh Anchan -> prasidh_anchan
 
                     if (emailList?.contains(currentUser?.email) == true) {
                         navController.popBackStack()
@@ -367,8 +379,10 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                                 username = displayName!!
                             ),
                             onSuccess = {
-                                navController.popBackStack()
-                                navController.navigate(NavScreens.HomeScreen.route)
+                                navController.navigate(NavScreens.HomeScreen.route) {
+                                    navController.graph.startDestinationRoute?.let { route -> popUpTo(route)
+                                    }
+                                }
                                 viewModel.clearUiState()
                             }
                         )
@@ -399,11 +413,13 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         }
 
         composable(NavScreens.HomeScreen.route) {
+            startDestination = NavScreens.HomeScreen.route
             HomeScreen(
                 logOut = {
                     viewModel.logOut()
                     navController.popBackStack()
                     navController.navigate(NavScreens.LoginScreen.route)
+                    viewModel.clearUiState()
                 }
             )
         }
