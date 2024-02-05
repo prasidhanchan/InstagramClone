@@ -65,5 +65,11 @@
     <string name="add_story">Add Story</string>
     <string name="story_placeholder">%1$s\'s Story</string>
     <string name="your_story">Your story</string>
+    <string name="post">%1$s\'s post</string>
+    <string name="like_unlike">Like/Unlike</string>
+    <string name="likes">%1$s likes</string>
+    <string name="view_all_comments">View all %1$s comments</string>
+    <string name="add_a_comment">Add a comment...</string>
+    <string name="verified">Verified</string>
 
 </resources>

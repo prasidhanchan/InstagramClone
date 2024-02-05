@@ -49,7 +49,7 @@ fun IGHomeAppBar() {
             horizontalArrangement = Arrangement.End
         ) {
             Icon(
-                modifier = Modifier.size(28.dp),
+                modifier = Modifier.size(26.dp),
                 painter = painterResource(id = R.drawable.heart_outlined),
                 tint = Color.White,
                 contentDescription = stringResource(R.string.notifications)
