@@ -88,13 +88,13 @@ fun IGDialog(
                         )
                     }
 
-                    Divider(
-                        modifier = Modifier.padding(top = 30.dp),
-                        thickness = 0.5.dp,
-                        color = Color.White.copy(alpha = 0.2f)
-                    )
 
                     if (showBlueButton) {
+                        Divider(
+                            modifier = Modifier.padding(top = 30.dp),
+                            thickness = 0.5.dp,
+                            color = Color.White.copy(alpha = 0.1f)
+                        )
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -116,8 +116,9 @@ fun IGDialog(
 
                     if (showWhiteButton) {
                         Divider(
+                            modifier = if (!showBlueButton) Modifier.padding(top = 30.dp) else Modifier,
                             thickness = 0.5.dp,
-                            color = Color.White.copy(alpha = 0.2f)
+                            color = Color.White.copy(alpha = 0.1f)
                         )
                         Box(
                             modifier = Modifier
@@ -151,7 +152,7 @@ fun IGDialogPreview() {
         subTitle = "The username or password you entered doesn't appear to belong to an account. Please check your username or password and try again.",
         showDialog = true,
         showBlueButton = true,
-        showWhiteButton = false,
+        showWhiteButton = true,
         button1Text = "Sign Up",
         button2Text = "Try Again",
         onBlueClick = {  },

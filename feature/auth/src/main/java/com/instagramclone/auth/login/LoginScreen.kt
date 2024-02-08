@@ -244,16 +244,29 @@ fun LoginScreen(
                 }
             }
         }
-        IGDialog(
-            title = uiState.errorTitle,
-            subTitle = uiState.errorSubTitle,
-            showDialog = uiState.showDialog,
-            showBlueButton = true,
-            button1Text = stringResource(id = R.string.sign_up_dialog),
-            button2Text = stringResource(R.string.try_again),
-            onBlueClick = onDismiss,
-            onWhiteClick = onConfirm
-        )
+
+        if (uiState.errorTitle == "Incorrect password") {
+            IGDialog(
+                title = uiState.errorTitle,
+                subTitle = uiState.errorSubTitle,
+                showDialog = uiState.showDialog,
+                showBlueButton = false,
+                button1Text = stringResource(id = R.string.ok),
+                onBlueClick = {  },
+                onWhiteClick = onDismiss
+            )
+        } else {
+            IGDialog(
+                title = uiState.errorTitle,
+                subTitle = uiState.errorSubTitle,
+                showDialog = uiState.showDialog,
+                showBlueButton = true,
+                button1Text = stringResource(id = R.string.sign_up_dialog),
+                button2Text = stringResource(R.string.try_again),
+                onBlueClick = onDismiss,
+                onWhiteClick = onConfirm
+            )
+        }
         if (uiState.showDialog) keyBoard?.hide()
     }
 }

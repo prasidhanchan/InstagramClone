@@ -4,6 +4,7 @@ import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.util.models.DataOrException
@@ -39,6 +40,37 @@ class AuthRepositoryImpl : AuthRepository {
             }.addOnFailureListener {
                 onError(it.message.toString())
             }
+    }
+
+    override suspend fun loginUserWithUsername(
+        username: String,
+        password: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        dbUser.get().addOnSuccessListener { querySnap ->
+            val usersList = querySnap.documents.map { docSnap ->
+                docSnap.toObject(IGUser::class.java)
+            }
+            val user = usersList.filter { it?.username == username }
+
+            if (user.isNotEmpty()) {
+                if (password == user.first()?.password) {
+                    loginUser(
+                        email = user.first()?.email!!,
+                        password = password,
+                        onSuccess = onSuccess,
+                        onError = onError
+                    )
+                } else {
+                    onError("Password Incorrect")
+                }
+            } else {
+                onError("Username not found")
+            }
+        }.addOnFailureListener {
+            onError(it.message.toString())
+        }
     }
 
     override fun sendPasswordResetEmail(
@@ -125,8 +157,8 @@ class AuthRepositoryImpl : AuthRepository {
     override suspend fun getAllUsernames(): DataOrException<List<String>, Boolean, Exception> {
         val dataOrException: DataOrException<List<String>, Boolean, Exception> = DataOrException()
         dataOrException.isLoading = true
-        dbUser.get().addOnSuccessListener { documents ->
-            dataOrException.data = documents.documents.map { it.data?.get("username").toString() }
+        dbUser.get().addOnSuccessListener { querySnap ->
+            dataOrException.data = querySnap.documents.map { it.data?.get("username").toString() }
         }.addOnFailureListener {
             dataOrException.e = it
         }

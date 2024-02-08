@@ -121,17 +121,31 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 },
                 onDismiss = { viewModel.setDialog(value = false) },
                 onLogin = {
-                    viewModel.loginUser(
-                        email = uiState.emailOrUsername.trim(),
-                        password = uiState.password.trim(),
-                        context = context,
-                        onSuccess = {
-                            navController.navigate(NavScreens.InnerScreenHolder.route) {
-                                navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
+                    if (uiState.emailOrUsername.matches(Regex("^[a-zA-Z0-9_.]+|[a-zA-Z]+\$\n"))) {
+                        viewModel.loginWithUsername(
+                            username = uiState.emailOrUsername,
+                            password = uiState.password,
+                            context = context,
+                            onSuccess = {
+                                navController.navigate(NavScreens.InnerScreenHolder.route) {
+                                    navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
+                                }
+                                viewModel.clearUiState()
                             }
-                            viewModel.clearUiState()
-                        }
-                    )
+                        )
+                    } else {
+                        viewModel.loginUser(
+                            email = uiState.emailOrUsername.trim(),
+                            password = uiState.password.trim(),
+                            context = context,
+                            onSuccess = {
+                                navController.navigate(NavScreens.InnerScreenHolder.route) {
+                                    navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
+                                }
+                                viewModel.clearUiState()
+                            }
+                        )
+                    }
                 }
             )
         }

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.firebase.repository.AuthRepositoryImpl
+import com.instagramclone.ui.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -99,9 +100,65 @@ class AuthViewModel @Inject constructor(
                             it.copy(
                                 showDialog = true,
                                 isLoading = false,
-                                errorTitle = context.getString(com.instagramclone.ui.R.string.incorrect_username_or_password),
-                                errorSubTitle = context.getString(com.instagramclone.ui.R.string.incorrect_username_or_password_message)
+                                errorTitle = context.getString(R.string.incorrect_username_or_password),
+                                errorSubTitle = context.getString(R.string.incorrect_username_or_password_message)
                             )
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    /**
+     * Function to login a user using username and password
+     * @param username Requires username of the User
+     * @param password Requires password of the User
+     * @param onSuccess on success lambda triggered when the login is successful
+     */
+    fun loginWithUsername(
+        username: String,
+        password: String,
+        context: Context,
+        onSuccess: () -> Unit
+    ) {
+        uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
+            authRepository.loginUserWithUsername(
+                username = username,
+                password = password,
+                onSuccess = {
+                    onSuccess()
+                    uiState.update { it.copy(isLoading = false) }
+                },
+                onError = { error ->
+                    uiState.update {
+                        when (error) {
+                            "Password Incorrect" -> {
+                                it.copy(
+                                    isLoading = false,
+                                    errorTitle = context.getString(R.string.incorrect_password),
+                                    errorSubTitle = context.getString(R.string.incorrect_passowrd_message),
+                                    showDialog = true
+                                )
+                            }
+
+                            "Username not found" -> {
+                                it.copy(
+                                    isLoading = false,
+                                    errorTitle = context.getString(R.string.incorrect_username_or_password),
+                                    errorSubTitle = context.getString(R.string.incorrect_username_or_password_message),
+                                    showDialog = true,
+                                    errorOrSuccess = error
+                                )
+                            }
+
+                            else -> {
+                                it.copy(
+                                    isLoading = false,
+                                    errorOrSuccess = error
+                                )
+                            }
                         }
                     }
                 }
@@ -280,11 +337,12 @@ class AuthViewModel @Inject constructor(
     ) {
         viewModelScope.launch(Dispatchers.Main) {
             uiState.update { it.copy(isLoading = true) }
-            val users = if (uiState.value.emailOrUsername.matches(Regex("^[a-zA-Z0-9_.]+|[a-zA-Z]+\$\n"))) {
-                _users.value?.filter { it.username == uiState.value.emailOrUsername }
-            } else {
-                _users.value?.filter { it.email == uiState.value.emailOrUsername }
-            }
+            val users =
+                if (uiState.value.emailOrUsername.matches(Regex("^[a-zA-Z0-9_.]+|[a-zA-Z]+\$\n"))) {
+                    _users.value?.filter { it.username == uiState.value.emailOrUsername }
+                } else {
+                    _users.value?.filter { it.email == uiState.value.emailOrUsername }
+                }
             delay(1000L)
             if (!users.isNullOrEmpty()) {
                 uiState.update { uiState ->
@@ -330,9 +388,11 @@ class AuthViewModel @Inject constructor(
     fun setErrorOrSuccess(errorOrSuccess: String) {
         uiState.update { it.copy(errorOrSuccess = errorOrSuccess) }
     }
+
     fun setErrorOrSuccessEmail(errorOrSuccessEmail: String) {
         uiState.update { it.copy(errorOrSuccessEmail = errorOrSuccessEmail) }
     }
+
     fun setErrorOrSuccessUsername(errorOrSuccessUsername: String) {
         uiState.update { it.copy(errorOrSuccessUsername = errorOrSuccessUsername) }
     }
@@ -340,6 +400,7 @@ class AuthViewModel @Inject constructor(
     fun clearEmail() {
         uiState.update { it.copy(email = "") }
     }
+
     fun clearUsername() {
         uiState.update { it.copy(username = "") }
     }
