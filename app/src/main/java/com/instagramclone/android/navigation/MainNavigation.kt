@@ -29,6 +29,7 @@ import com.instagramclone.auth.signup.CreatePasswordScreen
 import com.instagramclone.auth.signup.ProfileAddedScreen
 import com.instagramclone.auth.signup.WelcomeScreen
 import com.instagramclone.firebase.models.IGUser
+import com.instagramclone.home.HomeViewModel
 import com.instagramclone.ui.R
 import com.instagramclone.util.constants.FacebookLogin
 import com.instagramclone.util.constants.toIGUsername
@@ -427,7 +428,11 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
 
         composable(NavScreens.InnerScreenHolder.route) {
             startDestination = NavScreens.InnerScreenHolder.route
-            InnerScreenHolder()
+            val viewModelHome: HomeViewModel = hiltViewModel()
+            val uiState by viewModelHome.uiState.collectAsState()
+            InnerScreenHolder(
+                profileImage = uiState.profileImage
+            )
         }
     }
 }

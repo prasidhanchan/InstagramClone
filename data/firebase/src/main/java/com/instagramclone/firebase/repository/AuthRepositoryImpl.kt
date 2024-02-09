@@ -4,7 +4,6 @@ import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.util.models.DataOrException
@@ -62,6 +61,8 @@ class AuthRepositoryImpl : AuthRepository {
                         onSuccess = onSuccess,
                         onError = onError
                     )
+                } else if (user.first()?.password == "Facebook Login") {
+                    onError("Password not set, please login through facebook.")
                 } else {
                     onError("Password Incorrect")
                 }

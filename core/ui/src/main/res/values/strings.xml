@@ -73,5 +73,9 @@
     <string name="verified">Verified</string>
     <string name="incorrect_password">Incorrect password</string>
     <string name="incorrect_passowrd_message">The password you entered is incorrect. Please try again.</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="upload">Upload</string>
+    <string name="reels">Reels</string>
 
 </resources>
