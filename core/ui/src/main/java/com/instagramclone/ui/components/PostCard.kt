@@ -27,13 +27,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,6 +89,8 @@ fun PostCard(
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
                         model = post.profileImage,
+                        contentScale = ContentScale.Crop,
+                        filterQuality = FilterQuality.Low,
                         contentDescription = post.username
                     )
                 }
@@ -108,11 +114,13 @@ fun PostCard(
                 }
             }
 
-
             AsyncImage(
-                modifier = Modifier.defaultMinSize(minHeight = 200.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = 200.dp),
                 model = post.images.first(), //TODO integrate Pager
-                contentScale = ContentScale.Fit,
+                contentScale = ContentScale.Crop,
+                filterQuality = FilterQuality.Low,
                 onLoading = { imageSize = it.painter?.intrinsicSize?.height ?: 0f },
                 contentDescription = stringResource(R.string.post, post.username)
             )
@@ -121,7 +129,7 @@ fun PostCard(
                 modifier = Modifier
                     .padding(10.dp)
                     .fillMaxWidth()
-                    .height(25.dp),
+                    .wrapContentHeight(Alignment.CenterVertically),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
@@ -159,7 +167,10 @@ fun PostCard(
                                 ),
                             painter = painterResource(id = R.drawable.comment),
                             tint = Color.White,
-                            contentDescription = stringResource(R.string.like_unlike)
+                            contentDescription = stringResource(
+                                R.string.view_all_comments,
+                                post.comments.size
+                            )
                         )
                         Icon(
                             modifier = Modifier
@@ -172,7 +183,7 @@ fun PostCard(
                                 ),
                             painter = painterResource(id = R.drawable.send),
                             tint = Color.White,
-                            contentDescription = stringResource(R.string.like_unlike)
+                            contentDescription = stringResource(R.string.send)
                         )
                     }
                 }
@@ -187,7 +198,7 @@ fun PostCard(
                         ),
                     painter = painterResource(id = R.drawable.save_outlined),
                     tint = Color.White,
-                    contentDescription = stringResource(R.string.like_unlike)
+                    contentDescription = stringResource(R.string.save)
                 )
             }
             Text(
@@ -206,35 +217,40 @@ fun PostCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(30.dp)
-                    .padding(vertical = 5.dp)
+                    .wrapContentHeight(Alignment.CenterVertically)
+                    .padding(vertical = 5.dp),
+                horizontalArrangement = Arrangement.Start
             ) {
+                val annotatedString = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        )
+                    ) {
+                        append("${post.username} ")
+                    }
+
+                    withStyle(
+                        style = SpanStyle(
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White
+                        )
+                    ) {
+                        append(post.caption)
+                    }
+                }
                 Text(
                     modifier = Modifier
                         .padding(start = 15.dp, end = 5.dp),
-                    text = post.username,
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White,
-                        textAlign = TextAlign.Start
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    modifier = Modifier,
-                    text = post.caption,
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.White,
-                        textAlign = TextAlign.Start
-                    ),
+                    text = annotatedString,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
             }
+
 
             Text(
                 modifier = Modifier
@@ -249,7 +265,7 @@ fun PostCard(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.5f),
+                    color = Color.White.copy(alpha = 0.6f),
                     textAlign = TextAlign.Start
                 )
             )
@@ -274,6 +290,8 @@ fun PostCard(
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
                         model = post.profileImage,
+                        contentScale = ContentScale.Crop,
+                        filterQuality = FilterQuality.Low,
                         contentDescription = post.username
                     )
                 }
@@ -285,7 +303,7 @@ fun PostCard(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.White.copy(alpha = 0.5f),
+                        color = Color.White.copy(alpha = 0.6f),
                         textAlign = TextAlign.Start
                     )
                 )
@@ -319,9 +337,9 @@ fun PostCardPreview() {
             images = listOf(""),
             isVerified = true
         ),
-        onLikeClicked = {  },
-        onSendClicked = {  },
-        onSaveClicked = {  },
-        onUsernameClicked = {  },
+        onLikeClicked = { },
+        onSendClicked = { },
+        onSaveClicked = { },
+        onUsernameClicked = { },
     )
 }

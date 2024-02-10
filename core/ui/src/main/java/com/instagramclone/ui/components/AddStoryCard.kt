@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -67,6 +68,7 @@ fun AddStoryCard(
                     modifier = Modifier.fillMaxSize(),
                     model = profileImage,
                     contentScale = ContentScale.Crop,
+                    filterQuality = FilterQuality.Low,
                     contentDescription = stringResource(id = R.string.profile_image)
                 )
             }

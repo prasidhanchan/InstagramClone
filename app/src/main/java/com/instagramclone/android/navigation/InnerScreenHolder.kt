@@ -1,7 +1,5 @@
 package com.instagramclone.android.navigation
 
-import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -11,8 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.instagramclone.util.constants.Utils
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun InnerScreenHolder(
     profileImage: String?,
@@ -21,11 +19,11 @@ fun InnerScreenHolder(
     var currentRoute by remember { mutableStateOf<NavScreens>(NavScreens.HomeScreen) }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        containerColor = Utils.IgBlack,
         bottomBar = {
             IGBottomBar(
                 profileImage = profileImage,
                 navigateToRoute = { item ->
-                    Log.d("IGNAV", "InnerScreenHolder: $profileImage")
                     currentRoute = item
                     navHostController.navigate(item.route) {
                         launchSingleTop = true
@@ -36,8 +34,11 @@ fun InnerScreenHolder(
                 navHostController = navHostController
             )
         },
-        content = {
-            InnerScreenNavigation(navHostController = navHostController)
+        content = { innerPadding ->
+            InnerScreenNavigation(
+                innerPadding = innerPadding,
+                navHostController = navHostController
+            )
         }
     )
 }

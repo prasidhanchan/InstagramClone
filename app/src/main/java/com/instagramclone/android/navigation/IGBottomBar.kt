@@ -51,7 +51,7 @@ fun IGBottomBar(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.Top
         ) {
             items.forEach { item ->

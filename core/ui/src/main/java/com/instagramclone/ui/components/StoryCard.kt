@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -106,6 +107,7 @@ fun StoryCard(
                     modifier = Modifier.fillMaxSize(),
                     model = story.profileImage,
                     contentScale = ContentScale.Crop,
+                    filterQuality = FilterQuality.Low,
                     contentDescription = stringResource(R.string.story_placeholder, story.username)
                 )
             }
