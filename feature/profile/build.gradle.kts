@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.instagramclone.home"
+    namespace = "com.instagramclone.profile"
     compileSdk = AndroidConfig.compileSdk
 
     defaultConfig {
@@ -51,6 +51,9 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     ksp(libs.androidx.hilt.compiler)
 
+    // Coil
+    implementation(libs.coil.compose)
+
     implementation(libs.material3)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.compose.bom))
@@ -63,5 +66,4 @@ dependencies {
 
     implementation(project(":core:ui"))
     implementation(project(":core:util"))
-    implementation(project(":data:firebase"))
 }

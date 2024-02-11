@@ -1,5 +1,7 @@
 package com.instagramclone.android.navigation
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -71,12 +73,26 @@ fun IGBottomBar(
                     ),
                 shape = CircleShape,
                 color = Utils.IgOffBlack,
+                border = BorderStroke(
+                    color = if (currentScreen?.hierarchy?.any { it.route == NavScreens.ProfileScreen.route } == true) {
+                        Color.White
+                    } else {
+                        Color.Transparent
+                    },
+                    width = 2.dp)
             ) {
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = profileImage,
-                    contentDescription = stringResource(id = R.string.profile_image)
-                )
+                if (profileImage?.isNotEmpty() == true) {
+                    AsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = profileImage,
+                        contentDescription = stringResource(id = R.string.profile_image)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.profile),
+                        contentDescription = stringResource(id = R.string.profile_image)
+                    )
+                }
             }
         }
     }

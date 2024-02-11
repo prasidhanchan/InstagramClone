@@ -11,4 +11,6 @@ object Utils {
     val IgOffWhite = Color(0xFFF5F5F5)
     val IgBlue = Color(0xFF2196F3)
     val IgError = Color(0xFFE95044)
+    val IgLikeRed = Color(0xFFF55043)
+    val IgLinkBlue = Color(0xFFA1DCF7)
 }

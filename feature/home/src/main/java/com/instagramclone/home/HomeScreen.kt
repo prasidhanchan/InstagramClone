@@ -22,7 +22,9 @@ import com.instagramclone.util.models.Story
 fun HomeScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
+    currentUserId: String,
     onLikeClicked: () -> Unit,
+    onUnLikeClicked: () -> Unit,
     onSendClicked: () -> Unit,
     onSaveClicked: () -> Unit,
     onUsernameClicked: () -> Unit
@@ -58,7 +60,7 @@ fun HomeScreen(
                 "https://www.themobileindian.com/wp-content/uploads/2021/06/pubg.jpg"
             ),
             profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2FvJdDRERlD9VVleMOJDIoYTXSYu53.jpg?alt=media&token=e1831424-81db-44ac-baaa-b8e4dced084b",
-            likes = 52456,
+            likes = listOf("1234", "12345", "123456", "85488"),
             isVerified = true,
             caption = "Who you picking?"
         ),
@@ -66,7 +68,7 @@ fun HomeScreen(
             username = "fordmustang",
             images = listOf("https://imgs.search.brave.com/M0SnwILQ61kDRs5hVMb68edBdpVgueVd9YsKRBjj168/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvNDU5/MjYxOTA5L3Bob3Rv/L2ZvcmQtbXVzdGFu/Zy5qcGc_cz02MTJ4/NjEyJnc9MCZrPTIw/JmM9ZC1DLW0waFJ6/bVAyR000NnZEd1Yt/S1VTUHQzUDk0Q2Q2/bG1OYmxZRk9jMD0"),
             profileImage = "https://imgs.search.brave.com/FlvNKl9wbnrJaG6u7micYzZp6BUUgF_VwwOWBSNqI1k/rs:fit:860:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJjYXZlLmNv/bS93cC95Rk52M1ll/LmpwZw",
-            likes = 52456,
+            likes = listOf("1234", "12345"),
             isVerified = true,
             caption = "fordmustang After four and a half years of hard work and dedication, Mark Passarelli's fully factory-restored'68 Ford Mustang® GT Fastback is ready to speed off into the\n" +
                     "sunset."
@@ -97,7 +99,9 @@ fun HomeScreen(
                 )
             },
             posts = posts,
+            currentUserId = currentUserId,
             onLikeClicked = onLikeClicked,
+            onUnLikeClicked = onUnLikeClicked,
             onSendClicked = onSendClicked,
             onSaveClicked = onSaveClicked,
             onUsernameClicked = onUsernameClicked
@@ -132,7 +136,9 @@ fun HomeScreenPreview() {
     HomeScreen(
         innerPadding = PaddingValues(),
         uiState = UiState(stories = stories),
+        currentUserId = "12345",
         onLikeClicked = { },
+        onUnLikeClicked = { },
         onSendClicked = { },
         onSaveClicked = { },
         onUsernameClicked = { },

@@ -79,5 +79,13 @@
     <string name="reels">Reels</string>
     <string name="send">Send</string>
     <string name="save">Save</string>
+    <string name="posts">posts</string>
+    <string name="followers">followers</string>
+    <string name="following">following</string>
+    <string name="link">Link</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="following_caps">Following</string>
+    <string name="follow">Follow</string>
+    <string name="message">Message</string>
 
 </resources>

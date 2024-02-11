@@ -33,6 +33,7 @@ fun IGButton(
     text: String,
     enabled: Boolean = true,
     fontSize: Int = 15,
+    color: Color = Utils.IgBlue,
     cornerRadius: Dp = 8.dp,
     isLoading: Boolean,
     onClick: () -> Unit
@@ -44,8 +45,8 @@ fun IGButton(
         onClick = onClick,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Utils.IgBlue,
-            disabledContainerColor = Utils.IgBlue.copy(alpha = 0.4f)
+            containerColor = color,
+            disabledContainerColor = color.copy(alpha = 0.4f)
         ),
         shape = RoundedCornerShape(cornerRadius)
     ) {

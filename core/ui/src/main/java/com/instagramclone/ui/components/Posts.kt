@@ -8,7 +8,9 @@ import com.instagramclone.util.models.Post
 @Composable
 fun Posts(
     posts: List<Post>,
+    currentUserId: String,
     onLikeClicked: () -> Unit,
+    onUnLikeClicked: () -> Unit,
     onSendClicked: () -> Unit,
     onSaveClicked: () -> Unit,
     onUsernameClicked: () -> Unit,
@@ -25,7 +27,9 @@ fun Posts(
             ) { post ->
                 PostCard(
                     post = post,
+                    currentUserId = currentUserId,
                     onLikeClicked = onLikeClicked,
+                    onUnLikeClicked = onUnLikeClicked,
                     onSendClicked = onSendClicked,
                     onSaveClicked = onSaveClicked,
                     onUsernameClicked = onUsernameClicked

@@ -1,5 +1,8 @@
 package com.instagramclone.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,13 +53,29 @@ import com.instagramclone.util.models.Post
 @Composable
 fun PostCard(
     post: Post,
+    currentUserId: String,
     onLikeClicked: () -> Unit,
+    onUnLikeClicked: () -> Unit,
     onSendClicked: () -> Unit,
     onSaveClicked: () -> Unit,
     onUsernameClicked: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     var imageSize by remember { mutableFloatStateOf(0f) }
+
+    val hasLiked = post.likes.filter { postId -> postId == currentUserId }.isNotEmpty()
+    var likeState by remember { mutableStateOf(hasLiked) }
+
+    var size by remember { mutableFloatStateOf(1.3f) }
+    val scale by animateFloatAsState(
+        animationSpec = spring(
+            dampingRatio = 1f
+        ),
+        targetValue = size,
+        finishedListener = { size = 1.3f },
+        label = "like"
+    )
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -86,13 +106,20 @@ fun PostCard(
                     shape = CircleShape,
                     color = Utils.IgOffBlack
                 ) {
-                    AsyncImage(
-                        modifier = Modifier.fillMaxSize(),
-                        model = post.profileImage,
-                        contentScale = ContentScale.Crop,
-                        filterQuality = FilterQuality.Low,
-                        contentDescription = post.username
-                    )
+                    if (post.profileImage.isNotEmpty()) {
+                        AsyncImage(
+                            modifier = Modifier.fillMaxSize(),
+                            model = post.profileImage,
+                            contentScale = ContentScale.Crop,
+                            filterQuality = FilterQuality.Low,
+                            contentDescription = post.username
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.profile),
+                            contentDescription = stringResource(id = R.string.profile_image)
+                        )
+                    }
                 }
                 Text(
                     modifier = Modifier.padding(start = 10.dp, end = 5.dp),
@@ -144,19 +171,43 @@ fun PostCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        Icon(
-                            modifier = Modifier
-                                .scale(1.3f)
-                                .padding(horizontal = 8.dp)
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = interactionSource,
-                                    onClick = onLikeClicked
-                                ),
-                            painter = painterResource(id = R.drawable.heart_outlined),
-                            tint = Color.White,
-                            contentDescription = stringResource(R.string.like_unlike)
-                        )
+                        if (likeState) {
+                            Icon(
+                                modifier = Modifier
+                                    .scale(scale)
+                                    .padding(horizontal = 8.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = interactionSource,
+                                        onClick = {
+                                            size = 1.6f
+                                            likeState = !likeState
+                                            onUnLikeClicked()
+                                        }
+                                    ),
+                                painter = painterResource(id = R.drawable.heart_filled),
+                                tint = Utils.IgLikeRed,
+                                contentDescription = stringResource(R.string.like_unlike)
+                            )
+                        } else {
+                            Icon(
+                                modifier = Modifier
+                                    .scale(scale)
+                                    .padding(horizontal = 8.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = interactionSource,
+                                        onClick = {
+                                            size = 1.6f
+                                            likeState = !likeState
+                                            onLikeClicked()
+                                        }
+                                    ),
+                                painter = painterResource(id = R.drawable.heart_outlined),
+                                tint = Color.White,
+                                contentDescription = stringResource(R.string.like_unlike)
+                            )
+                        }
                         Icon(
                             modifier = Modifier
                                 .padding(horizontal = 8.dp)
@@ -205,7 +256,7 @@ fun PostCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 15.dp),
-                text = stringResource(R.string.likes, post.likes),
+                text = stringResource(R.string.likes, post.likes.size),
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -287,13 +338,20 @@ fun PostCard(
                     shape = CircleShape,
                     color = Utils.IgOffBlack
                 ) {
-                    AsyncImage(
-                        modifier = Modifier.fillMaxSize(),
-                        model = post.profileImage,
-                        contentScale = ContentScale.Crop,
-                        filterQuality = FilterQuality.Low,
-                        contentDescription = post.username
-                    )
+                    if (post.profileImage.isNotEmpty()) {
+                        AsyncImage(
+                            modifier = Modifier.fillMaxSize(),
+                            model = post.profileImage,
+                            contentScale = ContentScale.Crop,
+                            filterQuality = FilterQuality.Low,
+                            contentDescription = post.username
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.profile), 
+                            contentDescription = stringResource(id = R.string.profile_image)
+                        )
+                    }
                 }
                 Text(
                     modifier = Modifier
@@ -331,13 +389,15 @@ fun PostCardPreview() {
     PostCard(
         post = Post(
             username = "pra_sidh_22",
-            likes = 52456,
+            likes = listOf("1234", "4321"),
             caption = "Who you picking?",
             timeStamp = 5,
             images = listOf(""),
             isVerified = true
         ),
+        currentUserId = "12345",
         onLikeClicked = { },
+        onUnLikeClicked = { },
         onSendClicked = { },
         onSaveClicked = { },
         onUsernameClicked = { },

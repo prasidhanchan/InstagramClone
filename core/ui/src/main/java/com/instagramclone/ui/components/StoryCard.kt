@@ -2,6 +2,7 @@ package com.instagramclone.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -103,13 +105,20 @@ fun StoryCard(
                     .border(width = 5.dp, color = Utils.IgBlack, shape = CircleShape),
                 color = Utils.IgOffBlack
             ) {
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = story.profileImage,
-                    contentScale = ContentScale.Crop,
-                    filterQuality = FilterQuality.Low,
-                    contentDescription = stringResource(R.string.story_placeholder, story.username)
-                )
+                if (story.profileImage.isNotEmpty()) {
+                    AsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = story.profileImage,
+                        contentScale = ContentScale.Crop,
+                        filterQuality = FilterQuality.Low,
+                        contentDescription = stringResource(R.string.story_placeholder, story.username)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.profile),
+                        contentDescription = stringResource(id = R.string.profile_image)
+                    )
+                }
             }
             Text(
                 modifier = Modifier.padding(vertical = 2.dp),
