@@ -57,6 +57,7 @@ fun IGTextBox(
 ) {
     val focusRequester = FocusRequester()
     val interactionSource = remember { MutableInteractionSource() }
+
     TextField(
         modifier = modifier
             .height(50.dp)

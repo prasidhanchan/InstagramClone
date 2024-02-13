@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import com.google.firebase.auth.FirebaseAuth
 import com.instagramclone.home.HomeScreen
 import com.instagramclone.home.HomeViewModel
+import com.instagramclone.profile.EditProfileScreen
 import com.instagramclone.profile.ProfileScreen
 import com.instagramclone.profile.UiState
 
@@ -54,8 +55,21 @@ fun InnerScreenNavigation(
                         "https://www.animeinformer.com/wp-content/uploads/2022/08/demon-slayer-pfp.png.webp"
                     )
                 ),
-                onEditProfileClick = {  },
+                onEditProfileClick = { navHostController.navigate(NavScreens.EditProfileScreen.route) },
                 onMoreClick = {  }
+            )
+        }
+        composable(NavScreens.EditProfileScreen.route) {
+            EditProfileScreen(
+                innerPadding = innerPadding,
+                uiState = UiState(
+                    username = "pra_sidh_22",
+                    name = "Prasidh Gopal Anchan",
+                    bio = "Android developer",
+                    links = "https://www.linktr.ee/prasidhanchan"
+                ),
+                onClickEditText = { /*TODO*/ },
+                onBackClick = { navHostController.popBackStack() }
             )
         }
     }

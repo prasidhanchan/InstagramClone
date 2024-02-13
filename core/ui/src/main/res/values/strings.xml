@@ -87,5 +87,11 @@
     <string name="following_caps">Following</string>
     <string name="follow">Follow</string>
     <string name="message">Message</string>
+    <string name="edit_profile_picture">Edit profile picture</string>
+    <string name="name">Name</string>
+    <string name="bio">Bio</string>
+    <string name="links">Links</string>
+    <string name="gender">Gender</string>
+    <string name="personal_information_settings">Personal information settings</string>
 
 </resources>
