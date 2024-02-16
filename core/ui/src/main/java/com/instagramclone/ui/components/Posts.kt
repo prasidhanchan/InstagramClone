@@ -25,15 +25,17 @@ fun Posts(
                 items = posts,
                 key = { post -> post.username }
             ) { post ->
-                PostCard(
-                    post = post,
-                    currentUserId = currentUserId,
-                    onLikeClicked = onLikeClicked,
-                    onUnLikeClicked = onUnLikeClicked,
-                    onSendClicked = onSendClicked,
-                    onSaveClicked = onSaveClicked,
-                    onUsernameClicked = onUsernameClicked
-                )
+                if (posts.isNotEmpty()) {
+                    PostCard(
+                        post = post,
+                        currentUserId = currentUserId,
+                        onLikeClicked = onLikeClicked,
+                        onUnLikeClicked = onUnLikeClicked,
+                        onSendClicked = onSendClicked,
+                        onSaveClicked = onSaveClicked,
+                        onUsernameClicked = onUsernameClicked
+                    )
+                }
             }
         }
     )

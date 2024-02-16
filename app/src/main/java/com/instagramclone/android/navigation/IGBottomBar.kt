@@ -79,7 +79,7 @@ fun IGBottomBar(
                     } else {
                         Color.Transparent
                     },
-                    width = 2.dp)
+                    width = 1.5.dp)
             ) {
                 if (profileImage?.isNotEmpty() == true) {
                     AsyncImage(

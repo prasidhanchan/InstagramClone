@@ -29,6 +29,7 @@ import com.instagramclone.ui.components.IGProfileAppBar
 import com.instagramclone.ui.components.ProfileCard
 import com.instagramclone.util.constants.Utils
 import com.instagramclone.ui.R
+import com.instagramclone.ui.components.IGLoader
 
 @Composable
 fun ProfileScreen(
@@ -37,84 +38,88 @@ fun ProfileScreen(
     onEditProfileClick: () -> Unit,
     onMoreClick: () -> Unit
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
-        verticalArrangement = Arrangement.Top,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        item(
-            key = "profileAppBar",
-            span = { GridItemSpan(currentLineSpan = 3) }
+    if (uiState.username.isNotEmpty()) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.Top,
+            horizontalArrangement = Arrangement.Start
         ) {
-            IGProfileAppBar(
-                username = uiState.username,
-                onMoreClick = onMoreClick
-            )
-        }
-
-        item (
-            key = "profileCard",
-            span = { GridItemSpan(currentLineSpan = 3) }
-        ){
-            ProfileCard(
-                profileImage = uiState.profileImage,
-                name = uiState.name,
-                bio = uiState.bio,
-                links = uiState.links,
-                posts = uiState.myPosts.size,
-                followers = uiState.followers.size,
-                following = uiState.following.size,
-                onEditProfileClick = onEditProfileClick
-            )
-        }
-
-        item(
-            span = { GridItemSpan(currentLineSpan = 3) }
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+            item(
+                key = "profileAppBar",
+                span = { GridItemSpan(currentLineSpan = 3) }
             ) {
-                Icon(
-                    modifier = Modifier.padding(vertical = 10.dp),
-                    painter = painterResource(id = R.drawable.grid),
-                    tint = Color.White,
-                    contentDescription = stringResource(com.instagramclone.profile.R.string.posts)
-                )
-                Divider(
-                    modifier = Modifier.padding(bottom = 2.dp),
-                    thickness = 1.dp,
-                    color = Color.White
+                IGProfileAppBar(
+                    username = uiState.username,
+                    onMoreClick = onMoreClick
                 )
             }
-        }
 
-        items(
-            key = { myPost -> myPost },
-            items = uiState.myPosts
-        ) { myPost ->
-            Box(
-                modifier = Modifier
-                    .padding(1.dp)
-                    .size(120.dp)
-                    .background(color = Utils.IgOffBlack),
-                contentAlignment = Alignment.Center
+            item (
+                key = "profileCard",
+                span = { GridItemSpan(currentLineSpan = 3) }
+            ){
+                ProfileCard(
+                    profileImage = uiState.profileImage,
+                    name = uiState.name,
+                    bio = uiState.bio,
+                    links = uiState.links,
+                    posts = uiState.myPosts.size,
+                    followers = uiState.followers.size,
+                    following = uiState.following.size,
+                    onEditProfileClick = onEditProfileClick
+                )
+            }
+
+            item(
+                span = { GridItemSpan(currentLineSpan = 3) }
             ) {
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = myPost,
-                    contentScale = ContentScale.Crop,
-                    contentDescription = stringResource(
-                        com.instagramclone.profile.R.string.post_info,
-                        uiState.username
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(vertical = 10.dp),
+                        painter = painterResource(id = R.drawable.grid),
+                        tint = Color.White,
+                        contentDescription = stringResource(com.instagramclone.profile.R.string.posts)
                     )
-                )
+                    Divider(
+                        modifier = Modifier.padding(bottom = 2.dp),
+                        thickness = 1.dp,
+                        color = Color.White
+                    )
+                }
+            }
+
+            items(
+                key = { myPost -> myPost },
+                items = uiState.myPosts
+            ) { myPost ->
+                Box(
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .size(120.dp)
+                        .background(color = Utils.IgOffBlack),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = myPost,
+                        contentScale = ContentScale.Crop,
+                        contentDescription = stringResource(
+                            com.instagramclone.profile.R.string.post_info,
+                            uiState.username
+                        )
+                    )
+                }
             }
         }
+    } else {
+        IGLoader()
     }
 }
 

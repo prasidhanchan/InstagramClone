@@ -9,5 +9,7 @@ data class UiState(
     var gender: String = "Unknown",
     var myPosts: List<String> = emptyList(),
     var followers: List<String> = emptyList(),
-    var following: List<String> = emptyList()
+    var following: List<String> = emptyList(),
+    var isLoading: Boolean = false,
+    var error: String = ""
 )

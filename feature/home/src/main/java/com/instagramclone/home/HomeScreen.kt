@@ -88,8 +88,8 @@ fun HomeScreen(
 
                 Stories(
                     profileImage = uiState.profileImage,
-                    onAddStoryClick = { /*TODO*/ },
-                    onStoryClick = { /*TODO*/ },
+                    onAddStoryClick = { /* TODO */ },
+                    onStoryClick = { /* TODO */ },
                     stories = stories
                 )
                 Divider(
