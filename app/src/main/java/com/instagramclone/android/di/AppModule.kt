@@ -1,5 +1,6 @@
 package com.instagramclone.android.di
 
+import com.google.firebase.firestore.FirebaseFirestore
 import com.instagramclone.firebase.repository.AuthRepositoryImpl
 import com.instagramclone.firebase.repository.HomeRepositoryImpl
 import com.instagramclone.firebase.repository.ProfileRepositoryImpl
@@ -22,5 +23,5 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideProfileRepository() = ProfileRepositoryImpl()
+    fun provideProfileRepository() = ProfileRepositoryImpl(query = FirebaseFirestore.getInstance().collection("Users"))
 }

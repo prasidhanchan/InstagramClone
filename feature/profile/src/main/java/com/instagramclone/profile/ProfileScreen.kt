@@ -38,7 +38,7 @@ fun ProfileScreen(
     onEditProfileClick: () -> Unit,
     onMoreClick: () -> Unit
 ) {
-    if (uiState.username.isNotEmpty()) {
+    if (!uiState.isLoading) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             modifier = Modifier

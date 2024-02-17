@@ -11,5 +11,6 @@ data class UiState(
     var followers: List<String> = emptyList(),
     var following: List<String> = emptyList(),
     var isLoading: Boolean = false,
-    var error: String = ""
+    var error: String = "",
+    var textState: String = ""
 )

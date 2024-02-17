@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,19 +16,21 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepositoryImpl
 ): ViewModel() {
+
+    private val _usernames: MutableStateFlow<List<String>?> = MutableStateFlow(null)
+    val usernames = _usernames.asStateFlow()
     var uiState = MutableStateFlow(UiState())
         private set
 
-    init {
-        getUserData()
-    }
-
-    private fun getUserData() {
+    /**
+     * Function to get current user data from Firestore
+     */
+    fun getUserData() {
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
             val result = profileRepository.getUserData()
 
-            delay(1000L)
+            delay(1500L)
             if (result.data != null) {
                 uiState.update { uiState ->
                     uiState.copy(
@@ -58,5 +61,62 @@ class ProfileViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Function to get all usernames from Firestore
+     */
+    fun getAllUsernames() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = profileRepository.getAllUsernames()
+
+            delay(1000L)
+            if (result.e == null) {
+                _usernames.update { result.data }
+            } else {
+                uiState.update { it.copy(error = result.e?.message.toString()) }
+            }
+        }
+    }
+
+    /**
+     * Function to update the user details such as, name, username, etc
+     * @param text Requires the current field which is being updated
+     * @param value Requires the new value which is to be updated
+     * @param onSuccess On success lambda which is triggered when the update task is completed
+     */
+    fun updateUserDetails(
+        text: String,
+        value: String,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            profileRepository.updateUserDetails(
+                key = when (text) {
+                    "Name" -> "name"
+                    "Username" -> "username"
+                    "Bio" -> "bio"
+                    else -> "links"
+                },
+                value = value,
+                onSuccess = onSuccess,
+                onError = { error ->
+                    uiState.update { it.copy(error = error) }
+                }
+            )
+        }
+    }
+
+    fun setText(text: String) {
+        uiState.update { it.copy(textState = text) }
+    }
+    fun clearText() {
+        uiState.update { it.copy(textState = "") }
+    }
+    fun setError(error: String) {
+        uiState.update { it.copy(error = error) }
+    }
+    fun clearError() {
+        uiState.update { it.copy(error = "") }
     }
 }

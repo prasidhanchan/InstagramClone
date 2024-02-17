@@ -25,6 +25,7 @@ sealed class NavScreens(
     data object ReelsScreen: NavScreens(iconOutlined = R.drawable.reel_outlined, iconFilled = R.drawable.reel_filled, name = "Reels", route = "ReelsScreen")
     data object ProfileScreen: NavScreens(name = "Profile", route = "ProfileScreen")
     data object EditProfileScreen: NavScreens(name = "EditProfile", route = "EditProfileScreen")
+    data object EditTextScreen: NavScreens(name = "EditText", route = "EditTextScreen")
 
     data object Items {
         val list = listOf(
