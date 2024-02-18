@@ -14,6 +14,7 @@ class ProfileRepositoryImpl @Inject constructor(
 ): ProfileRepository {
     private val currentUser = FirebaseAuth.getInstance().currentUser
     private val dbUser = FirebaseFirestore.getInstance().collection("Users")
+
     override suspend fun getUserData(): DataOrException<IGUser, Boolean, Exception> {
         val dataOrException: DataOrException<IGUser, Boolean, Exception> = DataOrException()
 

@@ -62,7 +62,7 @@ fun AddStoryCard(
         ) {
 
             Surface(
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(75.dp),
                 shape = CircleShape,
                 color = Utils.IgOffBlack
             ) {

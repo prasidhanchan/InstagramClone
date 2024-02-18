@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +41,7 @@ fun EditTextScreen(
     onValueChange: (String) -> Unit,
     uiState: UiState,
     isUsernameAvailable: Boolean,
+    isUpdating: Boolean,
     onCancelClick: () -> Unit,
     onDoneClick: () -> Unit
 ) {
@@ -57,6 +60,7 @@ fun EditTextScreen(
                 "Name" -> uiState.textState.isNotEmpty()
                 else -> uiState.textState.isNotEmpty() && isUsernameAvailable
             },
+            isUpdating = isUpdating,
             onCancelClick = onCancelClick,
             onDoneClick = onDoneClick
         )
@@ -109,6 +113,7 @@ fun EditTextScreen(
 fun EditTextScreenAppbar(
     text: String,
     buttonEnabled: Boolean = true,
+    isUpdating: Boolean,
     onCancelClick: () -> Unit,
     onDoneClick: () -> Unit
 ) {
@@ -147,18 +152,26 @@ fun EditTextScreenAppbar(
                 textAlign = TextAlign.End
             )
             Spacer(modifier = Modifier.weight(4f))
-            Icon(
-                modifier = Modifier
-                    .scale(1.5f)
-                    .weight(0.5f)
-                    .clickable(
-                        enabled = buttonEnabled,
-                        onClick = onDoneClick
-                    ),
-                painter = painterResource(id = R.drawable.check),
-                tint = if (buttonEnabled) Utils.IgBlue else Utils.IgBlue.copy(alpha = 0.5f),
-                contentDescription = stringResource(R.string.done)
-            )
+            if (!isUpdating) {
+                Icon(
+                    modifier = Modifier
+                        .scale(1.5f)
+                        .weight(0.5f)
+                        .clickable(
+                            enabled = buttonEnabled,
+                            onClick = onDoneClick
+                        ),
+                    painter = painterResource(id = R.drawable.check),
+                    tint = if (buttonEnabled) Utils.IgBlue else Utils.IgBlue.copy(alpha = 0.5f),
+                    contentDescription = stringResource(R.string.done)
+                )
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = Utils.IgBlue
+                )
+            }
         }
     }
 }
@@ -172,6 +185,7 @@ fun EditTextScreenAppbar(
 fun EditTextScreenAppBarPreview() {
     EditTextScreenAppbar(
         text = "Name",
+        isUpdating = true,
         onCancelClick = { },
         onDoneClick = { }
     )
@@ -190,6 +204,7 @@ fun EditTextScreenPreview() {
         onValueChange = { },
         uiState = UiState(textState = "Prasidh Gopal Anchan"),
         isUsernameAvailable = true,
+        isUpdating = true,
         onCancelClick = { },
         onDoneClick = { }
     )

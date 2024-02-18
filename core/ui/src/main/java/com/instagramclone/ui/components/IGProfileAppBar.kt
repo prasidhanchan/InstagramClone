@@ -40,7 +40,7 @@ fun IGProfileAppBar(
         Text(
             text = username,
             style = TextStyle(
-                fontSize = 20.sp,
+                fontSize = 21.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )

@@ -1,6 +1,7 @@
 package com.instagramclone.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,13 +31,15 @@ import com.instagramclone.ui.components.ProfileCard
 import com.instagramclone.util.constants.Utils
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGLoader
+import com.instagramclone.util.models.Post
 
 @Composable
 fun ProfileScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
     onEditProfileClick: () -> Unit,
-    onMoreClick: () -> Unit
+    onMoreClick: () -> Unit,
+    onPostClick: (Int) -> Unit
 ) {
     if (!uiState.isLoading) {
         LazyVerticalGrid(
@@ -96,25 +99,28 @@ fun ProfileScreen(
             }
 
             items(
-                key = { myPost -> myPost },
+                key = { myPost -> myPost.images },
                 items = uiState.myPosts
             ) { myPost ->
-                Box(
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .size(120.dp)
-                        .background(color = Utils.IgOffBlack),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AsyncImage(
-                        modifier = Modifier.fillMaxSize(),
-                        model = myPost,
-                        contentScale = ContentScale.Crop,
-                        contentDescription = stringResource(
-                            com.instagramclone.profile.R.string.post_info,
-                            uiState.username
+                if (myPost.images.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .padding(1.dp)
+                            .size(120.dp)
+                            .background(color = Utils.IgOffBlack)
+                            .clickable(onClick = { onPostClick(uiState.myPosts.indexOf(myPost)) }),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AsyncImage(
+                            modifier = Modifier.fillMaxSize(),
+                            model = myPost.images.first() /* TODO integrate pager */,
+                            contentScale = ContentScale.Crop,
+                            contentDescription = stringResource(
+                                com.instagramclone.profile.R.string.post_info,
+                                uiState.username
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -136,15 +142,20 @@ fun ProfileScreenPreview() {
             username = "pra_sidh_22",
             name = "Prasidh Gopal Anchan",
             myPosts = listOf(
-                "1",
-                "2",
-                "3",
-                "4"
+                Post(
+                    profileImage = "a",
+                    images = listOf("a")
+                ),
+                Post(
+                    profileImage = "b",
+                    images = listOf("b")
+                ),
             ),
             followers = listOf("", ""),
             following = listOf("")
         ),
         onEditProfileClick = {  },
-        onMoreClick = {  }
+        onMoreClick = {  },
+        onPostClick = {  }
     )
 }

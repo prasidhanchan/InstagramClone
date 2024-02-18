@@ -40,15 +40,16 @@ fun IGBottomBar(
     navHostController: NavHostController
 ) {
     val items = NavScreens.Items.list
+    val interactionSource = remember { MutableInteractionSource() }
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+    val currentScreen = navBackStackEntry?.destination
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(65.dp),
         color = Utils.IgBlack
     ) {
-        val interactionSource = remember { MutableInteractionSource() }
-        val navBackStackEntry by navHostController.currentBackStackEntryAsState()
-        val currentScreen = navBackStackEntry?.destination
         Row(
             modifier = Modifier
                 .fillMaxSize()

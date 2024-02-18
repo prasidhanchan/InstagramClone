@@ -3,6 +3,7 @@ package com.instagramclone.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.instagramclone.firebase.repository.ProfileRepositoryImpl
+import com.instagramclone.util.models.Post
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -15,12 +16,16 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepositoryImpl
-): ViewModel() {
+) : ViewModel() {
 
     private val _usernames: MutableStateFlow<List<String>?> = MutableStateFlow(null)
     val usernames = _usernames.asStateFlow()
     var uiState = MutableStateFlow(UiState())
         private set
+
+    init {
+        getUserData()
+    }
 
     /**
      * Function to get current user data from Firestore
@@ -45,10 +50,38 @@ class ProfileViewModel @Inject constructor(
                         isLoading = false,
                         //TODO remove
                         myPosts = listOf(
-                            "https://i.pinimg.com/564x/98/58/74/9858745cd157f2797065e639c5b3bf23.jpg",
-                            "https://wallpaperaccess.in/public/uploads/preview/oshi-no-ko-yoasobi-anime-girl-wallpaper-s.jpg",
-                            "https://cdn.hero.page/pfp/5bb14a97-d70c-4fa3-b462-3a8183481905-cool-one-piece-luffy-pfp-cool-anime-pfp-1.png",
-                            "https://www.animeinformer.com/wp-content/uploads/2022/08/demon-slayer-pfp.png.webp"
+                            Post(
+                                profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2FvJdDRERlD9VVleMOJDIoYTXSYu53.jpg?alt=media&token=e1831424-81db-44ac-baaa-b8e4dced084b",
+                                username = "pra_sidh_22",
+                                isVerified = true,
+                                images = listOf(
+                                    "https://i.pinimg.com/564x/98/58/74/9858745cd157f2797065e639c5b3bf23.jpg"
+                                )
+                            ),
+                            Post(
+                                profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2FvJdDRERlD9VVleMOJDIoYTXSYu53.jpg?alt=media&token=e1831424-81db-44ac-baaa-b8e4dced084b",
+                                username = "pra_sidh_22",
+                                isVerified = true,
+                                images = listOf(
+                                    "https://wallpaperaccess.in/public/uploads/preview/oshi-no-ko-yoasobi-anime-girl-wallpaper-s.jpg",
+                                )
+                            ),
+                            Post(
+                                profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2FvJdDRERlD9VVleMOJDIoYTXSYu53.jpg?alt=media&token=e1831424-81db-44ac-baaa-b8e4dced084b",
+                                username = "pra_sidh_22",
+                                isVerified = true,
+                                images = listOf(
+                                    "https://cdn.hero.page/pfp/5bb14a97-d70c-4fa3-b462-3a8183481905-cool-one-piece-luffy-pfp-cool-anime-pfp-1.png"
+                                )
+                            ),
+                            Post(
+                                profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2FvJdDRERlD9VVleMOJDIoYTXSYu53.jpg?alt=media&token=e1831424-81db-44ac-baaa-b8e4dced084b",
+                                username = "pra_sidh_22",
+                                isVerified = true,
+                                images = listOf(
+                                    "https://www.animeinformer.com/wp-content/uploads/2022/08/demon-slayer-pfp.png.webp"
+                                )
+                            )
                         )
                     )
                 }
@@ -67,14 +100,21 @@ class ProfileViewModel @Inject constructor(
      * Function to get all usernames from Firestore
      */
     fun getAllUsernames() {
+        uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
             val result = profileRepository.getAllUsernames()
 
-            delay(1000L)
+            delay(1500L)
             if (result.e == null) {
                 _usernames.update { result.data }
+                uiState.update { it.copy(isLoading = false) }
             } else {
-                uiState.update { it.copy(error = result.e?.message.toString()) }
+                uiState.update {
+                    it.copy(
+                        error = result.e?.message.toString(),
+                        isLoading = false
+                    )
+                }
             }
         }
     }
@@ -90,7 +130,9 @@ class ProfileViewModel @Inject constructor(
         value: String,
         onSuccess: () -> Unit
     ) {
+        uiState.update { it.copy(isUpdating = true) }
         viewModelScope.launch(Dispatchers.IO) {
+            delay(1000L)
             profileRepository.updateUserDetails(
                 key = when (text) {
                     "Name" -> "name"
@@ -99,9 +141,17 @@ class ProfileViewModel @Inject constructor(
                     else -> "links"
                 },
                 value = value,
-                onSuccess = onSuccess,
+                onSuccess = {
+                    onSuccess()
+                    uiState.update { it.copy(isUpdating = false) }
+                },
                 onError = { error ->
-                    uiState.update { it.copy(error = error) }
+                    uiState.update {
+                        it.copy(
+                            error = error,
+                            isUpdating = false
+                        )
+                    }
                 }
             )
         }
@@ -110,13 +160,31 @@ class ProfileViewModel @Inject constructor(
     fun setText(text: String) {
         uiState.update { it.copy(textState = text) }
     }
+
     fun clearText() {
         uiState.update { it.copy(textState = "") }
     }
+
     fun setError(error: String) {
         uiState.update { it.copy(error = error) }
     }
+
     fun clearError() {
         uiState.update { it.copy(error = "") }
+    }
+    fun setIsUserDetailChanged(value: Boolean) {
+        uiState.update { it.copy(isUserDetailChanged = value) }
+    }
+    fun setName(name: String) {
+        uiState.update { it.copy(name = name) }
+    }
+    fun setUsername(username: String) {
+        uiState.update { it.copy(username = username) }
+    }
+    fun setBio(bio: String) {
+        uiState.update { it.copy(bio = bio) }
+    }
+    fun setLinks(links: String) {
+        uiState.update { it.copy(links = links) }
     }
 }

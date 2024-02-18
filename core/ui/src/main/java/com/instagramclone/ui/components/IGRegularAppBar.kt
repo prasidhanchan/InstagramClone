@@ -3,6 +3,8 @@ package com.instagramclone.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,19 +33,22 @@ import com.instagramclone.util.constants.Utils
 @Composable
 fun IGRegularAppBar(
     text: String,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 20.dp),
+    trailingIcon: @Composable () -> Unit = {  }
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
     Surface(
         modifier = Modifier
-            .padding(horizontal = 20.dp)
             .fillMaxWidth()
             .height(50.dp),
         color = Utils.IgBlack
     ) {
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .padding(contentPadding)
+                .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
@@ -59,12 +64,18 @@ fun IGRegularAppBar(
             )
             Spacer(modifier = Modifier.width(30.dp))
             Text(
+                modifier = Modifier.weight(2f),
                 text = text,
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
+            )
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.CenterEnd,
+                content = { trailingIcon() }
             )
         }
     }

@@ -17,6 +17,7 @@ fun InnerScreenHolder(
 ) {
     val navHostController = rememberNavController()
     var currentRoute by remember { mutableStateOf<NavScreens>(NavScreens.HomeScreen) }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Utils.IgBlack,
@@ -26,9 +27,9 @@ fun InnerScreenHolder(
                 navigateToRoute = { item ->
                     currentRoute = item
                     navHostController.navigate(item.route) {
+                        popUpTo(navHostController.graph.startDestinationId)
                         launchSingleTop = true
                         restoreState = true
-                        popUpTo(navHostController.graph.startDestinationId)
                     }
                 },
                 navHostController = navHostController

@@ -76,13 +76,12 @@ fun HomeScreen(
     )
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Posts(
+            innerPadding = innerPadding,
             topContent = {
                 IGHomeAppBar()
 

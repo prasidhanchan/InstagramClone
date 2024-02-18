@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,16 +51,19 @@ fun ProfileCard(
     onEditProfileClick: () -> Unit = {  },
 ) {
     val uriHandler = LocalUriHandler.current
+
     Column(
         modifier = Modifier
-            .padding(horizontal = 20.dp, vertical = 10.dp)
+            .padding(vertical = 15.dp)
             .wrapContentHeight(Alignment.Top)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -72,6 +76,7 @@ fun ProfileCard(
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
                         model = profileImage,
+                        contentScale = ContentScale.Crop,
                         contentDescription = stringResource(id = R.string.profile_image)
                     )
                 } else {
@@ -154,7 +159,7 @@ fun ProfileCard(
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 5.dp),
+                .padding(horizontal = 15.dp, vertical = 5.dp),
             text = name,
             style = TextStyle(
                 fontSize = 14.sp,
@@ -166,7 +171,9 @@ fun ProfileCard(
         )
         if (bio.isNotEmpty()) {
             Text(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .fillMaxWidth(),
                 text = bio,
                 style = TextStyle(
                     fontSize = 14.sp,
@@ -179,8 +186,13 @@ fun ProfileCard(
             )
         }
         if (links.isNotEmpty()) {
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
                 Icon(
+                    modifier = Modifier.padding(start = 15.dp),
                     painter = painterResource(id = R.drawable.link),
                     tint = Utils.IgLinkBlue,
                     contentDescription = stringResource(R.string.link)
@@ -196,7 +208,8 @@ fun ProfileCard(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         color = Utils.IgLinkBlue
-                    )
+                    ),
+                    textAlign = TextAlign.Start
                 )
             }
         }
@@ -205,7 +218,7 @@ fun ProfileCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 10.dp),
+                .padding(all = 15.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {

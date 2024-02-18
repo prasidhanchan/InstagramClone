@@ -1,6 +1,8 @@
 package com.instagramclone.android.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,6 +20,7 @@ import com.instagramclone.home.HomeScreen
 import com.instagramclone.home.HomeViewModel
 import com.instagramclone.profile.EditProfileScreen
 import com.instagramclone.profile.EditTextScreen
+import com.instagramclone.profile.PostsScreen
 import com.instagramclone.profile.ProfileScreen
 import com.instagramclone.profile.ProfileViewModel
 import com.instagramclone.ui.R
@@ -28,6 +31,7 @@ import kotlinx.coroutines.launch
 fun InnerScreenNavigation(
     navHostController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel(),
+    viewModelProfile: ProfileViewModel = hiltViewModel(),
     innerPadding: PaddingValues
 ) {
     val currentUser = FirebaseAuth.getInstance().currentUser
@@ -50,26 +54,33 @@ fun InnerScreenNavigation(
             )
         }
         composable(NavScreens.ProfileScreen.route) {
-            val viewModelProfile: ProfileViewModel = hiltViewModel()
+//            val viewModelProfile: ProfileViewModel = hiltViewModel()
             val uiState by viewModelProfile.uiState.collectAsState()
 
             LaunchedEffect(key1 = Unit) {
-                viewModelProfile.getUserData()
+                if (uiState.isUserDetailChanged) {
+                    viewModelProfile.getUserData()
+                    viewModelProfile.setIsUserDetailChanged(false)
+                }
             }
 
             ProfileScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
                 onEditProfileClick = { navHostController.navigate(NavScreens.EditProfileScreen.route) },
-                onMoreClick = { }
+                onMoreClick = { },
+                onPostClick = { postIndex -> navHostController.navigate(NavScreens.PostsScreen.route + "/$postIndex") }
             )
         }
         composable(NavScreens.EditProfileScreen.route) {
-            val viewModelProfile: ProfileViewModel = hiltViewModel()
             val uiState by viewModelProfile.uiState.collectAsState()
 
+
             LaunchedEffect(key1 = Unit) {
-                viewModelProfile.getUserData()
+                Log.d("UISTATEE", "InnerScreenNavigation: Executed")
+                if (uiState.isUserDetailChanged) {
+                    viewModelProfile.getUserData()
+                }
             }
 
             EditProfileScreen(
@@ -87,7 +98,6 @@ fun InnerScreenNavigation(
                 }
             )
         ) { backStack ->
-            val viewModelProfile: ProfileViewModel = hiltViewModel()
             val uiState by viewModelProfile.uiState.collectAsState()
             val text = backStack.arguments?.getString("text")
             val usernames by viewModelProfile.usernames.collectAsState()
@@ -100,7 +110,8 @@ fun InnerScreenNavigation(
                     "Name" -> viewModelProfile.setText(text = uiState.name)
                     "Username" -> viewModelProfile.setText(text = uiState.username)
                     "Bio" -> viewModelProfile.setText(text = uiState.bio)
-                    else -> viewModelProfile.setText(uiState.links)
+                    "Links" -> viewModelProfile.setText(text = uiState.links)
+                    else -> viewModelProfile.setText(uiState.gender)
                 }
             }
 
@@ -126,9 +137,8 @@ fun InnerScreenNavigation(
                     }
                 },
                 uiState = uiState,
-                isUsernameAvailable = (uiState.username == uiState.textState || usernames?.contains(
-                    uiState.textState
-                ) == false),
+                isUsernameAvailable = (uiState.username == uiState.textState || usernames?.contains(uiState.textState) == false),
+                isUpdating = uiState.isUpdating,
                 onCancelClick = {
                     navHostController.popBackStack()
                     viewModelProfile.clearText()
@@ -141,10 +151,12 @@ fun InnerScreenNavigation(
                                 text = text,
                                 value = uiState.textState,
                                 onSuccess = {
+                                    viewModelProfile.setName(uiState.textState)
+                                    viewModelProfile.setIsUserDetailChanged(true)
                                     navHostController.popBackStack()
+                                    viewModelProfile.clearText()
                                 }
                             )
-                            viewModelProfile.clearText()
                         }
 
                         "Username" -> {
@@ -153,10 +165,11 @@ fun InnerScreenNavigation(
                                     text = text,
                                     value = uiState.textState,
                                     onSuccess = {
+                                        viewModelProfile.setIsUserDetailChanged(true)
                                         navHostController.popBackStack()
+                                        viewModelProfile.clearText()
                                     }
                                 )
-                                viewModelProfile.clearText()
                             } else {
                                 viewModelProfile.setError(context.getString(R.string.username_format_incorrect))
                             }
@@ -168,12 +181,44 @@ fun InnerScreenNavigation(
                                 text = text,
                                 value = uiState.textState,
                                 onSuccess = {
+                                    viewModelProfile.setIsUserDetailChanged(true)
                                     navHostController.popBackStack()
+                                    viewModelProfile.clearText()
                                 }
                             )
                         }
                     }
                 }
+            )
+        }
+        composable(
+            "${NavScreens.PostsScreen.route}/{postIndex}",
+            arguments = listOf(
+                navArgument("postIndex") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStack ->
+            val uiState by viewModelProfile.uiState.collectAsState()
+            val scrollState = rememberLazyListState()
+            val postIndex = backStack.arguments?.getInt("postIndex")
+
+            LaunchedEffect(key1 = Unit) {
+                scrollState.animateScrollToItem(postIndex!!)
+            }
+
+            PostsScreen(
+                innerPadding = innerPadding,
+                uiState = uiState,
+                currentUserId = currentUser?.uid!!,
+                scrollState = scrollState,
+                onFollowClick = { },
+                onLikeClicked = { },
+                onUnlikeClicked = { },
+                onSendClicked = { },
+                onSaveClicked = { },
+                onUsernameClicked = { },
+                onBackClick = { navHostController.popBackStack() }
             )
         }
     }
