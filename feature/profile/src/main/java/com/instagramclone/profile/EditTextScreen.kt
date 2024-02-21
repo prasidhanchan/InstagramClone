@@ -55,10 +55,9 @@ fun EditTextScreen(
         EditTextScreenAppbar(
             text = text,
             buttonEnabled = when (text) {
-                "Bio" -> true
-                "Links" -> true
-                "Name" -> uiState.textState.isNotEmpty()
-                else -> uiState.textState.isNotEmpty() && isUsernameAvailable
+                stringResource(id = R.string.name) -> uiState.textState.isNotEmpty()
+                stringResource(id = R.string.username) -> uiState.textState.isNotEmpty() && isUsernameAvailable
+                else -> true
             },
             isUpdating = isUpdating,
             onCancelClick = onCancelClick,
@@ -71,7 +70,7 @@ fun EditTextScreen(
                 value = uiState.textState,
                 onValueChange = onValueChange,
                 enabled = true,
-                onClick = { }
+                onClick = { onDoneClick() }
             )
             AnimatedVisibility(
                 visible = uiState.error.isNotEmpty()
@@ -92,8 +91,8 @@ fun EditTextScreen(
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 5.dp),
                 text = when (text) {
-                    "Name" -> stringResource(R.string.edit_profile_message)
-                    "Username" -> stringResource(id = R.string.edit_text_message_usn, uiState.username)
+                    stringResource(id = R.string.name) -> stringResource(R.string.edit_profile_message)
+                    stringResource(id = R.string.username) -> stringResource(id = R.string.edit_text_message_usn, uiState.username)
                     else -> ""
                 },
                 style = TextStyle(

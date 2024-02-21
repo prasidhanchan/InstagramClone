@@ -1,9 +1,11 @@
 package com.instagramclone.profile
 
+import android.net.Uri
 import com.instagramclone.util.models.Post
 
 data class UiState(
     var profileImage: String = "",
+    var newProfileImage: Uri? = null,
     var username: String = "",
     var name: String = "",
     var bio: String = "",
@@ -16,5 +18,7 @@ data class UiState(
     var isUpdating: Boolean = false,
     var isUserDetailChanged: Boolean = false,
     var error: String = "",
-    var textState: String = ""
+    var textState: String = "",
+    var showPostScreen: Boolean = false,
+    var postIndex: Int? = null
 )

@@ -96,5 +96,8 @@
     <string name="edit_profile_message">Help people discover your account by using the name you\'re known by: either your full name, nickname, or business name.</string>
     <string name="edit_text_message_usn">You\'ll be able to change your name back to %1$s for another 14 days.</string>
     <string name="done">Done</string>
+    <string name="remove_current_picture">Remove current picture</string>
+    <string name="new_profile_picture">New profile picture</string>
+    <string name="profileimage">ProfileImage</string>
 
 </resources>

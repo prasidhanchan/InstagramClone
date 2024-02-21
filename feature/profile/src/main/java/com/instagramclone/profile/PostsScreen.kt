@@ -1,5 +1,7 @@
 package com.instagramclone.profile
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +30,7 @@ fun PostsScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
     currentUserId: String,
+    isMyProfile: Boolean,
     scrollState: LazyListState,
     onFollowClick: () -> Unit,
     onLikeClicked: () -> Unit,
@@ -40,7 +43,8 @@ fun PostsScreen(
     Column(
         modifier = Modifier
             .padding(innerPadding)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(color = Utils.IgBlack),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -48,15 +52,17 @@ fun PostsScreen(
             text = stringResource(id = R.string.posts),
             onBackClick = onBackClick,
             trailingIcon = {
-                Text(
-                    modifier = Modifier.clickable(onClick = onFollowClick),
-                    text = stringResource(id = R.string.follow),
-                    style = TextStyle(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Utils.IgBlue
+                if (!isMyProfile) {
+                    Text(
+                        modifier = Modifier.clickable(onClick = onFollowClick),
+                        text = stringResource(id = R.string.follow),
+                        style = TextStyle(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Utils.IgBlue
+                        )
                     )
-                )
+                }
             }
         )
         if (uiState.myPosts.isNotEmpty()) {
@@ -74,6 +80,10 @@ fun PostsScreen(
         } else {
             IGLoader()
         }
+        BackHandler(
+            enabled = uiState.showPostScreen,
+            onBack = onBackClick
+        )
     }
 }
 
@@ -100,6 +110,7 @@ fun PostScreenPreview() {
             )
         ),
         currentUserId = "",
+        isMyProfile = true,
         scrollState = LazyListState(),
         onFollowClick = {  },
         onLikeClicked = {  },

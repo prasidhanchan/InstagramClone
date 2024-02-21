@@ -430,7 +430,9 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             startDestination = NavScreens.InnerScreenHolder.route
             val viewModelHome: HomeViewModel = hiltViewModel()
             val uiState by viewModelHome.uiState.collectAsState()
+
             InnerScreenHolder(
+                viewModel = viewModelHome,
                 profileImage = uiState.profileImage
             )
         }

@@ -1,5 +1,9 @@
 package com.instagramclone.profile
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,10 +14,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -37,9 +43,18 @@ import com.instagramclone.util.models.Post
 fun ProfileScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
+    currentUserId: String,
+    scrollState:LazyListState,
+    onFollowClick: () -> Unit,
+    onLikeClicked: () -> Unit,
+    onUnlikeClicked: () -> Unit,
+    onSendClicked: () -> Unit,
+    onSaveClicked: () -> Unit,
+    onUsernameClicked: () -> Unit,
     onEditProfileClick: () -> Unit,
     onMoreClick: () -> Unit,
-    onPostClick: (Int) -> Unit
+    onPostClick: (Int) -> Unit,
+    setShowPostScreen: (Boolean) -> Unit
 ) {
     if (!uiState.isLoading) {
         LazyVerticalGrid(
@@ -124,6 +139,32 @@ fun ProfileScreen(
                 }
             }
         }
+        AnimatedVisibility(
+            visible = uiState.showPostScreen,
+            enter = slideInHorizontally(
+                animationSpec = tween(durationMillis = 250),
+                initialOffsetX = { it }
+            ),
+            exit = slideOutHorizontally(
+                animationSpec = tween(durationMillis = 250),
+                targetOffsetX = { it }
+            )
+        ) {
+            PostsScreen(
+                innerPadding = innerPadding,
+                uiState = uiState,
+                currentUserId = currentUserId,
+                isMyProfile = true,
+                scrollState = scrollState,
+                onFollowClick = onFollowClick,
+                onLikeClicked = onLikeClicked,
+                onUnlikeClicked = onUnlikeClicked,
+                onSendClicked = onSendClicked,
+                onSaveClicked = onSaveClicked,
+                onUsernameClicked = onUsernameClicked,
+                onBackClick = { setShowPostScreen(false) }
+            )
+        }
     } else {
         IGLoader()
     }
@@ -154,8 +195,17 @@ fun ProfileScreenPreview() {
             followers = listOf("", ""),
             following = listOf("")
         ),
+        currentUserId = "",
+        scrollState = rememberLazyListState(),
+        onFollowClick = {  },
+        onLikeClicked = {  },
+        onUnlikeClicked = {  },
+        onSendClicked = {  },
+        onSaveClicked = {  },
+        onUsernameClicked = {  },
         onEditProfileClick = {  },
         onMoreClick = {  },
-        onPostClick = {  }
+        onPostClick = {  },
+        setShowPostScreen = {  }
     )
 }

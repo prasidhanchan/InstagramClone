@@ -1,5 +1,13 @@
 package com.instagramclone.profile
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -15,7 +23,10 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,8 +40,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.EditTextBox
+import com.instagramclone.ui.components.IGBottomSheetProfile
 import com.instagramclone.ui.components.IGLoader
 import com.instagramclone.ui.components.IGRegularAppBar
+import com.instagramclone.ui.components.IGWaitDialog
 import com.instagramclone.util.constants.Utils
 
 @Composable
@@ -38,9 +51,25 @@ fun EditProfileScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
     onClickEditText: (String) -> Unit,
+    onDeleteProfileClick: () -> Unit,
+    setNewImage: (Uri) -> Unit,
+    onUploadClicked: () -> Unit,
     onBackClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    var showSheet by remember { mutableStateOf(false) }
+    var showUpdateScreen by remember { mutableStateOf(false) }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            if (uri != null) {
+                showUpdateScreen = true
+                showSheet = false
+                setNewImage(uri)
+            }
+        }
+    )
 
     if (!uiState.isLoading) {
         Column(
@@ -80,7 +109,7 @@ fun EditProfileScreen(
                 modifier = Modifier.clickable(
                     indication = null,
                     interactionSource = interactionSource,
-                    onClick = { /*TODO open gallery */ }
+                    onClick = { showSheet = true }
                 ),
                 text = stringResource(R.string.edit_profile_picture),
                 style = TextStyle(
@@ -125,7 +154,7 @@ fun EditProfileScreen(
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .fillMaxWidth()
-                    .clickable(onClick = { /*TODO open gallery */ }),
+                    .clickable(onClick = { /*TODO open personal info */ }),
                 text = stringResource(R.string.personal_information_settings),
                 style = TextStyle(
                     fontSize = 16.sp,
@@ -139,6 +168,49 @@ fun EditProfileScreen(
                 color = Color.White.copy(alpha = 0.2f)
             )
         }
+        IGBottomSheetProfile(
+            profileImage = uiState.profileImage,
+            profileDescription = uiState.name,
+            showSheet = showSheet,
+            onNewProfileClick = {
+                galleryLauncher.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
+                )
+            },
+            onDeleteProfileClick = {
+                showSheet = false
+                onDeleteProfileClick()
+            },
+            onDismiss = { showSheet = !showSheet }
+        )
+        AnimatedVisibility(
+            visible = showUpdateScreen,
+            enter = slideInVertically(
+                animationSpec = tween(durationMillis = 250),
+                initialOffsetY = { it }
+            ),
+            exit = slideOutVertically(
+                animationSpec = tween(durationMillis = 250),
+                targetOffsetY = { it }
+            )
+        ) {
+            UpdateProfileImageScreen(
+                innerPadding = innerPadding,
+                uiState = uiState,
+                onNextClick = {
+                    showUpdateScreen = false
+                    onUploadClicked()
+                },
+                onCancelClick = { showUpdateScreen = false }
+            )
+        }
+
+        IGWaitDialog(
+            text = stringResource(id = R.string.loading),
+            showDialog = uiState.isUpdating
+        )
     } else {
         IGLoader()
     }
@@ -158,7 +230,10 @@ fun EditProfileScreenPreview() {
             username = "pra_sidh_22",
             bio = "Android developer"
         ),
-        onClickEditText = {  },
-        onBackClick = {  }
+        onClickEditText = { },
+        onDeleteProfileClick = { },
+        setNewImage = { },
+        onUploadClicked = { },
+        onBackClick = { }
     )
 }

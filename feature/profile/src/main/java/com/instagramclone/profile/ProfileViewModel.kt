@@ -1,8 +1,11 @@
 package com.instagramclone.profile
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.instagramclone.firebase.repository.ProfileRepositoryImpl
+import com.instagramclone.ui.R
 import com.instagramclone.util.models.Post
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -128,6 +131,7 @@ class ProfileViewModel @Inject constructor(
     fun updateUserDetails(
         text: String,
         value: String,
+        context: Context,
         onSuccess: () -> Unit
     ) {
         uiState.update { it.copy(isUpdating = true) }
@@ -135,15 +139,45 @@ class ProfileViewModel @Inject constructor(
             delay(1000L)
             profileRepository.updateUserDetails(
                 key = when (text) {
-                    "Name" -> "name"
-                    "Username" -> "username"
-                    "Bio" -> "bio"
+                    context.getString(R.string.name) -> "name"
+                    context.getString(R.string.username) -> "username"
+                    context.getString(R.string.bio) -> "bio"
+                    context.getString(R.string.profileimage) -> "profileImage"
+                    context.getString(R.string.gender) -> "gender"
                     else -> "links"
                 },
                 value = value,
                 onSuccess = {
                     onSuccess()
                     uiState.update { it.copy(isUpdating = false) }
+                },
+                onError = { error ->
+                    uiState.update {
+                        it.copy(
+                            error = error,
+                            isUpdating = false
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    /** Function to convert Gallery image Uri to url using Firebase Storage
+     * @param newImage Requires the uri of an image from gallery
+     * @param onSuccess on Success lambda triggered when download url is retrieved from Firebase Storage
+     */
+    fun convertToUrl(
+        newImage: Uri,
+        onSuccess: (String) -> Unit
+    ) {
+        uiState.update { it.copy(isUpdating = true) }
+        viewModelScope.launch(Dispatchers.IO) {
+            profileRepository.convertToUrl(
+                newImage = newImage,
+                onSuccess = { downloadUrl ->
+                    uiState.update { it.copy(isUpdating = false) }
+                    onSuccess(downloadUrl)
                 },
                 onError = { error ->
                     uiState.update {
@@ -172,19 +206,21 @@ class ProfileViewModel @Inject constructor(
     fun clearError() {
         uiState.update { it.copy(error = "") }
     }
+
     fun setIsUserDetailChanged(value: Boolean) {
         uiState.update { it.copy(isUserDetailChanged = value) }
     }
-    fun setName(name: String) {
-        uiState.update { it.copy(name = name) }
+
+    fun setShowPostScreen(value: Boolean, postIndex: Int) {
+        uiState.update {
+            it.copy(
+                showPostScreen = value,
+                postIndex = postIndex
+            )
+        }
     }
-    fun setUsername(username: String) {
-        uiState.update { it.copy(username = username) }
-    }
-    fun setBio(bio: String) {
-        uiState.update { it.copy(bio = bio) }
-    }
-    fun setLinks(links: String) {
-        uiState.update { it.copy(links = links) }
+
+    fun setNewImage(newImage: Uri?) {
+        uiState.update { it.copy(newProfileImage = newImage) }
     }
 }

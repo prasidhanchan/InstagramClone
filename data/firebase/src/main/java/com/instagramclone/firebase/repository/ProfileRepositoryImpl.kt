@@ -1,9 +1,11 @@
 package com.instagramclone.firebase.repository
 
+import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.FirebaseStorage
 import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.util.models.DataOrException
 import kotlinx.coroutines.tasks.await
@@ -11,7 +13,7 @@ import javax.inject.Inject
 
 class ProfileRepositoryImpl @Inject constructor(
     private val query: Query
-): ProfileRepository {
+) : ProfileRepository {
     private val currentUser = FirebaseAuth.getInstance().currentUser
     private val dbUser = FirebaseFirestore.getInstance().collection("Users")
 
@@ -58,6 +60,30 @@ class ProfileRepositoryImpl @Inject constructor(
                 .update(key, value)
                 .addOnSuccessListener {
                     onSuccess()
+                }
+                .addOnFailureListener {
+                    onError(it.message.toString())
+                }.await()
+        }
+    }
+
+    override suspend fun convertToUrl(
+        newImage: Uri,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        if (currentUser != null) {
+            val storageRef = FirebaseStorage.getInstance().reference.child("ProfileImage").child(currentUser.uid + ".jpg")
+
+            storageRef.putFile(newImage)
+                .addOnSuccessListener {
+                    storageRef.downloadUrl
+                        .addOnSuccessListener { downloadUrl ->
+                            onSuccess(downloadUrl.toString())
+                        }
+                        .addOnFailureListener {
+                            onError(it.message.toString())
+                        }
                 }
                 .addOnFailureListener {
                     onError(it.message.toString())

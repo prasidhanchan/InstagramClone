@@ -33,6 +33,8 @@ import com.instagramclone.util.constants.Utils
 @Composable
 fun IGRegularAppBar(
     text: String,
+    leadingIcon: Int = R.drawable.back,
+    fonSize: Int = 20,
     onBackClick: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(horizontal = 20.dp),
     trailingIcon: @Composable () -> Unit = {  }
@@ -58,7 +60,7 @@ fun IGRegularAppBar(
                     interactionSource = interactionSource,
                     onClick = onBackClick
                 ),
-                painter = painterResource(id = R.drawable.back),
+                painter = painterResource(id = leadingIcon),
                 tint = Color.White,
                 contentDescription = stringResource(id = R.string.back)
             )
@@ -67,7 +69,7 @@ fun IGRegularAppBar(
                 modifier = Modifier.weight(2f),
                 text = text,
                 style = TextStyle(
-                    fontSize = 20.sp,
+                    fontSize = fonSize.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )

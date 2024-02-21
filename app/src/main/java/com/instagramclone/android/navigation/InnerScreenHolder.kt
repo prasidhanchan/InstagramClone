@@ -9,10 +9,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.instagramclone.home.HomeViewModel
 import com.instagramclone.util.constants.Utils
 
 @Composable
 fun InnerScreenHolder(
+    viewModel: HomeViewModel,
     profileImage: String?,
 ) {
     val navHostController = rememberNavController()
@@ -38,6 +40,7 @@ fun InnerScreenHolder(
         content = { innerPadding ->
             InnerScreenNavigation(
                 innerPadding = innerPadding,
+                viewModelHome = viewModel,
                 navHostController = navHostController
             )
         }

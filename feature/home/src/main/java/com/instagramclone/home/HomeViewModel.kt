@@ -23,7 +23,7 @@ class HomeViewModel @Inject constructor(
     init {
         getUserData()
     }
-    private fun getUserData() {
+    fun getUserData() {
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
             val result = homeRepository.getUserData()
