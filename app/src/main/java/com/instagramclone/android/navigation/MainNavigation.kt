@@ -433,7 +433,11 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
 
             InnerScreenHolder(
                 viewModel = viewModelHome,
-                profileImage = uiState.profileImage
+                profileImage = uiState.profileImage,
+                navigateToLogin = {
+                    navController.popBackStack()
+                    navController.navigate(NavScreens.LoginScreen.route)
+                }
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.instagramclone.android.navigation
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -21,7 +22,9 @@ import com.instagramclone.profile.EditProfileScreen
 import com.instagramclone.profile.EditTextScreen
 import com.instagramclone.profile.ProfileScreen
 import com.instagramclone.profile.ProfileViewModel
+import com.instagramclone.profile.SettingsAndPrivacyScreen
 import com.instagramclone.ui.R
+import com.instagramclone.util.constants.checkPassword
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -30,7 +33,8 @@ fun InnerScreenNavigation(
     navHostController: NavHostController,
     viewModelHome: HomeViewModel,
     viewModelProfile: ProfileViewModel = hiltViewModel(),
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    navigateToLogin: () -> Unit
 ) {
     val currentUser = FirebaseAuth.getInstance().currentUser
     val context = LocalContext.current
@@ -82,13 +86,13 @@ fun InnerScreenNavigation(
                 onSaveClicked = { },
                 onUsernameClicked = { },
                 onEditProfileClick = { navHostController.navigate(NavScreens.EditProfileScreen.route) },
-                onMoreClick = { },
                 onPostClick = { postIndex ->
                     viewModelProfile.setShowPostScreen(value = true, postIndex = postIndex)
                 },
                 setShowPostScreen = {
                     viewModelProfile.setShowPostScreen(value = it, postIndex = 0)
-                }
+                },
+                onSettingsAndPrivacyClicked = { navHostController.navigate(NavScreens.SettingsAndPrivacyScreen.route) }
             )
         }
         composable(NavScreens.EditProfileScreen.route) {
@@ -99,6 +103,8 @@ fun InnerScreenNavigation(
                     viewModelProfile.getUserData()
                 }
             }
+
+            val scope = rememberCoroutineScope()
 
             EditProfileScreen(
                 innerPadding = innerPadding,
@@ -133,6 +139,60 @@ fun InnerScreenNavigation(
                             )
                             viewModelProfile.setNewImage(null)
                         }
+                    )
+                },
+                onPasswordChange = {
+                    viewModelProfile.setPassword(value = it)
+
+                    scope.launch {
+                        delay(1000L)
+                        viewModelProfile.clearError()
+                    }
+                },
+                onNewPasswordChange = {
+                    viewModelProfile.setNewPassword(value = it)
+
+                    scope.launch {
+                        delay(1000L)
+                        viewModelProfile.clearError()
+                    }
+                },
+                onRePasswordChange = {
+                    viewModelProfile.setRePassword(value = it)
+
+                    scope.launch {
+                        delay(1000L)
+                        viewModelProfile.clearError()
+                    }
+                },
+                onChangePasswordClick = {
+                    checkPassword(
+                        currentPassword = uiState.password,
+                        passwordState = uiState.passwordState,
+                        newPasswordState = uiState.newPasswordState,
+                        rePasswordState = uiState.newPasswordState,
+                        onSuccess = {
+                            viewModelProfile.changePassword(
+                                password = uiState.newPasswordState.trim(),
+                                onSuccess = {
+                                    viewModelProfile.updateUserDetails(
+                                        text = context.getString(R.string.password),
+                                        value = uiState.newPasswordState.trim(),
+                                        context = context,
+                                        onSuccess = {
+                                            viewModelProfile.logOut()
+                                            navigateToLogin()
+                                            Toast.makeText(
+                                                context,
+                                                context.getString(R.string.your_password_has_been_reset),
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    )
+                                }
+                            )
+                        },
+                        onError = { viewModelProfile.setError(error = it) }
                     )
                 },
                 onBackClick = { navHostController.popBackStack() }
@@ -189,6 +249,7 @@ fun InnerScreenNavigation(
                 isUsernameAvailable = (uiState.username == uiState.textState ||
                         usernames?.contains(uiState.textState) == false),
                 isUpdating = uiState.isUpdating,
+                onGenderSelected = { viewModelProfile.setGender(it) },
                 onCancelClick = {
                     navHostController.popBackStack()
                     viewModelProfile.clearText()
@@ -226,6 +287,18 @@ fun InnerScreenNavigation(
                             }
                         }
 
+                        context.getString(R.string.gender) -> {
+                            viewModelProfile.updateUserDetails(
+                                text = text,
+                                value = uiState.gender,
+                                context = context,
+                                onSuccess = {
+                                    viewModelProfile.setIsUserDetailChanged(true)
+                                    navHostController.popBackStack()
+                                }
+                            )
+                        }
+
                         else -> {
                             viewModelProfile.clearError()
                             viewModelProfile.updateUserDetails(
@@ -241,6 +314,53 @@ fun InnerScreenNavigation(
                         }
                     }
                 }
+            )
+        }
+        composable(NavScreens.SettingsAndPrivacyScreen.route) {
+            val uiState by viewModelProfile.uiState.collectAsState()
+
+            SettingsAndPrivacyScreen(
+                innerPadding = innerPadding,
+                uiState = uiState,
+                onLogoutClick = {
+                    viewModelProfile.clearUiState()
+                    viewModelProfile.logOut()
+                    navigateToLogin()
+                },
+                onPasswordChange = { viewModelProfile.setPassword(value = it) },
+                onNewPasswordChange = { viewModelProfile.setNewPassword(value = it) },
+                onRePasswordChange = { viewModelProfile.setRePassword(value = it) },
+                onChangePasswordClick = {
+                    checkPassword(
+                        currentPassword = uiState.password,
+                        passwordState = uiState.passwordState,
+                        newPasswordState = uiState.newPasswordState,
+                        rePasswordState = uiState.newPasswordState,
+                        onSuccess = {
+                            viewModelProfile.changePassword(
+                                password = uiState.newPasswordState.trim(),
+                                onSuccess = {
+                                    viewModelProfile.updateUserDetails(
+                                        text = context.getString(R.string.password),
+                                        value = uiState.newPasswordState.trim(),
+                                        context = context,
+                                        onSuccess = {
+                                            viewModelProfile.logOut()
+                                            navigateToLogin()
+                                            Toast.makeText(
+                                                context,
+                                                context.getString(R.string.your_password_has_been_reset),
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    )
+                                }
+                            )
+                        },
+                        onError = { viewModelProfile.setError(error = it) }
+                    )
+                },
+                onBackClick = { navHostController.popBackStack() }
             )
         }
     }

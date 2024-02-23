@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.instagramclone.home.HomeViewModel
 import com.instagramclone.util.constants.Utils
@@ -16,32 +17,46 @@ import com.instagramclone.util.constants.Utils
 fun InnerScreenHolder(
     viewModel: HomeViewModel,
     profileImage: String?,
+    navigateToLogin: () -> Unit
 ) {
     val navHostController = rememberNavController()
     var currentRoute by remember { mutableStateOf<NavScreens>(NavScreens.HomeScreen) }
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination?.route
+
+    val showBottomBar = when(currentDestination) {
+        NavScreens.HomeScreen.route -> true
+        NavScreens.SearchScreen.route -> true
+        NavScreens.ReelsScreen.route -> true
+        NavScreens.ProfileScreen.route -> true
+        else -> false
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Utils.IgBlack,
         bottomBar = {
-            IGBottomBar(
-                profileImage = profileImage,
-                navigateToRoute = { item ->
-                    currentRoute = item
-                    navHostController.navigate(item.route) {
-                        popUpTo(navHostController.graph.startDestinationId)
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                navHostController = navHostController
-            )
+            if (showBottomBar) {
+                IGBottomBar(
+                    profileImage = profileImage,
+                    navigateToRoute = { item ->
+                        currentRoute = item
+                        navHostController.navigate(item.route) {
+                            popUpTo(navHostController.graph.startDestinationId)
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    navHostController = navHostController
+                )
+            }
         },
         content = { innerPadding ->
             InnerScreenNavigation(
                 innerPadding = innerPadding,
                 viewModelHome = viewModel,
-                navHostController = navHostController
+                navHostController = navHostController,
+                navigateToLogin = navigateToLogin
             )
         }
     )

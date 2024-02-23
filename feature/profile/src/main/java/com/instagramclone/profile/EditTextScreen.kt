@@ -17,6 +17,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -32,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.EditTextBox
 import com.instagramclone.ui.components.IGLoader
+import com.instagramclone.ui.components.IGRadioButton
 import com.instagramclone.util.constants.Utils
 
 @Composable
@@ -42,9 +47,12 @@ fun EditTextScreen(
     uiState: UiState,
     isUsernameAvailable: Boolean,
     isUpdating: Boolean,
+    onGenderSelected: (String) -> Unit,
     onCancelClick: () -> Unit,
     onDoneClick: () -> Unit
 ) {
+    var radioButtonState by remember { mutableStateOf(uiState.gender) }
+
     Column(
         modifier = Modifier
             .padding(innerPadding)
@@ -65,43 +73,130 @@ fun EditTextScreen(
         )
 
         if (!uiState.isLoading) {
-            EditTextBox(
-                text = text,
-                value = uiState.textState,
-                onValueChange = onValueChange,
-                enabled = true,
-                onClick = { onDoneClick() }
-            )
-            AnimatedVisibility(
-                visible = uiState.error.isNotEmpty()
-            ) {
+            if (text != stringResource(id = R.string.gender)) {
+                EditTextBox(
+                    text = text,
+                    value = uiState.textState,
+                    onValueChange = onValueChange,
+                    enabled = true,
+                    onClick = { onDoneClick() }
+                )
+                AnimatedVisibility(
+                    visible = uiState.error.isNotEmpty()
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        text = uiState.error,
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Utils.IgError
+                        ),
+                        textAlign = TextAlign.Start
+                    )
+                }
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    text = uiState.error,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 5.dp),
+                    text = when (text) {
+                        stringResource(id = R.string.name) -> stringResource(R.string.edit_profile_message)
+                        stringResource(id = R.string.username) -> stringResource(
+                            id = R.string.edit_text_message_usn,
+                            uiState.username
+                        )
+
+                        else -> ""
+                    },
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Utils.IgError
-                    ),
-                    textAlign = TextAlign.Start
+                        color = Color.White.copy(alpha = 0.5f)
+                    )
                 )
-            }
-            Text(
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 5.dp),
-                text = when (text) {
-                    stringResource(id = R.string.name) -> stringResource(R.string.edit_profile_message)
-                    stringResource(id = R.string.username) -> stringResource(id = R.string.edit_text_message_usn, uiState.username)
-                    else -> ""
-                },
-                style = TextStyle(
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.5f)
+            } else {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 15.dp),
+                    text = stringResource(id = R.string.edit_profile_message_gender),
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White.copy(alpha = 0.5f)
+                    )
                 )
-            )
 
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Male",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White
+                        )
+                    )
+                    IGRadioButton(
+                        selected = radioButtonState == "Male",
+                        onClick = {
+                            radioButtonState = "Male"
+                            onGenderSelected("Male")
+                        }
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 30.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Female",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White
+                        )
+                    )
+                    IGRadioButton(
+                        selected = radioButtonState == "Female",
+                        onClick = {
+                            radioButtonState = "Female"
+                            onGenderSelected("Female")
+                        }
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Unknown",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White
+                        )
+                    )
+                    IGRadioButton(
+                        selected = radioButtonState == "Unknown",
+                        onClick = {
+                            radioButtonState = "Unknown"
+                            onGenderSelected("Unknown")
+                        }
+                    )
+                }
+            }
         } else {
             IGLoader()
         }
@@ -199,11 +294,12 @@ fun EditTextScreenAppBarPreview() {
 fun EditTextScreenPreview() {
     EditTextScreen(
         innerPadding = PaddingValues(),
-        text = "Name",
+        text = "Gender",
         onValueChange = { },
         uiState = UiState(textState = "Prasidh Gopal Anchan"),
         isUsernameAvailable = true,
         isUpdating = true,
+        onGenderSelected = { },
         onCancelClick = { },
         onDoneClick = { }
     )

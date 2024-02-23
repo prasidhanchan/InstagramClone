@@ -2,4 +2,6 @@
 <resources>
     <string name="post_info">%1$s\'s post</string>
     <string name="posts">Posts</string>
+    <string name="settings_and_privacy">Settings and privacy</string>
+    <string name="your_account">Your account</string>
 </resources>

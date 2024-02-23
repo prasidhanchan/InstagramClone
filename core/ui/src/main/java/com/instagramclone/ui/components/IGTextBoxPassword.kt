@@ -48,7 +48,7 @@ fun IGTextBoxPassword(
     cornerRadius: Dp = 5.dp,
     imeAction: ImeAction = ImeAction.Next,
     enabled: Boolean = true,
-    keyboardType: KeyboardType = KeyboardType.Text,
+    keyboardType: KeyboardType = KeyboardType.Password,
     autoCorrect: Boolean,
     focusRequester: FocusRequester = FocusRequester(),
     isTrailingIconEnabled: Boolean = false,

@@ -8,6 +8,9 @@ data class UiState(
     var newProfileImage: Uri? = null,
     var username: String = "",
     var name: String = "",
+    var email: String = "",
+    var phone: String = "",
+    var password: String = "",
     var bio: String = "",
     var links: String = "",
     var gender: String = "Unknown",
@@ -20,5 +23,8 @@ data class UiState(
     var error: String = "",
     var textState: String = "",
     var showPostScreen: Boolean = false,
-    var postIndex: Int? = null
+    var postIndex: Int? = null,
+    var passwordState: String = "",
+    var newPasswordState: String = "",
+    var rePasswordState: String = "",
 )

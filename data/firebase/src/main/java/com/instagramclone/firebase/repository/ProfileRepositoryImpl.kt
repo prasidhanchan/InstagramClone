@@ -2,6 +2,7 @@ package com.instagramclone.firebase.repository
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
@@ -73,7 +74,8 @@ class ProfileRepositoryImpl @Inject constructor(
         onError: (String) -> Unit
     ) {
         if (currentUser != null) {
-            val storageRef = FirebaseStorage.getInstance().reference.child("ProfileImage").child(currentUser.uid + ".jpg")
+            val storageRef = FirebaseStorage.getInstance().reference.child("ProfileImage")
+                .child(currentUser.uid + ".jpg")
 
             storageRef.putFile(newImage)
                 .addOnSuccessListener {
@@ -89,5 +91,28 @@ class ProfileRepositoryImpl @Inject constructor(
                     onError(it.message.toString())
                 }.await()
         }
+    }
+
+    override suspend fun changePassword(
+        password: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        try {
+            currentUser?.updatePassword(password)
+                ?.addOnSuccessListener {
+                    onSuccess()
+                }
+                ?.addOnFailureListener {
+                    onError(it.message.toString())
+                }
+                ?.await()
+        } catch (e: FirebaseAuthException) {
+            onError(e.message.toString())
+        }
+    }
+
+    override fun logOut() {
+        FirebaseAuth.getInstance().signOut()
     }
 }

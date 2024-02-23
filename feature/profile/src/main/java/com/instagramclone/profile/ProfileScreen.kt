@@ -20,11 +20,19 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -32,13 +40,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.instagramclone.ui.components.IGProfileAppBar
-import com.instagramclone.ui.components.ProfileCard
-import com.instagramclone.util.constants.Utils
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGLoader
+import com.instagramclone.ui.components.IGProfileAppBar
+import com.instagramclone.ui.components.MoreCard
+import com.instagramclone.ui.components.ProfileCard
+import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.models.Post
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     innerPadding: PaddingValues,
@@ -52,10 +62,12 @@ fun ProfileScreen(
     onSaveClicked: () -> Unit,
     onUsernameClicked: () -> Unit,
     onEditProfileClick: () -> Unit,
-    onMoreClick: () -> Unit,
     onPostClick: (Int) -> Unit,
-    setShowPostScreen: (Boolean) -> Unit
+    setShowPostScreen: (Boolean) -> Unit,
+    onSettingsAndPrivacyClicked: () -> Unit
 ) {
+    var showSheet by remember { mutableStateOf(false) }
+
     if (!uiState.isLoading) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
@@ -71,7 +83,7 @@ fun ProfileScreen(
             ) {
                 IGProfileAppBar(
                     username = uiState.username,
-                    onMoreClick = onMoreClick
+                    onMoreClick = { showSheet = true }
                 )
             }
 
@@ -165,6 +177,37 @@ fun ProfileScreen(
                 onBackClick = { setShowPostScreen(false) }
             )
         }
+
+        if (showSheet) {
+            ModalBottomSheet(
+                dragHandle = {
+                    BottomSheetDefaults.DragHandle(
+                        width = 40.dp,
+                        color = Utils.IgOffWhite
+                    )
+                },
+                containerColor = Utils.IgOffBlack,
+                onDismissRequest = { showSheet = false }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 5.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    MoreCard(
+                        modifier = Modifier.scale(0.8f),
+                        icon = painterResource(id = R.drawable.settings),
+                        title = stringResource(R.string.settings_and_privacy),
+                        onClick = {
+                            showSheet = false
+                            onSettingsAndPrivacyClicked()
+                        }
+                    )
+                }
+            }
+        }
     } else {
         IGLoader()
     }
@@ -204,8 +247,8 @@ fun ProfileScreenPreview() {
         onSaveClicked = {  },
         onUsernameClicked = {  },
         onEditProfileClick = {  },
-        onMoreClick = {  },
         onPostClick = {  },
-        setShowPostScreen = {  }
+        setShowPostScreen = {  },
+        onSettingsAndPrivacyClicked = {  }
     )
 }

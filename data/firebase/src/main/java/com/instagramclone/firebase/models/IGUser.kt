@@ -6,6 +6,7 @@ data class IGUser(
     var name: String = "IGUser",
     var gender: String = "Unknown",
     var email: String = "",
+    var phone: String = "",
     var password: String = "",
     var profileImage: String = "",
     var bio: String = "",

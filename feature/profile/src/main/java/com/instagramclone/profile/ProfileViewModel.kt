@@ -45,6 +45,9 @@ class ProfileViewModel @Inject constructor(
                         profileImage = result.data?.profileImage!!,
                         username = result.data?.username!!,
                         name = result.data?.name!!,
+                        email = result.data?.email!!,
+                        phone = result.data?.phone!!,
+                        password = result.data?.password!!,
                         bio = result.data?.bio!!,
                         links = result.data?.links!!,
                         gender = result.data?.gender!!,
@@ -144,6 +147,7 @@ class ProfileViewModel @Inject constructor(
                     context.getString(R.string.bio) -> "bio"
                     context.getString(R.string.profileimage) -> "profileImage"
                     context.getString(R.string.gender) -> "gender"
+                    context.getString(R.string.password) -> "password"
                     else -> "links"
                 },
                 value = value,
@@ -191,6 +195,23 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    fun changePassword(
+        password: String,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            profileRepository.changePassword(
+                password = password,
+                onSuccess = onSuccess,
+                onError = { error ->
+                    uiState.update { it.copy(error = error) }
+                }
+            )
+        }
+    }
+
+    fun logOut() = viewModelScope.launch(Dispatchers.IO) { profileRepository.logOut() }
+
     fun setText(text: String) {
         uiState.update { it.copy(textState = text) }
     }
@@ -211,6 +232,26 @@ class ProfileViewModel @Inject constructor(
         uiState.update { it.copy(isUserDetailChanged = value) }
     }
 
+    fun clearUiState() {
+        uiState.update { uiState ->
+            uiState.copy(
+                profileImage = "",
+                newProfileImage = null,
+                username = "",
+                name = "",
+                email = "",
+                phone = "",
+                password = "",
+                bio = "",
+                links = "",
+                gender = "Unknown",
+                myPosts = emptyList(),
+                followers = emptyList(),
+                following = emptyList()
+            )
+        }
+    }
+
     fun setShowPostScreen(value: Boolean, postIndex: Int) {
         uiState.update {
             it.copy(
@@ -222,5 +263,21 @@ class ProfileViewModel @Inject constructor(
 
     fun setNewImage(newImage: Uri?) {
         uiState.update { it.copy(newProfileImage = newImage) }
+    }
+
+    fun setGender(gender: String) {
+        uiState.update { it.copy(gender = gender) }
+    }
+
+    fun setPassword(value: String) {
+        uiState.update { it.copy(passwordState = value) }
+    }
+
+    fun setNewPassword(value: String) {
+        uiState.update { it.copy(newPasswordState = value) }
+    }
+
+    fun setRePassword(value: String) {
+        uiState.update { it.copy(rePasswordState = value) }
     }
 }

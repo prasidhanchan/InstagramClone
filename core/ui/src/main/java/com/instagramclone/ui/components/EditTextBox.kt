@@ -81,7 +81,7 @@ fun EditTextBox(
             )
             Divider(
                 modifier = Modifier.padding(vertical = 8.dp),
-                thickness = 1.dp,
+                thickness = 0.8.dp,
                 color = Color.White
             )
         }

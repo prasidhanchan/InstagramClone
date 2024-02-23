@@ -99,5 +99,28 @@
     <string name="remove_current_picture">Remove current picture</string>
     <string name="new_profile_picture">New profile picture</string>
     <string name="profileimage">ProfileImage</string>
+    <string name="edit_profile_message_gender">This won\'t be part of your public profile.</string>
+    <string name="new_password_does_not_match">New password does not match. Enter new password again.</string>
+    <string name="current_password_is_incorrect">Current Password is incorrect.</string>
+    <string name="no_phone_number_added">No phone number added</string>
+    <string name="accounts_center">Accounts Center</string>
+    <string name="accounts_center_message">Manage your connected experiences and account settings across Meta technologies like Facebook, Instagram and Meta Horizon.</string>
+    <string name="account_settings">Account settings</string>
+    <string name="password_and_security">Password and security</string>
+    <string name="personal_details">Personal details</string>
+    <string name="personal_details_message">Meta uses the information to verify your identify and to keep our community safe. Your decide what personal details you make visible to others.</string>
+    <string name="password_and_security_message">Manage your passwords, login preferences ad recovery methods.</string>
+    <string name="change_password">Change password</string>
+    <string name="change_password_message">Your password must be at least 6 characters and should include a combination of numbers, letters and special characters(!$@%)</string>
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="re_type_new_password">Re-type new password</string>
+    <string name="meta">Meta</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="accounts_center_message_settings">Password, security, personal details</string>
+    <string name="log_out">Log out</string>
+    <string name="settings_and_privacy">Settings and privacy</string>
+    <string name="your_password_has_been_reset">Your password has been reset.</string>
 
 </resources>

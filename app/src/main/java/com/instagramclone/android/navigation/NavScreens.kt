@@ -26,6 +26,7 @@ sealed class NavScreens(
     data object ProfileScreen: NavScreens(name = "Profile", route = "ProfileScreen")
     data object EditProfileScreen: NavScreens(name = "EditProfile", route = "EditProfileScreen")
     data object EditTextScreen: NavScreens(name = "EditText", route = "EditTextScreen")
+    data object SettingsAndPrivacyScreen: NavScreens(name = "SettingsAndPrivacy", route = "SettingsAndPrivacyScreen")
 
     data object Items {
         val list = listOf(

@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
+import com.instagramclone.ui.components.AccountsCenter
 import com.instagramclone.ui.components.EditTextBox
 import com.instagramclone.ui.components.IGBottomSheetProfile
 import com.instagramclone.ui.components.IGLoader
@@ -54,10 +55,14 @@ fun EditProfileScreen(
     onDeleteProfileClick: () -> Unit,
     setNewImage: (Uri) -> Unit,
     onUploadClicked: () -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onNewPasswordChange: (String) -> Unit,
+    onRePasswordChange: (String) -> Unit,
+    onChangePasswordClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    var showSheet by remember { mutableStateOf(false) }
+    var gallerySheetState by remember { mutableStateOf(false) }
     var showUpdateScreen by remember { mutableStateOf(false) }
 
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -65,11 +70,13 @@ fun EditProfileScreen(
         onResult = { uri ->
             if (uri != null) {
                 showUpdateScreen = true
-                showSheet = false
+                gallerySheetState = false
                 setNewImage(uri)
             }
         }
     )
+
+    var sheetState by remember { mutableStateOf(false) }
 
     if (!uiState.isLoading) {
         Column(
@@ -109,7 +116,7 @@ fun EditProfileScreen(
                 modifier = Modifier.clickable(
                     indication = null,
                     interactionSource = interactionSource,
-                    onClick = { showSheet = true }
+                    onClick = { gallerySheetState = true }
                 ),
                 text = stringResource(R.string.edit_profile_picture),
                 style = TextStyle(
@@ -154,7 +161,9 @@ fun EditProfileScreen(
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .fillMaxWidth()
-                    .clickable(onClick = { /*TODO open personal info */ }),
+                    .clickable(
+                        onClick = { sheetState = true }
+                    ),
                 text = stringResource(R.string.personal_information_settings),
                 style = TextStyle(
                     fontSize = 16.sp,
@@ -171,7 +180,7 @@ fun EditProfileScreen(
         IGBottomSheetProfile(
             profileImage = uiState.profileImage,
             profileDescription = uiState.name,
-            showSheet = showSheet,
+            showSheet = gallerySheetState,
             onNewProfileClick = {
                 galleryLauncher.launch(
                     PickVisualMediaRequest(
@@ -180,10 +189,10 @@ fun EditProfileScreen(
                 )
             },
             onDeleteProfileClick = {
-                showSheet = false
+                gallerySheetState = false
                 onDeleteProfileClick()
             },
-            onDismiss = { showSheet = !showSheet }
+            onDismiss = { gallerySheetState = !gallerySheetState }
         )
         AnimatedVisibility(
             visible = showUpdateScreen,
@@ -211,6 +220,22 @@ fun EditProfileScreen(
             text = stringResource(id = R.string.loading),
             showDialog = uiState.isUpdating
         )
+
+        AccountsCenter(
+            email = uiState.email,
+            phone = uiState.phone,
+            password = uiState.passwordState,
+            newPassword = uiState.newPasswordState,
+            rePassword = uiState.rePasswordState,
+            error = uiState.error,
+            visible = sheetState,
+            buttonLoading = uiState.isUpdating,
+            onPasswordChange = onPasswordChange,
+            onNewPasswordChange = onNewPasswordChange,
+            onRePasswordChange = onRePasswordChange,
+            onChangePasswordClick = onChangePasswordClick,
+            onDismiss = { sheetState = false },
+        )
     } else {
         IGLoader()
     }
@@ -234,6 +259,10 @@ fun EditProfileScreenPreview() {
         onDeleteProfileClick = { },
         setNewImage = { },
         onUploadClicked = { },
-        onBackClick = { }
+        onBackClick = { },
+        onChangePasswordClick = { },
+        onPasswordChange = { },
+        onNewPasswordChange = { },
+        onRePasswordChange = { },
     )
 }
