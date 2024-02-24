@@ -122,5 +122,6 @@
     <string name="log_out">Log out</string>
     <string name="settings_and_privacy">Settings and privacy</string>
     <string name="your_password_has_been_reset">Your password has been reset.</string>
+    <string name="login">Login</string>
 
 </resources>

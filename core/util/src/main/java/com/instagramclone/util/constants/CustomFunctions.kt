@@ -1,7 +1,6 @@
 package com.instagramclone.util.constants
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import com.facebook.CallbackManager
@@ -42,7 +41,9 @@ fun FacebookLogin(
                     CoroutineScope(Dispatchers.IO).launch {
                         val token = result.accessToken.token
                         val credential = FacebookAuthProvider.getCredential(token)
-                        val signInResult = FirebaseAuth.getInstance().signInWithCredential(credential).await()
+                        val signInResult = FirebaseAuth.getInstance()
+                            .signInWithCredential(credential)
+                            .await()
 
                             if (signInResult != null) {
                                 withContext(Dispatchers.Main) {
@@ -75,35 +76,3 @@ fun FacebookLogin(
  */
 fun String?.toIGUsername(): String? = this?.lowercase()?.replace(oldValue = " ", newValue = "_")
 
-
-/**
- * Function to check if the entered passwords match the current password and new passwords match the password criteria
- * @param currentPassword Current active password
- * @param passwordState Entered current password
- * @param newPasswordState New password password
- * @param rePasswordState New password re-typed
- * @param onSuccess On Success lambda triggered when entered passwords are correct
- * @param onError On Error lambda triggered when there is an error
- */
-fun checkPassword(
-    currentPassword: String,
-    passwordState: String,
-    newPasswordState: String,
-    rePasswordState: String,
-    onSuccess: () -> Unit,
-    onError: (String) -> Unit
-) {
-    if (passwordState == currentPassword && currentPassword.isNotEmpty()) {
-        if (newPasswordState == rePasswordState) {
-            if (newPasswordState.length > 6) {
-                onSuccess()
-            } else {
-                onError("For security, your password must be 6 characters or more.")
-            }
-        } else {
-            onError("New password does not match. Enter new password again.")
-        }
-    } else {
-        onError("Current Password is incorrect.")
-    }
-}

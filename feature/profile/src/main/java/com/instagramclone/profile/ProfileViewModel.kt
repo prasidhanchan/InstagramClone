@@ -195,21 +195,48 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Function to change the account password,
+     * password is only updated if the current password matches with
+     * the entered password and new passwords matches the password criteria.
+     * @param currentPassword Current active password
+     * @param passwordState Entered current password
+     * @param newPasswordState New password password
+     * @param rePasswordState New password re-typed
+     * @param onSuccess On Success lambda triggered when entered passwords are correct
+     */
     fun changePassword(
-        password: String,
+        currentPassword: String,
+        passwordState: String,
+        newPasswordState: String,
+        rePasswordState: String,
+        context: Context,
         onSuccess: () -> Unit
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            profileRepository.changePassword(
-                password = password,
-                onSuccess = onSuccess,
-                onError = { error ->
-                    uiState.update { it.copy(error = error) }
+            if (passwordState == currentPassword && currentPassword.isNotEmpty()) {
+                if (newPasswordState == rePasswordState) {
+                    if (newPasswordState.length > 6) {
+                        profileRepository.changePassword(
+                            password = newPasswordState,
+                            onSuccess = onSuccess,
+                            onError = { error ->
+                                uiState.update { it.copy(error = error) }
+                            }
+                        )
+                    } else {
+                        uiState.update { it.copy(error = context.getString(R.string.your_password_must_be)) }
+                    }
+                } else {
+                    uiState.update { it.copy(error = context.getString(R.string.new_password_does_not_match)) }
                 }
-            )
+            } else {
+                uiState.update { it.copy(error = context.getString(R.string.current_password_is_incorrect)) }
+            }
         }
     }
 
+    /** Function to log out of firebase account */
     fun logOut() = viewModelScope.launch(Dispatchers.IO) { profileRepository.logOut() }
 
     fun setText(text: String) {

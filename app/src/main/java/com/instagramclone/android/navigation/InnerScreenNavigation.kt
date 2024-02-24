@@ -24,7 +24,6 @@ import com.instagramclone.profile.ProfileScreen
 import com.instagramclone.profile.ProfileViewModel
 import com.instagramclone.profile.SettingsAndPrivacyScreen
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.checkPassword
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -166,33 +165,28 @@ fun InnerScreenNavigation(
                     }
                 },
                 onChangePasswordClick = {
-                    checkPassword(
+                    viewModelProfile.changePassword(
                         currentPassword = uiState.password,
                         passwordState = uiState.passwordState,
                         newPasswordState = uiState.newPasswordState,
                         rePasswordState = uiState.newPasswordState,
+                        context = context,
                         onSuccess = {
-                            viewModelProfile.changePassword(
-                                password = uiState.newPasswordState.trim(),
+                            viewModelProfile.updateUserDetails(
+                                text = context.getString(R.string.password),
+                                value = uiState.newPasswordState.trim(),
+                                context = context,
                                 onSuccess = {
-                                    viewModelProfile.updateUserDetails(
-                                        text = context.getString(R.string.password),
-                                        value = uiState.newPasswordState.trim(),
-                                        context = context,
-                                        onSuccess = {
-                                            viewModelProfile.logOut()
-                                            navigateToLogin()
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.your_password_has_been_reset),
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
-                                    )
+                                    viewModelProfile.logOut()
+                                    navigateToLogin()
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.your_password_has_been_reset),
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 }
                             )
-                        },
-                        onError = { viewModelProfile.setError(error = it) }
+                        }
                     )
                 },
                 onBackClick = { navHostController.popBackStack() }
@@ -331,33 +325,28 @@ fun InnerScreenNavigation(
                 onNewPasswordChange = { viewModelProfile.setNewPassword(value = it) },
                 onRePasswordChange = { viewModelProfile.setRePassword(value = it) },
                 onChangePasswordClick = {
-                    checkPassword(
+                    viewModelProfile.changePassword(
                         currentPassword = uiState.password,
                         passwordState = uiState.passwordState,
                         newPasswordState = uiState.newPasswordState,
                         rePasswordState = uiState.newPasswordState,
+                        context = context,
                         onSuccess = {
-                            viewModelProfile.changePassword(
-                                password = uiState.newPasswordState.trim(),
+                            viewModelProfile.updateUserDetails(
+                                text = context.getString(R.string.password),
+                                value = uiState.newPasswordState.trim(),
+                                context = context,
                                 onSuccess = {
-                                    viewModelProfile.updateUserDetails(
-                                        text = context.getString(R.string.password),
-                                        value = uiState.newPasswordState.trim(),
-                                        context = context,
-                                        onSuccess = {
-                                            viewModelProfile.logOut()
-                                            navigateToLogin()
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.your_password_has_been_reset),
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
-                                    )
+                                    viewModelProfile.logOut()
+                                    navigateToLogin()
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.your_password_has_been_reset),
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 }
                             )
-                        },
-                        onError = { viewModelProfile.setError(error = it) }
+                        }
                     )
                 },
                 onBackClick = { navHostController.popBackStack() }

@@ -136,13 +136,13 @@ fun SettingsAndPrivacyScreen(
 
             Row(
                 modifier = Modifier
-                    .padding(vertical = 20.dp)
+                    .padding(vertical = 15.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(R.string.log_in),
+                    text = stringResource(R.string.login),
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
