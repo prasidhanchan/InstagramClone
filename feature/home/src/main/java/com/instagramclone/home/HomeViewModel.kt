@@ -15,14 +15,16 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepositoryImpl
-): ViewModel() {
+) : ViewModel() {
 
     var uiState = MutableStateFlow(UiState())
         private set
 
     init {
         getUserData()
+        getAllPosts()
     }
+
     fun getUserData() {
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
@@ -43,7 +45,32 @@ class HomeViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     uiState.update {
                         it.copy(
-                        error = result.e?.message.toString(),
+                            error = result.e?.message.toString(),
+                            isLoading = false
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun getAllPosts() {
+        uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = homeRepository.getAllPost()
+
+            withContext(Dispatchers.Main) {
+                if (result.e == null && !result.isLoading!!) {
+                    uiState.update {
+                        it.copy(
+                            posts = result.data!!,
+                            isLoading = false
+                        )
+                    }
+                } else {
+                    uiState.update {
+                        it.copy(
+                            error = result.e.toString(),
                             isLoading = false
                         )
                     }

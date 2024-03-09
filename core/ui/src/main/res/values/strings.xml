@@ -123,5 +123,14 @@
     <string name="settings_and_privacy">Settings and privacy</string>
     <string name="your_password_has_been_reset">Your password has been reset.</string>
     <string name="login">Login</string>
+    <string name="recents">Recents</string>
+    <string name="new_post">New Post</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="unknown">Unknown</string>
+    <string name="profile_pic">Profile Pic</string>
+    <string name="tick_cross">Tick/Cross</string>
+    <string name="share">Share</string>
+    <string name="write_a_caption">Write a caption...</string>
 
 </resources>

@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
@@ -38,7 +38,6 @@ import com.instagramclone.ui.components.IGTextBox
 import com.instagramclone.ui.components.IGTextBoxPassword
 import com.instagramclone.util.constants.Utils
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginScreen(
     uiState: UiState,
@@ -51,7 +50,7 @@ fun LoginScreen(
     onDismiss: () -> Unit,
     onLogin: () -> Unit
 ) {
-    val interactionSource = MutableInteractionSource()
+    val interactionSource = remember { MutableInteractionSource() }
     val focusRequesterPassword = FocusRequester()
     val keyBoard = LocalSoftwareKeyboardController.current
 
@@ -150,7 +149,7 @@ fun LoginScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier.weight(1f),
                     color = Color.White.copy(alpha = 0.2f)
                 )
@@ -164,7 +163,7 @@ fun LoginScreen(
                     ),
                     textAlign = TextAlign.Center
                 )
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier.weight(1f),
                     color = Color.White.copy(alpha = 0.2f)
                 )
@@ -208,7 +207,7 @@ fun LoginScreen(
                     verticalArrangement = Arrangement.Bottom,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Divider(
+                    HorizontalDivider(
                         modifier = Modifier.padding(vertical = 18.dp),
                         color = Color.White.copy(alpha = 0.2f)
                     )

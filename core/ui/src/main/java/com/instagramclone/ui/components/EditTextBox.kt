@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -79,7 +79,7 @@ fun EditTextBox(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text),
                 keyboardActions = KeyboardActions(onDone = { onClick(text) })
             )
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
                 thickness = 0.8.dp,
                 color = Color.White

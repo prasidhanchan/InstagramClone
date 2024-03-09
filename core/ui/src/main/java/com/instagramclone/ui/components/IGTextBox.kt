@@ -137,7 +137,7 @@ fun IGTextBox(
                             },
                         ),
                         tint = if (isErrorOrSuccess != stringResource(id = R.string.available)) Utils.IgError else Color.Green,
-                        contentDescription = "Tick/Cross"
+                        contentDescription = stringResource(R.string.tick_cross)
                     )
                 }
             } else {
@@ -157,6 +157,7 @@ fun IGTextBoxPreview() {
     IGTextBox(
         value = "Naruto",
         onValueChange = { },
+        isErrorOrSuccess = "Available",
         placeHolder = "Username",
         cornerRadius = 12.dp,
         autoCorrect = false,

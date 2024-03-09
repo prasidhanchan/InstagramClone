@@ -1,6 +1,16 @@
 package com.instagramclone.android.navigation
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -9,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -18,12 +29,16 @@ import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
 import com.instagramclone.home.HomeScreen
 import com.instagramclone.home.HomeViewModel
+import com.instagramclone.post.ShareContentScreen
+import com.instagramclone.post.ShareContentViewModel
+import com.instagramclone.post.SharePostScreen
 import com.instagramclone.profile.EditProfileScreen
 import com.instagramclone.profile.EditTextScreen
 import com.instagramclone.profile.ProfileScreen
 import com.instagramclone.profile.ProfileViewModel
 import com.instagramclone.profile.SettingsAndPrivacyScreen
 import com.instagramclone.ui.R
+import com.instagramclone.util.models.Post
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -32,6 +47,7 @@ fun InnerScreenNavigation(
     navHostController: NavHostController,
     viewModelHome: HomeViewModel,
     viewModelProfile: ProfileViewModel = hiltViewModel(),
+    viewModelShare: ShareContentViewModel = hiltViewModel(),
     innerPadding: PaddingValues,
     navigateToLogin: () -> Unit
 ) {
@@ -42,7 +58,19 @@ fun InnerScreenNavigation(
         navController = navHostController,
         startDestination = NavScreens.HomeScreen.route
     ) {
-        composable(NavScreens.HomeScreen.route) {
+        composable(
+            route = NavScreens.HomeScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModelHome.uiState.collectAsState()
 
             HomeScreen(
@@ -56,7 +84,19 @@ fun InnerScreenNavigation(
                 onUsernameClicked = { },
             )
         }
-        composable(NavScreens.ProfileScreen.route) {
+        composable(
+            route = NavScreens.ProfileScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModelProfile.uiState.collectAsState()
             val scrollState = rememberLazyListState()
 
@@ -94,7 +134,19 @@ fun InnerScreenNavigation(
                 onSettingsAndPrivacyClicked = { navHostController.navigate(NavScreens.SettingsAndPrivacyScreen.route) }
             )
         }
-        composable(NavScreens.EditProfileScreen.route) {
+        composable(
+            route = NavScreens.EditProfileScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModelProfile.uiState.collectAsState()
 
             LaunchedEffect(key1 = uiState.isUserDetailChanged) {
@@ -193,12 +245,22 @@ fun InnerScreenNavigation(
             )
         }
         composable(
-            "${NavScreens.EditTextScreen.route}/{text}",
+            route = "${NavScreens.EditTextScreen.route}/{text}",
             arguments = listOf(
                 navArgument("text") {
                     type = NavType.StringType
                 }
-            )
+            ),
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
         ) { backStack ->
             val uiState by viewModelProfile.uiState.collectAsState()
             val text = backStack.arguments?.getString("text")
@@ -310,7 +372,19 @@ fun InnerScreenNavigation(
                 }
             )
         }
-        composable(NavScreens.SettingsAndPrivacyScreen.route) {
+        composable(
+            route = NavScreens.SettingsAndPrivacyScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModelProfile.uiState.collectAsState()
 
             SettingsAndPrivacyScreen(
@@ -350,6 +424,108 @@ fun InnerScreenNavigation(
                     )
                 },
                 onBackClick = { navHostController.popBackStack() }
+            )
+        }
+        composable(
+            route = NavScreens.ShareContentScreen.route,
+            enterTransition = {
+                slideInHorizontally(
+                    animationSpec = tween(),
+                    initialOffsetX = { -it }
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    animationSpec = tween(),
+                    targetOffsetX = { -it }
+                )
+            }
+        ) {
+            val uiState by viewModelShare.uiState.collectAsState()
+
+            val permissionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission()
+            ) { isGranted ->
+                if (!isGranted) {
+                    Toast.makeText(
+                        context,
+                        "Please grant storage permission",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+            LaunchedEffect(key1 = Unit) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (
+                        ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.READ_MEDIA_IMAGES
+                        ) == PackageManager.PERMISSION_DENIED
+                    ) {
+                        permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+                    }
+                } else {
+                    if (ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_DENIED
+                    ) {
+                        permissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    }
+                }
+            }
+
+            ShareContentScreen(
+                innerPadding = innerPadding,
+                uiState = uiState,
+                onImageSelected = { viewModelShare.setImage(image = it) },
+                onNextClick = { navHostController.navigate(NavScreens.SharePostScreen.route) },
+                onBackClick = { navHostController.popBackStack() }
+            )
+        }
+        composable(
+            route = NavScreens.SharePostScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween()
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween()
+                )
+            }
+        ) {
+            val uiState by viewModelShare.uiState.collectAsState()
+            val uiStateProfile by viewModelProfile.uiState.collectAsState()
+
+            val timeStamp = System.currentTimeMillis()
+
+            SharePostScreen(
+                innerPadding = innerPadding,
+                uiState = uiState,
+                onCaptionChange = { viewModelShare.setCaption(caption = it) },
+                onBackClick = { navHostController.popBackStack() },
+                onShareClick = {
+                    viewModelShare.uploadPost(
+                        post = Post(
+                            profileImage = uiStateProfile.profileImage,
+                            userId = currentUser?.uid!!,
+                            username = uiStateProfile.username,
+                            timeStamp = timeStamp,
+                            isVerified = true, // TODO change
+                            images = listOf(uiState.selectedImage?.data.toString()),
+                            caption = uiState.caption
+                        ),
+                        onSuccess = {
+                            navHostController.navigate(NavScreens.HomeScreen.route) {
+                                popUpTo(navHostController.graph.startDestinationId)
+                            }
+                            viewModelHome.getAllPosts()
+                        }
+                    )
+                }
             )
         }
     }

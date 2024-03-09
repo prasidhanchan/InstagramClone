@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -152,7 +152,7 @@ fun EditProfileScreen(
                 onClick = onClickEditText
             )
 
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 15.dp),
                 thickness = 0.5.dp,
                 color = Color.White.copy(alpha = 0.2f)
@@ -171,7 +171,7 @@ fun EditProfileScreen(
                     color = Utils.IgBlue
                 )
             )
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 15.dp),
                 thickness = 0.5.dp,
                 color = Color.White.copy(alpha = 0.2f)

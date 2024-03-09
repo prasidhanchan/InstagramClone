@@ -21,10 +21,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -69,84 +70,89 @@ fun ProfileScreen(
     var showSheet by remember { mutableStateOf(false) }
 
     if (!uiState.isLoading) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.Top,
-            horizontalArrangement = Arrangement.Start
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Utils.IgBlack
         ) {
-            item(
-                key = "profileAppBar",
-                span = { GridItemSpan(currentLineSpan = 3) }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                verticalArrangement = Arrangement.Top,
+                horizontalArrangement = Arrangement.Start
             ) {
-                IGProfileAppBar(
-                    username = uiState.username,
-                    onMoreClick = { showSheet = true }
-                )
-            }
-
-            item (
-                key = "profileCard",
-                span = { GridItemSpan(currentLineSpan = 3) }
-            ){
-                ProfileCard(
-                    profileImage = uiState.profileImage,
-                    name = uiState.name,
-                    bio = uiState.bio,
-                    links = uiState.links,
-                    posts = uiState.myPosts.size,
-                    followers = uiState.followers.size,
-                    following = uiState.following.size,
-                    onEditProfileClick = onEditProfileClick
-                )
-            }
-
-            item(
-                span = { GridItemSpan(currentLineSpan = 3) }
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                item(
+                    key = "profileAppBar",
+                    span = { GridItemSpan(currentLineSpan = 3) }
                 ) {
-                    Icon(
-                        modifier = Modifier.padding(vertical = 10.dp),
-                        painter = painterResource(id = R.drawable.grid),
-                        tint = Color.White,
-                        contentDescription = stringResource(com.instagramclone.profile.R.string.posts)
-                    )
-                    Divider(
-                        modifier = Modifier.padding(bottom = 2.dp),
-                        thickness = 1.dp,
-                        color = Color.White
+                    IGProfileAppBar(
+                        username = uiState.username,
+                        onMoreClick = { showSheet = true }
                     )
                 }
-            }
 
-            items(
-                key = { myPost -> myPost.images },
-                items = uiState.myPosts
-            ) { myPost ->
-                if (myPost.images.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .size(120.dp)
-                            .background(color = Utils.IgOffBlack)
-                            .clickable(onClick = { onPostClick(uiState.myPosts.indexOf(myPost)) }),
-                        contentAlignment = Alignment.Center
+                item (
+                    key = "profileCard",
+                    span = { GridItemSpan(currentLineSpan = 3) }
+                ){
+                    ProfileCard(
+                        profileImage = uiState.profileImage,
+                        name = uiState.name,
+                        bio = uiState.bio,
+                        links = uiState.links,
+                        posts = uiState.myPosts.size,
+                        followers = uiState.followers.size,
+                        following = uiState.following.size,
+                        onEditProfileClick = onEditProfileClick
+                    )
+                }
+
+                item(
+                    span = { GridItemSpan(currentLineSpan = 3) }
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        AsyncImage(
-                            modifier = Modifier.fillMaxSize(),
-                            model = myPost.images.first() /* TODO integrate pager */,
-                            contentScale = ContentScale.Crop,
-                            contentDescription = stringResource(
-                                com.instagramclone.profile.R.string.post_info,
-                                uiState.username
-                            )
+                        Icon(
+                            modifier = Modifier.padding(vertical = 10.dp),
+                            painter = painterResource(id = R.drawable.grid),
+                            tint = Color.White,
+                            contentDescription = stringResource(com.instagramclone.profile.R.string.posts)
                         )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(bottom = 2.dp),
+                            thickness = 1.dp,
+                            color = Color.White
+                        )
+                    }
+                }
+
+                items(
+                    key = { myPost -> myPost.images },
+                    items = uiState.myPosts
+                ) { myPost ->
+                    if (myPost.images.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .padding(1.dp)
+                                .size(120.dp)
+                                .background(color = Utils.IgOffBlack)
+                                .clickable(onClick = { onPostClick(uiState.myPosts.indexOf(myPost)) }),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AsyncImage(
+                                modifier = Modifier.fillMaxSize(),
+                                model = myPost.images.first() /* TODO integrate pager */,
+                                contentScale = ContentScale.Crop,
+                                contentDescription = stringResource(
+                                    com.instagramclone.profile.R.string.post_info,
+                                    uiState.username
+                                )
+                            )
+                        }
                     }
                 }
             }

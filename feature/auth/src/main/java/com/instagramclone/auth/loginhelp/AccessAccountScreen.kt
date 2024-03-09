@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,9 +35,8 @@ import coil.compose.AsyncImage
 import com.instagramclone.auth.UiState
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.AccessAccountTopBar
-import com.instagramclone.util.constants.Utils
-import androidx.compose.ui.text.intl.Locale
 import com.instagramclone.ui.components.IGDialog
+import com.instagramclone.util.constants.Utils
 
 @Composable
 fun AccessAccountScreen(
@@ -75,7 +75,7 @@ fun AccessAccountScreen(
                     textAlign = TextAlign.Center
                 )
             )
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .padding(top = 20.dp, end = 10.dp),
                 thickness = 0.5.dp,
@@ -111,7 +111,7 @@ fun AccessAccountScreen(
                     )
                 }
             }
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .padding(end = 10.dp),
                 thickness = 0.5.dp,

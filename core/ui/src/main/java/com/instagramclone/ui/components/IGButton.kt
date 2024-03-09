@@ -71,7 +71,7 @@ fun IGButton(
 
 @Preview(apiLevel = 33)
 @Composable
-fun IGButtonPreview() {
+private fun IGButtonPreview() {
     IGButton(
         enabled = false,
         text = "Log in",

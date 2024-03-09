@@ -10,11 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -43,7 +44,7 @@ fun AddEmailScreen(
     navigateToLogin: () -> Unit,
     onNextClicked: () -> Unit
 ) {
-    val interactionSource = MutableInteractionSource()
+    val interactionSource = remember { MutableInteractionSource() }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -67,7 +68,7 @@ fun AddEmailScreen(
                 modifier = Modifier.scale(2f),
                 painter = painterResource(id = R.drawable.profile_pic),
                 tint = Color.White,
-                contentDescription = "Profile Pic"
+                contentDescription = stringResource(R.string.profile_pic)
             )
 
             Text(
@@ -80,7 +81,7 @@ fun AddEmailScreen(
                 ),
                 textAlign = TextAlign.Center
             )
-            Divider(thickness = 2.dp, color = Color.White)
+            HorizontalDivider(thickness = 2.dp, color = Color.White)
 
             IGTextBox(
                 modifier = Modifier.padding(top = 15.dp),
@@ -133,7 +134,7 @@ fun AddEmailScreen(
                     verticalArrangement = Arrangement.Bottom,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Divider(
+                    HorizontalDivider(
                         modifier = Modifier.padding(vertical = 18.dp),
                         color = Color.White.copy(alpha = 0.2f)
                     )
@@ -174,7 +175,7 @@ fun AddEmailScreen(
 
 @Preview(apiLevel = 33)
 @Composable
-fun AddEmailScreenPreview() {
+private fun AddEmailScreenPreview() {
     AddEmailScreen(
         uiState = UiState(email = ""),
         clearEmail = { },

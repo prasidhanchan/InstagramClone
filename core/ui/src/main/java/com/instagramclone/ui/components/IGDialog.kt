@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -90,7 +90,7 @@ fun IGDialog(
 
 
                     if (showBlueButton) {
-                        Divider(
+                        HorizontalDivider(
                             modifier = Modifier.padding(top = 30.dp),
                             thickness = 0.5.dp,
                             color = Color.White.copy(alpha = 0.1f)
@@ -115,7 +115,7 @@ fun IGDialog(
                     }
 
                     if (showWhiteButton) {
-                        Divider(
+                        HorizontalDivider(
                             modifier = if (!showBlueButton) Modifier.padding(top = 30.dp) else Modifier,
                             thickness = 0.5.dp,
                             color = Color.White.copy(alpha = 0.1f)

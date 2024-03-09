@@ -5,7 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.instagramclone.ui.components.IGHomeAppBar
 import com.instagramclone.ui.components.Posts
 import com.instagramclone.ui.components.Stories
-import com.instagramclone.util.models.Post
+import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.models.Story
 
 @Composable
@@ -52,59 +53,43 @@ fun HomeScreen(
             isViewed = true
         )
     )
-    val posts = listOf(
-        Post(
-            username = "pra_sidh_22",
-            images = listOf(
-                "https://beebom.com/wp-content/uploads/2023/08/Jujutsu-Kaisen-Shibuya-Incident-arc.jpg?quality=75&strip=all",
-                "https://www.themobileindian.com/wp-content/uploads/2021/06/pubg.jpg"
-            ),
-            profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2FvJdDRERlD9VVleMOJDIoYTXSYu53.jpg?alt=media&token=e1831424-81db-44ac-baaa-b8e4dced084b",
-            likes = listOf("1234", "12345", "123456", "85488"),
-            isVerified = true,
-            caption = "Who you picking?"
-        ),
-        Post(
-            username = "fordmustang",
-            images = listOf("https://imgs.search.brave.com/M0SnwILQ61kDRs5hVMb68edBdpVgueVd9YsKRBjj168/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvNDU5/MjYxOTA5L3Bob3Rv/L2ZvcmQtbXVzdGFu/Zy5qcGc_cz02MTJ4/NjEyJnc9MCZrPTIw/JmM9ZC1DLW0waFJ6/bVAyR000NnZEd1Yt/S1VTUHQzUDk0Q2Q2/bG1OYmxZRk9jMD0"),
-            profileImage = "https://imgs.search.brave.com/FlvNKl9wbnrJaG6u7micYzZp6BUUgF_VwwOWBSNqI1k/rs:fit:860:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJjYXZlLmNv/bS93cC95Rk52M1ll/LmpwZw",
-            likes = listOf("1234", "12345"),
-            isVerified = true,
-            caption = "fordmustang After four and a half years of hard work and dedication, Mark Passarelli's fully factory-restored'68 Ford Mustang® GT Fastback is ready to speed off into the\n" +
-                    "sunset."
-        )
-    )
 
-    Column(
+    Surface(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+        color = Utils.IgBlack
     ) {
-        Posts(
-            innerPadding = innerPadding,
-            topContent = {
-                IGHomeAppBar()
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Posts(
+                innerPadding = innerPadding,
+                topContent = {
+                    IGHomeAppBar()
 
-                Stories(
-                    profileImage = uiState.profileImage,
-                    onAddStoryClick = { /* TODO */ },
-                    onStoryClick = { /* TODO */ },
-                    stories = stories
-                )
-                Divider(
-                    modifier = Modifier.padding(top = 8.dp),
-                    thickness = 0.5.dp,
-                    color = Color.White.copy(alpha = 0.2f)
-                )
-            },
-            posts = posts,
-            currentUserId = currentUserId,
-            onLikeClicked = onLikeClicked,
-            onUnLikeClicked = onUnLikeClicked,
-            onSendClicked = onSendClicked,
-            onSaveClicked = onSaveClicked,
-            onUsernameClicked = onUsernameClicked
-        )
+                    Stories(
+                        profileImage = uiState.profileImage,
+                        onAddStoryClick = { /* TODO */ },
+                        onStoryClick = { /* TODO */ },
+                        stories = stories
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(top = 8.dp),
+                        thickness = 0.5.dp,
+                        color = Color.White.copy(alpha = 0.2f)
+                    )
+                },
+                posts = uiState.posts,
+                currentUserId = currentUserId,
+                onLikeClicked = onLikeClicked,
+                onUnLikeClicked = onUnLikeClicked,
+                onSendClicked = onSendClicked,
+                onSaveClicked = onSaveClicked,
+                onUsernameClicked = onUsernameClicked
+            )
+        }
     }
 }
 

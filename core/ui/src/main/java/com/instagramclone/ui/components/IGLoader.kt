@@ -28,6 +28,6 @@ fun IGLoader() {
 
 @Preview
 @Composable
-fun IGLoaderPreview() {
+private fun IGLoaderPreview() {
     IGLoader()
 }

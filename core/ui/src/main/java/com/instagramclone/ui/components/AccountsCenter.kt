@@ -471,7 +471,6 @@ fun DragHandle(
     ) {
         Icon(
             modifier = modifier
-                .scale(1.4f)
                 .padding(top = 10.dp)
                 .clickable(
                     indication = null,

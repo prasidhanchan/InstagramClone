@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
 import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.formatTimeStamp
 import com.instagramclone.util.models.Post
 
 @Composable
@@ -372,7 +373,7 @@ fun PostCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp),
-                    text = "${post.timeStamp} days ago",
+                    text = post.timeStamp.formatTimeStamp(),
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,

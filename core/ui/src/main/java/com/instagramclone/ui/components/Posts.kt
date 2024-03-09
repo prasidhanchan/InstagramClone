@@ -1,6 +1,5 @@
 package com.instagramclone.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -8,7 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import com.instagramclone.util.models.Post
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Posts(
     innerPadding: PaddingValues = PaddingValues(),

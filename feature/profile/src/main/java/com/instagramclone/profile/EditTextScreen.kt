@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -52,6 +53,7 @@ fun EditTextScreen(
     onDoneClick: () -> Unit
 ) {
     var radioButtonState by remember { mutableStateOf(uiState.gender) }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -135,7 +137,7 @@ fun EditTextScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Male",
+                        text = stringResource(R.string.male),
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
@@ -143,10 +145,10 @@ fun EditTextScreen(
                         )
                     )
                     IGRadioButton(
-                        selected = radioButtonState == "Male",
+                        selected = radioButtonState == stringResource(id = R.string.male),
                         onClick = {
-                            radioButtonState = "Male"
-                            onGenderSelected("Male")
+                            radioButtonState = context.getString(R.string.male)
+                            onGenderSelected(context.getString(R.string.male))
                         }
                     )
                 }
@@ -158,7 +160,7 @@ fun EditTextScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Female",
+                        text = stringResource(R.string.female),
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
@@ -166,10 +168,10 @@ fun EditTextScreen(
                         )
                     )
                     IGRadioButton(
-                        selected = radioButtonState == "Female",
+                        selected = radioButtonState == stringResource(id = R.string.female),
                         onClick = {
-                            radioButtonState = "Female"
-                            onGenderSelected("Female")
+                            radioButtonState = context.getString(R.string.female)
+                            onGenderSelected(context.getString(R.string.female))
                         }
                     )
                 }
@@ -189,10 +191,10 @@ fun EditTextScreen(
                         )
                     )
                     IGRadioButton(
-                        selected = radioButtonState == "Unknown",
+                        selected = radioButtonState == stringResource(R.string.unknown),
                         onClick = {
-                            radioButtonState = "Unknown"
-                            onGenderSelected("Unknown")
+                            radioButtonState = context.getString(R.string.unknown)
+                            onGenderSelected(context.getString(R.string.unknown))
                         }
                     )
                 }

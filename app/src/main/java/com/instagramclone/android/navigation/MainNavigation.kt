@@ -1,6 +1,9 @@
 package com.instagramclone.android.navigation
 
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,7 +49,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         navController = navController,
         startDestination = startDestination
     ) {
-        composable(NavScreens.SplashScreen.route) {
+        composable(
+            route = NavScreens.SplashScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val currentUser = FirebaseAuth.getInstance().currentUser
 
             LaunchedEffect(key1 = true) {
@@ -64,7 +79,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             }
             SplashScreen()
         }
-        composable(NavScreens.LoginScreen.route) {
+        composable(
+            route = NavScreens.LoginScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModel.uiState.collectAsState()
             val emailList by viewModel.emailList.collectAsState()
 
@@ -150,7 +177,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
-        composable(NavScreens.AddEmailScreen.route) {
+        composable(
+            route = NavScreens.AddEmailScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModel.uiState.collectAsState()
             val emailList by viewModel.emailList.collectAsState()
             val scope = rememberCoroutineScope()
@@ -210,7 +249,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
-        composable(NavScreens.ChooseUsernameScreen.route) {
+        composable(
+            route = NavScreens.ChooseUsernameScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModel.uiState.collectAsState()
             val usernameList by viewModel.usernameList.collectAsState()
             val scope = rememberCoroutineScope()
@@ -278,7 +329,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
-        composable(NavScreens.CreatePasswordScreen.route) {
+        composable(
+            route = NavScreens.CreatePasswordScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModel.uiState.collectAsState()
 
             CreatePasswordScreen(
@@ -293,7 +356,18 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
-        composable(NavScreens.WelcomeScreen.route) {
+        composable(route = NavScreens.WelcomeScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModel.uiState.collectAsState()
 
             WelcomeScreen(
@@ -318,7 +392,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
-        composable(NavScreens.AddProfileScreen.route) {
+        composable(
+            route = NavScreens.AddProfileScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModel.uiState.collectAsState()
             val scope = rememberCoroutineScope()
 
@@ -341,7 +427,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
-        composable(NavScreens.ProfileAddedScreen.route) {
+        composable(
+            route = NavScreens.ProfileAddedScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModel.uiState.collectAsState()
 
             ProfileAddedScreen(
@@ -367,7 +465,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
-        composable(NavScreens.LoginHelpScreen.route) {
+        composable(
+            route = NavScreens.LoginHelpScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModel.uiState.collectAsState()
             val emailList by viewModel.emailList.collectAsState()
             LaunchedEffect(key1 = Unit) {
@@ -415,7 +525,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
-        composable(NavScreens.AccessAccountScreen.route) {
+        composable(
+            route = NavScreens.AccessAccountScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             val uiState by viewModel.uiState.collectAsState()
 
             AccessAccountScreen(
@@ -426,7 +548,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             )
         }
 
-        composable(NavScreens.InnerScreenHolder.route) {
+        composable(
+            route = NavScreens.InnerScreenHolder.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(350)
+                )
+            }
+        ) {
             startDestination = NavScreens.InnerScreenHolder.route
             val viewModelHome: HomeViewModel = hiltViewModel()
             val uiState by viewModelHome.uiState.collectAsState()

@@ -108,7 +108,10 @@ class AuthRepositoryImpl : AuthRepository {
         val dataOrException: DataOrException<Uri?, Boolean, Exception> = DataOrException()
         if (currentUser != null) {
             dataOrException.isLoading = true
-            val storageRef = FirebaseStorage.getInstance().reference.child("ProfileImage").child(currentUser.uid + ".jpg")
+            val storageRef = FirebaseStorage.getInstance().reference
+                .child("ProfileImage")
+                .child(currentUser.uid + ".jpg")
+
             storageRef.putFile(uri!!).addOnSuccessListener {
                 storageRef.downloadUrl.addOnSuccessListener {
                     dataOrException.data = it
@@ -172,7 +175,7 @@ class AuthRepositoryImpl : AuthRepository {
     override suspend fun getAllUsers(): DataOrException<List<IGUser>, Boolean, Exception> {
         val dataOrException: DataOrException<List<IGUser>, Boolean, Exception> = DataOrException()
         dataOrException.isLoading = true
-        dbUser.get().addOnSuccessListener {  querySnap ->
+        dbUser.get().addOnSuccessListener { querySnap ->
             dataOrException.data = querySnap.documents.map { docSnap ->
                 docSnap.toObject(IGUser::class.java)!!
             }

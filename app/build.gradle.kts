@@ -98,6 +98,9 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
+    // Navigation compose
+    implementation(libs.androidx.navigation.compose)
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.core.ktx)
@@ -122,4 +125,5 @@ dependencies {
     implementation(project(":feature:auth"))
     implementation(project(":feature:home"))
     implementation(project(":feature:profile"))
+    implementation(project(":feature:post"))
 }
