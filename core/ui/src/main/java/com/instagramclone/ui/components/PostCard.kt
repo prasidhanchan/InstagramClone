@@ -1,7 +1,9 @@
 package com.instagramclone.ui.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,11 +19,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -51,18 +57,20 @@ import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.constants.formatTimeStamp
 import com.instagramclone.util.models.Post
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostCard(
     post: Post,
     currentUserId: String,
-    onLikeClicked: () -> Unit,
-    onUnLikeClicked: () -> Unit,
-    onSendClicked: () -> Unit,
-    onSaveClicked: () -> Unit,
-    onUsernameClicked: () -> Unit
+    onLikeClick: () -> Unit,
+    onUnLikeClick: () -> Unit,
+    onSendClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onUnfollowClick: () -> Unit,
+    onDeletePostClick: (Post) -> Unit,
+    onUsernameClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    var imageSize by remember { mutableFloatStateOf(0f) }
 
     val hasLiked = post.likes.any { postId -> postId == currentUserId }
     var likeState by remember { mutableStateOf(hasLiked) }
@@ -77,9 +85,15 @@ fun PostCard(
         label = "like"
     )
 
+    var moreSheetState by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+
     if (post.images.isNotEmpty()) {
         Surface(
             modifier = Modifier
+                .animateContentSize(
+                    animationSpec = tween(350)
+                )
                 .fillMaxWidth()
                 .wrapContentHeight(Alignment.CenterVertically)
                 .padding(bottom = 15.dp),
@@ -98,7 +112,7 @@ fun PostCard(
                         .clickable(
                             indication = null,
                             interactionSource = interactionSource,
-                            onClick = onUsernameClicked
+                            onClick = onUsernameClick
                         ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
@@ -141,6 +155,24 @@ fun PostCard(
                             contentDescription = stringResource(R.string.verified)
                         )
                     }
+
+                    // More icon
+                    Box(
+                        modifier = Modifier.weight(4f),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = interactionSource,
+                                    onClick = { moreSheetState = true }
+                                ),
+                            painter = painterResource(id = R.drawable.more2),
+                            tint = Color.White,
+                            contentDescription = stringResource(id = R.string.more)
+                        )
+                    }
                 }
 
                 AsyncImage(
@@ -150,7 +182,6 @@ fun PostCard(
                     model = post.images.first(), //TODO integrate Pager
                     contentScale = ContentScale.Crop,
                     filterQuality = FilterQuality.Low,
-                    onLoading = { imageSize = it.painter?.intrinsicSize?.height ?: 0f },
                     contentDescription = stringResource(R.string.post, post.username)
                 )
 
@@ -184,7 +215,7 @@ fun PostCard(
                                             onClick = {
                                                 size = 1.6f
                                                 likeState = !likeState
-                                                onUnLikeClicked()
+                                                onUnLikeClick()
                                             }
                                         ),
                                     painter = painterResource(id = R.drawable.heart_filled),
@@ -202,7 +233,7 @@ fun PostCard(
                                             onClick = {
                                                 size = 1.6f
                                                 likeState = !likeState
-                                                onLikeClicked()
+                                                onLikeClick()
                                             }
                                         ),
                                     painter = painterResource(id = R.drawable.heart_outlined),
@@ -232,7 +263,7 @@ fun PostCard(
                                     .clickable(
                                         indication = null,
                                         interactionSource = interactionSource,
-                                        onClick = onSendClicked
+                                        onClick = onSendClick
                                     ),
                                 painter = painterResource(id = R.drawable.send),
                                 tint = Color.White,
@@ -247,7 +278,7 @@ fun PostCard(
                             .clickable(
                                 indication = null,
                                 interactionSource = interactionSource,
-                                onClick = onSaveClicked
+                                onClick = onSaveClick
                             ),
                         painter = painterResource(id = R.drawable.save_outlined),
                         tint = Color.White,
@@ -330,7 +361,7 @@ fun PostCard(
                         .clickable(
                             indication = null,
                             interactionSource = interactionSource,
-                            onClick = { }
+                            onClick = { moreSheetState = true }
                         ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
@@ -383,10 +414,83 @@ fun PostCard(
                 )
             }
         }
+        IGBottomSheet(
+            showSheet = moreSheetState,
+            sheetState = sheetState,
+            onDismiss = { moreSheetState = false }
+        ) {
+            if (post.userId != currentUserId) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 20.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = interactionSource,
+                            onClick = onUnfollowClick
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Icon(
+                        modifier = Modifier.size(18.dp),
+                        painter = painterResource(id = R.drawable.unfollow),
+                        tint = Color.White,
+                        contentDescription = stringResource(id = R.string.unfollow)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = stringResource(id = R.string.unfollow),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White
+                        )
+                    )
+                }
+            }
+
+            if (post.userId == currentUserId) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 20.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = interactionSource,
+                            onClick = {
+                                moreSheetState = false
+                                onDeletePostClick(post)
+                            }
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.delete),
+                        tint = Utils.IgError,
+                        contentDescription = stringResource(id = R.string.delete)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = stringResource(id = R.string.delete),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Utils.IgError
+                        )
+                    )
+                }
+            }
+        }
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview(
+    apiLevel = 33,
+    showBackground = true,
+    backgroundColor = 0XFF000000
+)
 @Composable
 fun PostCardPreview() {
     PostCard(
@@ -399,10 +503,12 @@ fun PostCardPreview() {
             isVerified = true
         ),
         currentUserId = "12345",
-        onLikeClicked = { },
-        onUnLikeClicked = { },
-        onSendClicked = { },
-        onSaveClicked = { },
-        onUsernameClicked = { },
+        onLikeClick = { },
+        onUnLikeClick = { },
+        onSendClick = { },
+        onSaveClick = { },
+        onUnfollowClick = { },
+        onDeletePostClick = { },
+        onUsernameClick = { },
     )
 }

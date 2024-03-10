@@ -15,7 +15,9 @@ fun Stories(
 ) {
     LazyRow(
         content = {
-            item {
+            item(
+                key = "addStory"
+            ) {
                 AddStoryCard(
                     profileImage = profileImage,
                     onClick = onAddStoryClick

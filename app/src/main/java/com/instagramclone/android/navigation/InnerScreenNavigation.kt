@@ -72,16 +72,29 @@ fun InnerScreenNavigation(
             }
         ) {
             val uiState by viewModelHome.uiState.collectAsState()
+            val uiStateProfile by viewModelProfile.uiState.collectAsState()
 
             HomeScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
+                selectedPost = uiStateProfile.selectedPost,
                 currentUserId = currentUser?.uid!!,
-                onLikeClicked = { },
-                onUnLikeClicked = { },
-                onSendClicked = { },
-                onSaveClicked = { },
-                onUsernameClicked = { },
+                onLikeClick = { },
+                onUnLikeClick = { },
+                onSendClick = { },
+                onSaveClick = { },
+                onUnfollowClick = { },
+                onDeletePostClick = { post ->
+                    viewModelProfile.deletePost(
+                        post = post,
+                        onSuccess = {
+                            viewModelProfile.getUserData()
+                            viewModelHome.getAllPosts()
+                        }
+                    )
+                },
+                setSelectedPost = { viewModelProfile.setSelectedPost(it) },
+                onUsernameClick = { },
             )
         }
         composable(
@@ -116,14 +129,25 @@ fun InnerScreenNavigation(
             ProfileScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
+                selectedPost = uiState.selectedPost,
                 currentUserId = currentUser?.uid!!,
                 scrollState = scrollState,
                 onFollowClick = { },
-                onLikeClicked = { },
-                onUnlikeClicked = { },
-                onSendClicked = { },
-                onSaveClicked = { },
-                onUsernameClicked = { },
+                onLikeClick = { },
+                onUnlikeClick = { },
+                onSendClick = { },
+                onSaveClick = { },
+                onUnfollowClick = { },
+                onDeletePostClick = { post ->
+                    viewModelProfile.deletePost(
+                        post = post,
+                        onSuccess = {
+                            viewModelProfile.getUserData()
+                            viewModelHome.getAllPosts()
+                        }
+                    )
+                },
+                onUsernameClick = { },
                 onEditProfileClick = { navHostController.navigate(NavScreens.EditProfileScreen.route) },
                 onPostClick = { postIndex ->
                     viewModelProfile.setShowPostScreen(value = true, postIndex = postIndex)
@@ -131,7 +155,10 @@ fun InnerScreenNavigation(
                 setShowPostScreen = {
                     viewModelProfile.setShowPostScreen(value = it, postIndex = 0)
                 },
-                onSettingsAndPrivacyClicked = { navHostController.navigate(NavScreens.SettingsAndPrivacyScreen.route) }
+                setSelectedPost = { viewModelProfile.setSelectedPost(it) },
+                onSettingsAndPrivacyClicked = {
+                    navHostController.navigate(NavScreens.SettingsAndPrivacyScreen.route)
+                }
             )
         }
         composable(
@@ -445,14 +472,8 @@ fun InnerScreenNavigation(
 
             val permissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission()
-            ) { isGranted ->
-                if (!isGranted) {
-                    Toast.makeText(
-                        context,
-                        "Please grant storage permission",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+            ) { _ ->
+
             }
 
             LaunchedEffect(key1 = Unit) {
@@ -481,7 +502,10 @@ fun InnerScreenNavigation(
                 uiState = uiState,
                 onImageSelected = { viewModelShare.setImage(image = it) },
                 onNextClick = { navHostController.navigate(NavScreens.SharePostScreen.route) },
-                onBackClick = { navHostController.popBackStack() }
+                onBackClick = {
+                    navHostController.popBackStack()
+                    viewModelShare.setImage(uiState.images.firstOrNull())
+                }
             )
         }
         composable(

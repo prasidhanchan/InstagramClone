@@ -109,10 +109,10 @@ fun AddProfileScreen(
         IGDialog(
             title = stringResource(R.string.change_profile_photo),
             showDialog = uiState.showDialog,
-            showBlueButton = true,
+            showBlueOrRedButton = true,
             button1Text = stringResource(R.string.cancel),
             button2Text = stringResource(R.string.choose_from_library),
-            onBlueClick = {
+            onBlueOrRedClick = {
                 activityLauncher.launch(
                     PickVisualMediaRequest(
                         ActivityResultContracts.PickVisualMedia.ImageOnly

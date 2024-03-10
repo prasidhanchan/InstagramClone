@@ -63,7 +63,7 @@ class ShareContentViewModel @Inject constructor(
         }
     }
 
-    fun setImage(image: Image) {
+    fun setImage(image: Image?) {
         uiState.update { it.copy(selectedImage = image) }
     }
 

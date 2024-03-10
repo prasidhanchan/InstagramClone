@@ -239,6 +239,35 @@ class ProfileViewModel @Inject constructor(
     /** Function to log out of firebase account */
     fun logOut() = viewModelScope.launch(Dispatchers.IO) { profileRepository.logOut() }
 
+    /**
+     * Function to delete Post Note : The post will be deleted from FireStore as well as Firebase Storage
+     * @param post requires the actual [Post]
+     * @param onSuccess onSuccess lambda triggered when the deletion task is completed
+     */
+    fun deletePost(
+        post: Post,
+        onSuccess: () -> Unit
+    ) {
+        uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
+            profileRepository.deletePost(
+                post = post,
+                onSuccess = {
+                    onSuccess()
+                    uiState.update { it.copy(isLoading = false) }
+                },
+                onError = { error ->
+                    uiState.update {
+                        it.copy(
+                            error = error,
+                            isLoading = false
+                        )
+                    }
+                }
+            )
+        }
+    }
+
     fun setText(text: String) {
         uiState.update { it.copy(textState = text) }
     }
@@ -306,5 +335,9 @@ class ProfileViewModel @Inject constructor(
 
     fun setRePassword(value: String) {
         uiState.update { it.copy(rePasswordState = value) }
+    }
+
+    fun setSelectedPost(post: Post) {
+        uiState.update { it.copy(selectedPost = post) }
     }
 }

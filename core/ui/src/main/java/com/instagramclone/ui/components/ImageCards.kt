@@ -15,9 +15,11 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +34,7 @@ import coil.compose.AsyncImage
 import com.instagramclone.ui.R
 import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.models.Image
+import kotlinx.coroutines.launch
 
 @Composable
 fun ImageCards(
@@ -40,8 +43,12 @@ fun ImageCards(
     selectedImage: Image?,
     onImageSelected: (Image) -> Unit
 ) {
+    val state = rememberLazyStaggeredGridState()
+    val scope = rememberCoroutineScope()
+
     LazyVerticalStaggeredGrid(
         modifier = modifier.fillMaxSize(),
+        state = state,
         columns = StaggeredGridCells.Fixed(4)
     ) {
         item(
@@ -67,7 +74,12 @@ fun ImageCards(
             ImageItem(
                 image = image,
                 selectedImage = selectedImage?.data,
-                onImageSelected = onImageSelected
+                onImageSelected = {
+                    scope.launch {
+                        onImageSelected(it)
+                        state.animateScrollToItem(0)
+                    }
+                }
             )
         }
     }

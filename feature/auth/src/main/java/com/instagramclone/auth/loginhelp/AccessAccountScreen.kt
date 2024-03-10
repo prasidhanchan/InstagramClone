@@ -124,11 +124,11 @@ fun AccessAccountScreen(
             title = stringResource(R.string.email_sent),
             subTitle = stringResource(R.string.password_reset_message, uiState.email.substring(0, 1) + "*******" + uiState.email.substring(subStringBefore - 1, subStringBefore)),
             showDialog = uiState.showDialog,
-            showBlueButton = true,
+            showBlueOrRedButton = true,
             showWhiteButton = false,
             button1Text = "",
             button2Text = stringResource(R.string.ok),
-            onBlueClick = { setDialog(false) },
+            onBlueOrRedClick = { setDialog(false) },
             onWhiteClick = {  }
         )
     }

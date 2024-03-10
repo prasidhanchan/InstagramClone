@@ -3,6 +3,7 @@ package com.instagramclone.firebase.repository
 import android.net.Uri
 import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.util.models.DataOrException
+import com.instagramclone.util.models.Post
 
 interface ProfileRepository {
     suspend fun getUserData(): DataOrException<IGUser, Boolean, Exception>
@@ -11,4 +12,5 @@ interface ProfileRepository {
     suspend fun convertToUrl(newImage: Uri, onSuccess: (String) -> Unit, onError: (String) -> Unit)
     suspend fun changePassword(password: String, onSuccess: () -> Unit, onError: (String) -> Unit)
     fun logOut()
+    fun deletePost(post: Post, onSuccess: () -> Unit, onError: (String) -> Unit)
 }

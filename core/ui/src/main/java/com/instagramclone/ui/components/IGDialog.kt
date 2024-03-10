@@ -35,11 +35,12 @@ fun IGDialog(
     title: String,
     subTitle: String = "",
     showDialog: Boolean,
-    showBlueButton: Boolean,
+    showBlueOrRedButton: Boolean,
     showWhiteButton: Boolean = true,
+    blueOrRedButton: Color = Utils.IgBlue,
     button1Text: String,
     button2Text: String = "",
-    onBlueClick: () -> Unit,
+    onBlueOrRedClick: () -> Unit,
     onWhiteClick: () -> Unit,
 ) {
     AnimatedVisibility(
@@ -89,16 +90,16 @@ fun IGDialog(
                     }
 
 
-                    if (showBlueButton) {
+                    if (showBlueOrRedButton) {
                         HorizontalDivider(
                             modifier = Modifier.padding(top = 30.dp),
-                            thickness = 0.5.dp,
-                            color = Color.White.copy(alpha = 0.1f)
+                            thickness = 0.2.dp,
+                            color = Utils.IgOffWhite.copy(alpha = 0.2f)
                         )
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable(onClick = onBlueClick),
+                                .clickable(onClick = onBlueOrRedClick),
                             contentAlignment = Alignment.BottomCenter
                         ) {
                             Text(
@@ -107,7 +108,7 @@ fun IGDialog(
                                 style = TextStyle(
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Utils.IgBlue,
+                                    color = blueOrRedButton,
                                     textAlign = TextAlign.Center
                                 )
                             )
@@ -116,9 +117,9 @@ fun IGDialog(
 
                     if (showWhiteButton) {
                         HorizontalDivider(
-                            modifier = if (!showBlueButton) Modifier.padding(top = 30.dp) else Modifier,
-                            thickness = 0.5.dp,
-                            color = Color.White.copy(alpha = 0.1f)
+                            modifier = if (!showBlueOrRedButton) Modifier.padding(top = 30.dp) else Modifier,
+                            thickness = 0.2.dp,
+                            color = Utils.IgOffWhite.copy(alpha = 0.2f)
                         )
                         Box(
                             modifier = Modifier
@@ -151,11 +152,11 @@ fun IGDialogPreview() {
         title = "Incorrect username or password",
         subTitle = "The username or password you entered doesn't appear to belong to an account. Please check your username or password and try again.",
         showDialog = true,
-        showBlueButton = true,
+        showBlueOrRedButton = true,
         showWhiteButton = true,
         button1Text = "Sign Up",
         button2Text = "Try Again",
-        onBlueClick = {  },
+        onBlueOrRedClick = {  },
         onWhiteClick = {  }
     )
 }

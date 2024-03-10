@@ -43,6 +43,7 @@ fun AddStoryCard(
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp)
@@ -71,7 +72,7 @@ fun AddStoryCard(
                         modifier = Modifier.fillMaxSize(),
                         model = profileImage,
                         contentScale = ContentScale.Crop,
-                        filterQuality = FilterQuality.Low,
+                        filterQuality = FilterQuality.None,
                         contentDescription = stringResource(id = R.string.profile_image)
                     )
                 } else {

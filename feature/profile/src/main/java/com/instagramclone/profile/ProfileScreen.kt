@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
+import com.instagramclone.ui.components.IGDialog
 import com.instagramclone.ui.components.IGLoader
 import com.instagramclone.ui.components.IGProfileAppBar
 import com.instagramclone.ui.components.MoreCard
@@ -54,20 +55,25 @@ import com.instagramclone.util.models.Post
 fun ProfileScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
+    selectedPost: Post,
     currentUserId: String,
-    scrollState:LazyListState,
+    scrollState: LazyListState,
     onFollowClick: () -> Unit,
-    onLikeClicked: () -> Unit,
-    onUnlikeClicked: () -> Unit,
-    onSendClicked: () -> Unit,
-    onSaveClicked: () -> Unit,
-    onUsernameClicked: () -> Unit,
+    onLikeClick: () -> Unit,
+    onUnlikeClick: () -> Unit,
+    onSendClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onUnfollowClick: () -> Unit,
+    onDeletePostClick: (Post) -> Unit,
+    onUsernameClick: () -> Unit,
     onEditProfileClick: () -> Unit,
     onPostClick: (Int) -> Unit,
     setShowPostScreen: (Boolean) -> Unit,
+    setSelectedPost: (Post) -> Unit,
     onSettingsAndPrivacyClicked: () -> Unit
 ) {
     var showSheet by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     if (!uiState.isLoading) {
         Surface(
@@ -92,10 +98,10 @@ fun ProfileScreen(
                     )
                 }
 
-                item (
+                item(
                     key = "profileCard",
                     span = { GridItemSpan(currentLineSpan = 3) }
-                ){
+                ) {
                     ProfileCard(
                         profileImage = uiState.profileImage,
                         name = uiState.name,
@@ -175,11 +181,16 @@ fun ProfileScreen(
                 isMyProfile = true,
                 scrollState = scrollState,
                 onFollowClick = onFollowClick,
-                onLikeClicked = onLikeClicked,
-                onUnlikeClicked = onUnlikeClicked,
-                onSendClicked = onSendClicked,
-                onSaveClicked = onSaveClicked,
-                onUsernameClicked = onUsernameClicked,
+                onLikeClick = onLikeClick,
+                onUnlikeClick = onUnlikeClick,
+                onSendClick = onSendClick,
+                onSaveClick = onSaveClick,
+                onUnfollowClick = onUnfollowClick,
+                onDeletePostClick = {
+                    showDeleteDialog = true
+                    setSelectedPost(it)
+                },
+                onUsernameClick = onUsernameClick,
                 onBackClick = { setShowPostScreen(false) }
             )
         }
@@ -214,6 +225,24 @@ fun ProfileScreen(
                 }
             }
         }
+
+        IGDialog(
+            title = stringResource(id = R.string.delete_this_post),
+            subTitle = stringResource(R.string.delete_post_permanently),
+            showDialog = showDeleteDialog,
+            showBlueOrRedButton = true,
+            blueOrRedButton = Utils.IgError,
+            button1Text = stringResource(id = R.string.cancel),
+            button2Text = stringResource(id = R.string.delete),
+            onBlueOrRedClick = {
+                showDeleteDialog = false
+                onDeletePostClick(selectedPost)
+            },
+            onWhiteClick = {
+                showDeleteDialog = false
+                setSelectedPost(Post()) // Clearing selected post on cancel click
+            }
+        )
     } else {
         IGLoader()
     }
@@ -244,17 +273,21 @@ fun ProfileScreenPreview() {
             followers = listOf("", ""),
             following = listOf("")
         ),
+        selectedPost = Post(),
         currentUserId = "",
         scrollState = rememberLazyListState(),
-        onFollowClick = {  },
-        onLikeClicked = {  },
-        onUnlikeClicked = {  },
-        onSendClicked = {  },
-        onSaveClicked = {  },
-        onUsernameClicked = {  },
-        onEditProfileClick = {  },
-        onPostClick = {  },
-        setShowPostScreen = {  },
-        onSettingsAndPrivacyClicked = {  }
+        onFollowClick = { },
+        onLikeClick = { },
+        onUnlikeClick = { },
+        onSendClick = { },
+        onSaveClick = { },
+        onUnfollowClick = { },
+        onDeletePostClick = { },
+        onUsernameClick = { },
+        onEditProfileClick = { },
+        onPostClick = { },
+        setShowPostScreen = { },
+        setSelectedPost = { },
+        onSettingsAndPrivacyClicked = { }
     )
 }

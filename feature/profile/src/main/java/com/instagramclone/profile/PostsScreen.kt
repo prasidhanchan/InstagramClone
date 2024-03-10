@@ -33,11 +33,13 @@ fun PostsScreen(
     isMyProfile: Boolean,
     scrollState: LazyListState,
     onFollowClick: () -> Unit,
-    onLikeClicked: () -> Unit,
-    onUnlikeClicked: () -> Unit,
-    onSendClicked: () -> Unit,
-    onSaveClicked: () -> Unit,
-    onUsernameClicked: () -> Unit,
+    onLikeClick: () -> Unit,
+    onUnlikeClick: () -> Unit,
+    onSendClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onUnfollowClick: () -> Unit,
+    onDeletePostClick: (Post) -> Unit,
+    onUsernameClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
     Column(
@@ -70,11 +72,13 @@ fun PostsScreen(
                 enableHeader = false,
                 posts = uiState.myPosts,
                 currentUserId = currentUserId,
-                onLikeClicked = onLikeClicked,
-                onUnLikeClicked = onUnlikeClicked,
-                onSendClicked = onSendClicked,
-                onSaveClicked = onSaveClicked,
-                onUsernameClicked = onUsernameClicked,
+                onLikeClick = onLikeClick,
+                onUnLikeClick = onUnlikeClick,
+                onSendClick = onSendClick,
+                onSaveClick = onSaveClick,
+                onUsernameClick = onUsernameClick,
+                onUnfollowClick = onUnfollowClick,
+                onDeletePostClick = onDeletePostClick,
                 scrollState = scrollState
             )
         } else {
@@ -113,11 +117,13 @@ fun PostScreenPreview() {
         isMyProfile = true,
         scrollState = LazyListState(),
         onFollowClick = {  },
-        onLikeClicked = {  },
-        onUnlikeClicked = {  },
-        onSendClicked = {  },
-        onSaveClicked = {  },
-        onUsernameClicked = {  },
+        onLikeClick = {  },
+        onUnlikeClick = {  },
+        onSendClick = {  },
+        onSaveClick = {  },
+        onUnfollowClick = {  },
+        onDeletePostClick = {  },
+        onUsernameClick = {  },
         onBackClick = {  }
     )
 }

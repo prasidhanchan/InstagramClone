@@ -8,27 +8,39 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.instagramclone.ui.components.IGDialog
 import com.instagramclone.ui.components.IGHomeAppBar
 import com.instagramclone.ui.components.Posts
 import com.instagramclone.ui.components.Stories
 import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.models.Post
 import com.instagramclone.util.models.Story
+import com.instagramclone.ui.R
 
 @Composable
 fun HomeScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
+    selectedPost: Post,
     currentUserId: String,
-    onLikeClicked: () -> Unit,
-    onUnLikeClicked: () -> Unit,
-    onSendClicked: () -> Unit,
-    onSaveClicked: () -> Unit,
-    onUsernameClicked: () -> Unit
+    onLikeClick: () -> Unit,
+    onUnLikeClick: () -> Unit,
+    onSendClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onUnfollowClick: () -> Unit,
+    onDeletePostClick: (Post) -> Unit,
+    setSelectedPost: (Post) -> Unit,
+    onUsernameClick: () -> Unit
 ) {
     val stories = listOf(
         Story(
@@ -53,6 +65,8 @@ fun HomeScreen(
             isViewed = true
         )
     )
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -83,14 +97,36 @@ fun HomeScreen(
                 },
                 posts = uiState.posts,
                 currentUserId = currentUserId,
-                onLikeClicked = onLikeClicked,
-                onUnLikeClicked = onUnLikeClicked,
-                onSendClicked = onSendClicked,
-                onSaveClicked = onSaveClicked,
-                onUsernameClicked = onUsernameClicked
+                onLikeClick = onLikeClick,
+                onUnLikeClick = onUnLikeClick,
+                onSendClick = onSendClick,
+                onSaveClick = onSaveClick,
+                onUnfollowClick = onUnfollowClick,
+                onDeletePostClick = {
+                    showDeleteDialog = true
+                    setSelectedPost(it)
+                },
+                onUsernameClick = onUsernameClick
             )
         }
     }
+    IGDialog(
+        title = stringResource(R.string.delete_this_post),
+        subTitle = stringResource(R.string.delete_post_permanently),
+        showDialog = showDeleteDialog,
+        showBlueOrRedButton = true,
+        blueOrRedButton = Utils.IgError,
+        button1Text = stringResource(id = R.string.cancel),
+        button2Text = stringResource(id = R.string.delete),
+        onBlueOrRedClick = {
+            showDeleteDialog = false
+            onDeletePostClick(selectedPost)
+        },
+        onWhiteClick = {
+            showDeleteDialog = false
+            setSelectedPost(Post()) // Clearing selected post on cancel click
+        }
+    )
 }
 
 @Preview(
@@ -120,11 +156,15 @@ fun HomeScreenPreview() {
     HomeScreen(
         innerPadding = PaddingValues(),
         uiState = UiState(stories = stories),
+        selectedPost = Post(),
         currentUserId = "12345",
-        onLikeClicked = { },
-        onUnLikeClicked = { },
-        onSendClicked = { },
-        onSaveClicked = { },
-        onUsernameClicked = { },
+        onLikeClick = { },
+        onUnLikeClick = { },
+        onSendClick = { },
+        onSaveClick = { },
+        onUnfollowClick = { },
+        onDeletePostClick = { },
+        setSelectedPost = { },
+        onUsernameClick = { },
     )
 }

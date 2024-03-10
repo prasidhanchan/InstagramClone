@@ -249,9 +249,9 @@ fun LoginScreen(
                 title = uiState.errorTitle,
                 subTitle = uiState.errorSubTitle,
                 showDialog = uiState.showDialog,
-                showBlueButton = false,
+                showBlueOrRedButton = false,
                 button1Text = stringResource(id = R.string.ok),
-                onBlueClick = {  },
+                onBlueOrRedClick = {  },
                 onWhiteClick = onDismiss
             )
         } else {
@@ -259,10 +259,10 @@ fun LoginScreen(
                 title = uiState.errorTitle,
                 subTitle = uiState.errorSubTitle,
                 showDialog = uiState.showDialog,
-                showBlueButton = true,
+                showBlueOrRedButton = true,
                 button1Text = stringResource(id = R.string.sign_up_dialog),
                 button2Text = stringResource(R.string.try_again),
-                onBlueClick = onDismiss,
+                onBlueOrRedClick = onDismiss,
                 onWhiteClick = onConfirm
             )
         }

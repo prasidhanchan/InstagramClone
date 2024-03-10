@@ -27,4 +27,5 @@ data class UiState(
     var passwordState: String = "",
     var newPasswordState: String = "",
     var rePasswordState: String = "",
+    var selectedPost: Post = Post()
 )

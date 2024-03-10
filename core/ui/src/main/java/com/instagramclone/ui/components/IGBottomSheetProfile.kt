@@ -145,7 +145,7 @@ fun IGBottomSheetProfile(
     backgroundColor = 0XFF000000
 )
 @Composable
-fun IGBottomSheetProfilePreview() {
+private fun IGBottomSheetProfilePreview() {
     IGBottomSheetProfile(
         profileImage = "",
         profileDescription = "",

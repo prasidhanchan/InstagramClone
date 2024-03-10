@@ -110,13 +110,13 @@ fun StoryCard(
                         modifier = Modifier.fillMaxSize(),
                         model = story.profileImage,
                         contentScale = ContentScale.Crop,
-                        filterQuality = FilterQuality.Low,
+                        filterQuality = FilterQuality.None,
                         contentDescription = stringResource(R.string.story_placeholder, story.username)
                     )
                 } else {
                     Image(
                         painter = painterResource(id = R.drawable.profile),
-                        contentDescription = stringResource(id = R.string.profile_image)
+                        contentDescription = story.username
                     )
                 }
             }

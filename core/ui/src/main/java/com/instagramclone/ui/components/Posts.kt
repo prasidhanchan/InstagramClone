@@ -13,11 +13,13 @@ fun Posts(
     posts: List<Post>,
     currentUserId: String,
     enableHeader: Boolean = true,
-    onLikeClicked: () -> Unit,
-    onUnLikeClicked: () -> Unit,
-    onSendClicked: () -> Unit,
-    onSaveClicked: () -> Unit,
-    onUsernameClicked: () -> Unit,
+    onLikeClick: () -> Unit,
+    onUnLikeClick: () -> Unit,
+    onSendClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onUnfollowClick: () -> Unit,
+    onDeletePostClick: (Post) -> Unit,
+    onUsernameClick: () -> Unit,
     scrollState: LazyListState = LazyListState(),
     topContent: @Composable () -> Unit = {  }
 ) {
@@ -38,11 +40,13 @@ fun Posts(
                     PostCard(
                         post = post,
                         currentUserId = currentUserId,
-                        onLikeClicked = onLikeClicked,
-                        onUnLikeClicked = onUnLikeClicked,
-                        onSendClicked = onSendClicked,
-                        onSaveClicked = onSaveClicked,
-                        onUsernameClicked = onUsernameClicked
+                        onLikeClick = onLikeClick,
+                        onUnLikeClick = onUnLikeClick,
+                        onSendClick = onSendClick,
+                        onSaveClick = onSaveClick,
+                        onUnfollowClick = onUnfollowClick,
+                        onDeletePostClick = onDeletePostClick,
+                        onUsernameClick = onUsernameClick
                     )
                 }
             }

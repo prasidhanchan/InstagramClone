@@ -9,6 +9,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.util.models.DataOrException
+import com.instagramclone.util.models.Post
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -17,6 +18,9 @@ class ProfileRepositoryImpl @Inject constructor(
 ) : ProfileRepository {
     private val currentUser = FirebaseAuth.getInstance().currentUser
     private val dbUser = FirebaseFirestore.getInstance().collection("Users")
+    private val dbPost = FirebaseFirestore.getInstance().collection("Posts")
+
+    private val storageRefPost = FirebaseStorage.getInstance().reference.child("Posts")
 
     override suspend fun getUserData(): DataOrException<IGUser, Boolean, Exception> {
         val dataOrException: DataOrException<IGUser, Boolean, Exception> = DataOrException()
@@ -114,5 +118,25 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override fun logOut() {
         FirebaseAuth.getInstance().signOut()
+    }
+
+    override fun deletePost(
+        post: Post,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        dbPost.document("${currentUser?.uid}-${post.timeStamp}").delete()
+            .addOnSuccessListener {
+                storageRefPost.child("${currentUser?.uid}-${post.timeStamp}.jpg").delete()
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener {
+                        onError(it.message.toString())
+                    }
+            }
+            .addOnFailureListener {
+                onError(it.message.toString())
+            }
     }
 }
