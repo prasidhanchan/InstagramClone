@@ -1,6 +1,7 @@
 package com.instagramclone.profile
 
 import android.net.Uri
+import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.util.models.Post
 
 data class UiState(
@@ -27,5 +28,8 @@ data class UiState(
     var passwordState: String = "",
     var newPasswordState: String = "",
     var rePasswordState: String = "",
-    var selectedPost: Post = Post()
+    var selectedPost: Post = Post(),
+    var selectedUserProfile: IGUser = IGUser(),
+    var selectedUserPosts: List<Post> = emptyList(),
+    var isFollowing: Boolean = false
 )

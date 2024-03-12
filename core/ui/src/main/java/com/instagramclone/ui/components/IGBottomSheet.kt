@@ -39,7 +39,7 @@ fun IGBottomSheet(
             containerColor = Utils.IgOffBlack,
             content = {
                 HorizontalDivider(
-                    modifier = Modifier.padding(top = 40.dp),
+                    modifier = Modifier.padding(top = 35.dp),
                     thickness = 0.2.dp,
                     color = Utils.IgOffWhite.copy(alpha = 0.2f)
                 )

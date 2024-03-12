@@ -6,12 +6,15 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
@@ -26,36 +29,38 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.ui.R
-import com.instagramclone.ui.components.IGDialog
 import com.instagramclone.ui.components.IGLoader
-import com.instagramclone.ui.components.IGProfileAppBar
-import com.instagramclone.ui.components.MoreCard
 import com.instagramclone.ui.components.ProfileCard
 import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.models.Post
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
+fun UserProfileScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
-    selectedPost: Post,
     currentUserId: String,
     scrollState: LazyListState,
     onFollowClick: () -> Unit,
@@ -64,16 +69,16 @@ fun ProfileScreen(
     onSendClick: () -> Unit,
     onSaveClick: () -> Unit,
     onUnfollowClick: () -> Unit,
-    onDeletePostClick: (Post) -> Unit,
-    onUsernameClick: () -> Unit,
-    onEditProfileClick: () -> Unit,
+    onUsernameClick: (String) -> Unit,
     onPostClick: (Int) -> Unit,
+    onEditProfileClick: () -> Unit,
     setShowPostScreen: (Boolean) -> Unit,
-    setSelectedPost: (Post) -> Unit,
-    onSettingsAndPrivacyClicked: () -> Unit
+    setIsFollowing: (Boolean) -> Unit,
+    onBackClick: () -> Unit
 ) {
     var showSheet by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    var currentFollower by remember { mutableIntStateOf(0) }
+    var currentFollowing by remember { mutableIntStateOf(0) }
 
     if (!uiState.isLoading) {
         Surface(
@@ -92,9 +97,10 @@ fun ProfileScreen(
                     key = "profileAppBar",
                     span = { GridItemSpan(currentLineSpan = 3) }
                 ) {
-                    IGProfileAppBar(
-                        username = uiState.username,
-                        onMoreClick = { showSheet = true }
+                    IGUserProfileAppBar(
+                        username = uiState.selectedUserProfile.username,
+                        onMoreClick = { showSheet = true },
+                        onBackClick = onBackClick
                     )
                 }
 
@@ -103,13 +109,27 @@ fun ProfileScreen(
                     span = { GridItemSpan(currentLineSpan = 3) }
                 ) {
                     ProfileCard(
-                        profileImage = uiState.profileImage,
-                        name = uiState.name,
-                        bio = uiState.bio,
-                        links = uiState.links,
-                        posts = uiState.myPosts.size,
-                        followers = uiState.followers.size,
-                        following = uiState.following.size,
+                        myProfile = currentUserId == uiState.selectedUserProfile.userId,
+                        profileImage = uiState.selectedUserProfile.profileImage,
+                        name = uiState.selectedUserProfile.name,
+                        bio = uiState.selectedUserProfile.bio,
+                        links = uiState.selectedUserProfile.links,
+                        posts = uiState.selectedUserPosts.size,
+                        followers = uiState.selectedUserProfile.followersList.size.plus(currentFollower),
+                        following = uiState.selectedUserProfile.followingList.size,
+                        isFollowing = uiState.isFollowing,
+                        onFollowClick = {
+                            setIsFollowing(true) // Manually setting t avoid refreshing screen
+                            currentFollower += 1 // Manually Adding follower
+                            currentFollowing += 1 // Manually Adding following
+                            onFollowClick()
+                        },
+                        onUnFollowClick = {
+                            setIsFollowing(false) // Manually setting t avoid refreshing screen
+                            currentFollower -= 1 // Manually Removing follower
+                            currentFollowing -= 1 // Manually Remove following
+                            onUnfollowClick()
+                        },
                         onEditProfileClick = onEditProfileClick
                     )
                 }
@@ -138,7 +158,7 @@ fun ProfileScreen(
 
                 items(
                     key = { myPost -> myPost.images },
-                    items = uiState.myPosts
+                    items = uiState.selectedUserPosts
                 ) { myPost ->
                     if (myPost.images.isNotEmpty()) {
                         Box(
@@ -146,7 +166,11 @@ fun ProfileScreen(
                                 .padding(1.dp)
                                 .size(120.dp)
                                 .background(color = Utils.IgOffBlack)
-                                .clickable(onClick = { onPostClick(uiState.myPosts.indexOf(myPost)) }),
+                                .clickable(
+                                    onClick = {
+                                        onPostClick(uiState.selectedUserPosts.indexOf(myPost))
+                                    }
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             AsyncImage(
@@ -178,7 +202,7 @@ fun ProfileScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
                 currentUserId = currentUserId,
-                isMyProfile = true,
+                isMyProfile = currentUserId == uiState.selectedUserProfile.userId,
                 scrollState = scrollState,
                 onFollowClick = onFollowClick,
                 onLikeClick = onLikeClick,
@@ -186,10 +210,6 @@ fun ProfileScreen(
                 onSendClick = onSendClick,
                 onSaveClick = onSaveClick,
                 onUnfollowClick = onUnfollowClick,
-                onDeletePostClick = {
-                    showDeleteDialog = true
-                    setSelectedPost(it)
-                },
                 onUsernameClick = onUsernameClick,
                 onBackClick = { setShowPostScreen(false) }
             )
@@ -213,38 +233,62 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    MoreCard(
-                        modifier = Modifier.scale(0.8f),
-                        icon = painterResource(id = R.drawable.settings),
-                        title = stringResource(R.string.settings_and_privacy),
-                        onClick = {
-                            showSheet = false
-                            onSettingsAndPrivacyClicked()
-                        }
-                    )
+
                 }
             }
         }
-
-        IGDialog(
-            title = stringResource(id = R.string.delete_this_post),
-            subTitle = stringResource(R.string.delete_post_permanently),
-            showDialog = showDeleteDialog,
-            showBlueOrRedButton = true,
-            blueOrRedButton = Utils.IgError,
-            button1Text = stringResource(id = R.string.cancel),
-            button2Text = stringResource(id = R.string.delete),
-            onBlueOrRedClick = {
-                showDeleteDialog = false
-                onDeletePostClick(selectedPost)
-            },
-            onWhiteClick = {
-                showDeleteDialog = false
-                setSelectedPost(Post()) // Clearing selected post on cancel click
-            }
-        )
     } else {
         IGLoader()
+    }
+}
+
+@Composable
+fun IGUserProfileAppBar(
+    username: String,
+    onMoreClick: () -> Unit,
+    onBackClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
+            .fillMaxWidth()
+            .height(50.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Icon(
+            modifier = Modifier.clickable(
+                onClick = onBackClick
+            ),
+            painter = painterResource(id = R.drawable.back),
+            tint = Color.White,
+            contentDescription = stringResource(id = R.string.back)
+        )
+        Text(
+            modifier = Modifier
+                .padding(horizontal = 30.dp)
+                .weight(6f),
+            text = username,
+            style = TextStyle(
+                fontSize = 21.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            ),
+            textAlign = TextAlign.Start
+        )
+
+        Icon(
+            modifier = Modifier.clickable(
+                indication = null,
+                interactionSource = interactionSource,
+                onClick = onMoreClick
+            ),
+            painter = painterResource(id = R.drawable.more2),
+            tint = Color.White,
+            contentDescription = stringResource(id = R.string.more)
+        )
     }
 }
 
@@ -254,13 +298,17 @@ fun ProfileScreen(
     backgroundColor = 0XFF000000
 )
 @Composable
-fun ProfileScreenPreview() {
-    ProfileScreen(
+private fun UserProfileScreenPreview() {
+    UserProfileScreen(
         innerPadding = PaddingValues(),
         uiState = UiState(
-            username = "pra_sidh_22",
-            name = "Prasidh Gopal Anchan",
-            myPosts = listOf(
+            selectedUserProfile = IGUser(
+                username = "pra_sidh_22",
+                name = "Prasidh Gopal Anchan",
+                followersList = listOf("", ""),
+                followingList = listOf("")
+            ),
+            selectedUserPosts = listOf(
                 Post(
                     profileImage = "a",
                     images = listOf("a")
@@ -269,11 +317,8 @@ fun ProfileScreenPreview() {
                     profileImage = "b",
                     images = listOf("b")
                 ),
-            ),
-            followers = listOf("", ""),
-            following = listOf("")
+            )
         ),
-        selectedPost = Post(),
         currentUserId = "",
         scrollState = rememberLazyListState(),
         onFollowClick = { },
@@ -282,12 +327,11 @@ fun ProfileScreenPreview() {
         onSendClick = { },
         onSaveClick = { },
         onUnfollowClick = { },
-        onDeletePostClick = { },
         onUsernameClick = { },
-        onEditProfileClick = { },
         onPostClick = { },
+        onEditProfileClick = { },
         setShowPostScreen = { },
-        setSelectedPost = { },
-        onSettingsAndPrivacyClicked = { }
+        setIsFollowing = { },
+        onBackClick = { }
     )
 }

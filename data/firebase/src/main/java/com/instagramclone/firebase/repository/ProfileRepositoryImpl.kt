@@ -3,6 +3,7 @@ package com.instagramclone.firebase.repository
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
@@ -10,11 +11,13 @@ import com.google.firebase.storage.FirebaseStorage
 import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.util.models.DataOrException
 import com.instagramclone.util.models.Post
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class ProfileRepositoryImpl @Inject constructor(
-    private val query: Query
+    private val queryUser: Query,
+    private val queryPost: Query
 ) : ProfileRepository {
     private val currentUser = FirebaseAuth.getInstance().currentUser
     private val dbUser = FirebaseFirestore.getInstance().collection("Users")
@@ -43,7 +46,7 @@ class ProfileRepositoryImpl @Inject constructor(
 
         dataOrException.isLoading = true
         try {
-            dataOrException.data = query.get().await().documents.map { docSnap ->
+            dataOrException.data = queryUser.get().await().documents.map { docSnap ->
                 docSnap.toObject(IGUser::class.java)?.username!!
             }
             dataOrException.isLoading = false
@@ -138,5 +141,129 @@ class ProfileRepositoryImpl @Inject constructor(
             .addOnFailureListener {
                 onError(it.message.toString())
             }
+    }
+
+    override suspend fun getMyPosts(): DataOrException<List<Post>, Boolean, Exception> {
+        val dataOrException: DataOrException<List<Post>, Boolean, Exception> = DataOrException()
+
+        try {
+            dataOrException.isLoading = true
+            queryPost.get()
+                .addOnSuccessListener { querySnap ->
+                    dataOrException.data = querySnap.documents.map { docSnap ->
+                        docSnap.toObject(Post::class.java)!!
+                    }
+                        .filter { it.userId == currentUser?.uid }
+                    dataOrException.isLoading = false
+                }
+                .addOnFailureListener {
+                    dataOrException.e = it
+                    dataOrException.isLoading = false
+                }
+                .await()
+                .asFlow()
+        } catch (e: Exception) {
+            dataOrException.e = e
+        }
+        return dataOrException
+    }
+
+    override suspend fun getUserProfile(userId: String): DataOrException<IGUser, Boolean, Exception> {
+        val dataOrException: DataOrException<IGUser, Boolean, Exception> = DataOrException()
+
+        try {
+            dataOrException.isLoading = true
+            queryUser.get()
+                .addOnSuccessListener { querySnap ->
+                    dataOrException.data = querySnap.documents.map { docSnap ->
+                        docSnap.toObject(IGUser::class.java)
+                    }
+                        .first { it?.userId == userId }
+                    dataOrException.isLoading = false
+                }
+                .addOnFailureListener {
+                    dataOrException.e = it
+                    dataOrException.isLoading = false
+                }
+                .await()
+                .asFlow()
+
+        } catch (e: Exception) {
+            dataOrException.e = e
+            dataOrException.isLoading = false
+        }
+
+        return dataOrException
+    }
+
+    override suspend fun getUserPosts(userId: String): DataOrException<List<Post>, Boolean, Exception> {
+        val dataOrException: DataOrException<List<Post>, Boolean, Exception> = DataOrException()
+
+        try {
+            dataOrException.isLoading = true
+            queryPost.get()
+                .addOnSuccessListener { querySnap ->
+                    dataOrException.data = querySnap.documents.map { docSnap ->
+                        docSnap.toObject(Post::class.java)!!
+                    }
+                        .filter { it.userId == userId }
+                    dataOrException.isLoading = false
+                }
+                .addOnFailureListener {
+                    dataOrException.e = it
+                    dataOrException.isLoading = false
+                }
+        } catch (e: Exception) {
+            dataOrException.e = e
+            dataOrException.isLoading = false
+        }
+
+        return dataOrException
+    }
+
+    override suspend fun follow(
+        userId: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        dbUser.document(userId)
+            .update("followersList", FieldValue.arrayUnion(currentUser?.uid))
+            .addOnSuccessListener {
+                dbUser.document(currentUser?.uid!!)
+                    .update("followingList", FieldValue.arrayUnion(userId))
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener {
+                        onError(it.message.toString())
+                    }
+            }
+            .addOnFailureListener {
+                onError(it.message.toString())
+            }
+            .await()
+    }
+
+    override suspend fun unFollow(
+        userId: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        dbUser.document(userId)
+            .update("followersList", FieldValue.arrayRemove(currentUser?.uid))
+            .addOnSuccessListener {
+                dbUser.document(currentUser?.uid!!)
+                    .update("followingList", FieldValue.arrayRemove(userId))
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener {
+                        onError(it.message.toString())
+                    }
+            }
+            .addOnFailureListener {
+                onError(it.message.toString())
+            }
+            .await()
     }
 }

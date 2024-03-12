@@ -61,7 +61,7 @@ fun IGProfileAppBar(
 
 @Preview
 @Composable
-fun IGProfileAppbarPreview() {
+private fun IGProfileAppbarPreview() {
     IGProfileAppBar(
         username = "pra_sidh_22",
         onMoreClick = {  }

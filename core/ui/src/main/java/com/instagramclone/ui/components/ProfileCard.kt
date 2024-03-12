@@ -1,5 +1,6 @@
 package com.instagramclone.ui.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,16 +50,20 @@ fun ProfileCard(
     followers: Int,
     following: Int,
     isFollowing: Boolean = false,
-    onFollowClick: () -> Unit = {  },
-    onUnFollowClick: () -> Unit = {  },
-    onMessageClick: () -> Unit = {  },
-    onEditProfileClick: () -> Unit = {  },
+    onFollowClick: () -> Unit,
+    onUnFollowClick: () -> Unit,
+    onMessageClick: () -> Unit = { },
+    onEditProfileClick: () -> Unit = { },
 ) {
     val uriHandler = LocalUriHandler.current
+    var buttonColor by remember(isFollowing) {
+        mutableStateOf(if (isFollowing) Utils.IgButtonBlack else Utils.IgBlue)
+    }
 
     Column(
         modifier = Modifier
             .padding(vertical = 15.dp)
+            .animateContentSize()
             .wrapContentHeight(Alignment.Top)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Top,
@@ -234,30 +243,20 @@ fun ProfileCard(
                     onClick = onEditProfileClick
                 )
             } else {
-                if (isFollowing) {
-                    IGButton(
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .height(35.dp)
-                            .weight(1f),
-                        fontSize = 14,
-                        color = Utils.IgButtonBlack,
-                        text = stringResource(R.string.following_caps),
-                        isLoading = false,
-                        onClick = onUnFollowClick
-                    )
-                } else {
-                    IGButton(
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .height(35.dp)
-                            .weight(1f),
-                        fontSize = 14,
-                        text = stringResource(R.string.follow),
-                        isLoading = false,
-                        onClick = onFollowClick
-                    )
-                }
+                IGButton(
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .height(35.dp)
+                        .weight(1f),
+                    fontSize = 14,
+                    color = buttonColor,
+                    text = if (isFollowing) stringResource(R.string.following) else stringResource(R.string.follow),
+                    isLoading = false,
+                    onClick = {
+                        buttonColor = Utils.IgButtonBlack
+                        if (isFollowing) onUnFollowClick() else onFollowClick()
+                    }
+                )
                 IGButton(
                     modifier = Modifier
                         .padding(start = 4.dp)
@@ -280,8 +279,9 @@ fun ProfileCard(
     backgroundColor = 0XFF000000
 )
 @Composable
-fun ProfileCardPreview() {
+private fun ProfileCardPreview() {
     ProfileCard(
+        myProfile = true,
         profileImage = "",
         name = "Prasidh Gopal Anchan",
         bio = "Android developer",
@@ -290,8 +290,8 @@ fun ProfileCardPreview() {
         followers = 100,
         following = 80,
         isFollowing = false,
-        onFollowClick = {  },
-        onUnFollowClick = {  },
-        onMessageClick = {  },
+        onFollowClick = { },
+        onUnFollowClick = { },
+        onMessageClick = { },
     )
 }

@@ -72,6 +72,8 @@ class AuthRepositoryImpl : AuthRepository {
         }.addOnFailureListener {
             onError(it.message.toString())
         }
+            .await()
+            .asFlow()
     }
 
     override fun sendPasswordResetEmail(

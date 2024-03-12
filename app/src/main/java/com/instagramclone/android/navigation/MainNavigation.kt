@@ -32,7 +32,6 @@ import com.instagramclone.auth.signup.CreatePasswordScreen
 import com.instagramclone.auth.signup.ProfileAddedScreen
 import com.instagramclone.auth.signup.WelcomeScreen
 import com.instagramclone.firebase.models.IGUser
-import com.instagramclone.home.HomeViewModel
 import com.instagramclone.ui.R
 import com.instagramclone.util.constants.FacebookLogin
 import com.instagramclone.util.constants.toIGUsername
@@ -67,12 +66,12 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             LaunchedEffect(key1 = true) {
                 if (currentUser != null) {
                     startDestination = NavScreens.InnerScreenHolder.route
-                    delay(1000)
+                    delay(1000L)
                     navController.popBackStack()
                     navController.navigate(NavScreens.InnerScreenHolder.route)
                 } else {
                     startDestination = NavScreens.LoginScreen.route
-                    delay(1000)
+                    delay(1000L)
                     navController.popBackStack()
                     navController.navigate(NavScreens.LoginScreen.route)
                 }
@@ -95,6 +94,8 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             val uiState by viewModel.uiState.collectAsState()
             val emailList by viewModel.emailList.collectAsState()
 
+            val scope = rememberCoroutineScope()
+
             val loginManager = LoginManager.getInstance()
             val callBack = remember { CallbackManager.Factory.create() }
             val launcher = rememberLauncherForActivityResult(
@@ -113,7 +114,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                     if (emailList?.contains(currentUser?.email) == true) {
                         navController.popBackStack()
                         navController.navigate(NavScreens.InnerScreenHolder.route) {
-                            navController.graph.startDestinationRoute?.let { it1 -> popUpTo(it1) }
+                            navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
                         }
                         viewModel.clearUiState()
                     } else {
@@ -124,11 +125,14 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                                 password = context.getString(R.string.facebook_login)
                             ),
                             onSuccess = {
-                                navController.popBackStack()
-                                navController.navigate(NavScreens.InnerScreenHolder.route) {
-                                    navController.graph.startDestinationRoute?.let { it1 -> popUpTo(it1) }
+                                scope.launch {
+                                    navController.popBackStack()
+                                    navController.navigate(NavScreens.InnerScreenHolder.route) {
+                                        navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
+                                    }
+                                    delay(1000L)
+                                    viewModel.clearUiState()
                                 }
-                                viewModel.clearUiState()
                             }
                         )
                     }
@@ -562,15 +566,13 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             }
         ) {
             startDestination = NavScreens.InnerScreenHolder.route
-            val viewModelHome: HomeViewModel = hiltViewModel()
-            val uiState by viewModelHome.uiState.collectAsState()
 
             InnerScreenHolder(
-                viewModel = viewModelHome,
-                profileImage = uiState.profileImage,
                 navigateToLogin = {
                     navController.popBackStack()
-                    navController.navigate(NavScreens.LoginScreen.route)
+                    navController.navigate(NavScreens.LoginScreen.route) {
+                        navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
+                    }
                 }
             )
         }

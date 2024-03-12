@@ -95,7 +95,7 @@ class AuthViewModel @Inject constructor(
                     onSuccess()
                 },
                 onError = { error ->
-                    if (error.contains("The supplied auth credential is incorrect, malformed or has expired.")) {
+                    if (error.contains(context.getString(R.string.credential_expired))) {
                         uiState.update {
                             it.copy(
                                 showDialog = true,

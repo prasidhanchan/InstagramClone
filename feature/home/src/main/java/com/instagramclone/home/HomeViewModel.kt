@@ -78,4 +78,13 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    private fun clearUiState() {
+        uiState.update { UiState() }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        clearUiState()
+    }
 }

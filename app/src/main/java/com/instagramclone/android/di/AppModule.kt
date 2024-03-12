@@ -24,12 +24,19 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideHomeRepository() = HomeRepositoryImpl(dbPosts = FirebaseFirestore.getInstance().collection("Posts")
-        .orderBy("timeStamp", Query.Direction.DESCENDING))
+    fun provideHomeRepository() = HomeRepositoryImpl(
+        dbPosts = FirebaseFirestore.getInstance().collection("Posts")
+            .orderBy("timeStamp", Query.Direction.DESCENDING)
+    )
 
     @Singleton
     @Provides
-    fun provideProfileRepository() = ProfileRepositoryImpl(query = FirebaseFirestore.getInstance().collection("Users"))
+    fun provideProfileRepository() =
+        ProfileRepositoryImpl(
+            queryUser = FirebaseFirestore.getInstance().collection("Users"),
+            queryPost = FirebaseFirestore.getInstance().collection("Posts")
+                .orderBy("timeStamp", Query.Direction.DESCENDING)
+        )
 
     @Singleton
     @Provides
@@ -37,5 +44,6 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideContentResolver(@ApplicationContext context: Context) = ContentResolver(context = context)
+    fun provideContentResolver(@ApplicationContext context: Context) =
+        ContentResolver(context = context)
 }

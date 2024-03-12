@@ -54,6 +54,9 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
 
+    // Firebase Authentication
+    implementation(libs.firebase.authentication)
+
     implementation(libs.material3)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.compose.bom))

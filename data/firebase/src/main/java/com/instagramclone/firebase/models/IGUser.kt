@@ -12,7 +12,7 @@ data class IGUser(
     var bio: String = "",
     var links: String = "",
     var followersList: List<String> = emptyList(),
-    var followingsList: List<String> = emptyList()
+    var followingList: List<String> = emptyList()
 ) {
     fun convertToMap(): HashMap<String, Any> {
         return hashMapOf(
@@ -26,7 +26,7 @@ data class IGUser(
             "bio" to this.bio,
             "links" to this.links,
             "followersList" to this.followersList,
-            "followingsList" to this.followingsList,
+            "followingList" to this.followingList,
         )
     }
 }

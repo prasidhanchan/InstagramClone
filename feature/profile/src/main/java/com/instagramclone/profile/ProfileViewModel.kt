@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.instagramclone.firebase.repository.ProfileRepositoryImpl
 import com.instagramclone.ui.R
 import com.instagramclone.util.models.Post
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,13 +29,14 @@ class ProfileViewModel @Inject constructor(
         private set
 
     init {
-        getUserData()
+        getCurrentUserData()
+        getMyPosts()
     }
 
     /**
      * Function to get current user data from Firestore
      */
-    fun getUserData() {
+    fun getCurrentUserData() {
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
             val result = profileRepository.getUserData()
@@ -52,43 +55,8 @@ class ProfileViewModel @Inject constructor(
                         links = result.data?.links!!,
                         gender = result.data?.gender!!,
                         followers = result.data?.followersList!!,
-                        following = result.data?.followingsList!!,
-                        isLoading = false,
-                        //TODO remove
-                        myPosts = listOf(
-                            Post(
-                                profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2FvJdDRERlD9VVleMOJDIoYTXSYu53.jpg?alt=media&token=e1831424-81db-44ac-baaa-b8e4dced084b",
-                                username = "pra_sidh_22",
-                                isVerified = true,
-                                images = listOf(
-                                    "https://i.pinimg.com/564x/98/58/74/9858745cd157f2797065e639c5b3bf23.jpg"
-                                )
-                            ),
-                            Post(
-                                profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2FvJdDRERlD9VVleMOJDIoYTXSYu53.jpg?alt=media&token=e1831424-81db-44ac-baaa-b8e4dced084b",
-                                username = "pra_sidh_22",
-                                isVerified = true,
-                                images = listOf(
-                                    "https://wallpaperaccess.in/public/uploads/preview/oshi-no-ko-yoasobi-anime-girl-wallpaper-s.jpg",
-                                )
-                            ),
-                            Post(
-                                profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2FvJdDRERlD9VVleMOJDIoYTXSYu53.jpg?alt=media&token=e1831424-81db-44ac-baaa-b8e4dced084b",
-                                username = "pra_sidh_22",
-                                isVerified = true,
-                                images = listOf(
-                                    "https://cdn.hero.page/pfp/5bb14a97-d70c-4fa3-b462-3a8183481905-cool-one-piece-luffy-pfp-cool-anime-pfp-1.png"
-                                )
-                            ),
-                            Post(
-                                profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2FvJdDRERlD9VVleMOJDIoYTXSYu53.jpg?alt=media&token=e1831424-81db-44ac-baaa-b8e4dced084b",
-                                username = "pra_sidh_22",
-                                isVerified = true,
-                                images = listOf(
-                                    "https://www.animeinformer.com/wp-content/uploads/2022/08/demon-slayer-pfp.png.webp"
-                                )
-                            )
-                        )
+                        following = result.data?.followingList!!,
+                        isLoading = false
                     )
                 }
             } else {
@@ -240,6 +208,35 @@ class ProfileViewModel @Inject constructor(
     fun logOut() = viewModelScope.launch(Dispatchers.IO) { profileRepository.logOut() }
 
     /**
+     * Function to get all personal posts on profile
+     */
+    fun getMyPosts() {
+        uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = profileRepository.getMyPosts()
+
+            delay(800L)
+            withContext(Dispatchers.Main) {
+                if (result.e == null && !result.isLoading!!) {
+                    uiState.update {
+                        it.copy(
+                            myPosts = result.data!!,
+                            isLoading = false
+                        )
+                    }
+                } else {
+                    uiState.update {
+                        it.copy(
+                            error = result.e?.message.toString(),
+                            isLoading = false
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Function to delete Post Note : The post will be deleted from FireStore as well as Firebase Storage
      * @param post requires the actual [Post]
      * @param onSuccess onSuccess lambda triggered when the deletion task is completed
@@ -268,6 +265,109 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Function to get the Profile of the selected user / whose profile is visited
+     * @param userId User Id of the selected user
+     */
+    fun getUserProfile(userId: String) {
+        uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            val result = profileRepository.getUserProfile(userId = userId)
+
+            delay(1000L)
+            withContext(Dispatchers.Main) {
+                if (result.e == null && !result.isLoading!!) {
+                    uiState.update {uiState ->
+                        uiState.copy(
+                            selectedUserProfile = result.data!!,
+                            isFollowing = result.data!!.followersList.any { it == currentUser?.uid }
+                        )
+                    }
+                    delay(500L) // Artificial delay to make isFollowing load properly
+                    uiState.update { it.copy(isLoading = false) }
+                } else {
+                    uiState.update {
+                        it.copy(
+                            error = result.e?.message.toString(),
+                            isLoading = false
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Function to retrieve all the posts of the selected user / whose profile is visited
+     * @param userId User Id of the selected user
+     */
+    fun getUserPosts(userId: String) {
+        uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = profileRepository.getUserPosts(userId = userId)
+
+            delay(1500L)
+            withContext(Dispatchers.Main) {
+                if (result.e == null && !result.isLoading!!) {
+                    uiState.update {
+                        it.copy(
+                            selectedUserPosts = result.data!!,
+                            isLoading = false
+                        )
+                    }
+                } else {
+                    uiState.update {
+                        it.copy(
+                            error = result.e?.message.toString(),
+                            isLoading = false
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Function to follow a user
+     * @param userId User Id of the selected user
+     * @param onSuccess On Success lambda triggered when the user is successfully followed
+     */
+    fun follow(
+        userId: String,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            profileRepository.follow(
+                userId = userId,
+                onSuccess = onSuccess,
+                onError = { error ->
+                    uiState.update { it.copy(error = error) }
+                }
+            )
+        }
+    }
+
+    /**
+     * Function to unfollow a user
+     * @param userId User Id of the selected user
+     * @param onSuccess On Success lambda triggered when the user is successfully unfollowed
+     */
+    fun unFollow(
+        userId: String,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            profileRepository.unFollow(
+                userId = userId,
+                onSuccess = onSuccess,
+                onError = { error ->
+                    uiState.update { it.copy(error = error) }
+                }
+            )
+        }
+    }
+
     fun setText(text: String) {
         uiState.update { it.copy(textState = text) }
     }
@@ -288,24 +388,8 @@ class ProfileViewModel @Inject constructor(
         uiState.update { it.copy(isUserDetailChanged = value) }
     }
 
-    fun clearUiState() {
-        uiState.update { uiState ->
-            uiState.copy(
-                profileImage = "",
-                newProfileImage = null,
-                username = "",
-                name = "",
-                email = "",
-                phone = "",
-                password = "",
-                bio = "",
-                links = "",
-                gender = "Unknown",
-                myPosts = emptyList(),
-                followers = emptyList(),
-                following = emptyList()
-            )
-        }
+    private fun clearUiState() {
+        uiState.update { UiState() }
     }
 
     fun setShowPostScreen(value: Boolean, postIndex: Int) {
@@ -339,5 +423,14 @@ class ProfileViewModel @Inject constructor(
 
     fun setSelectedPost(post: Post) {
         uiState.update { it.copy(selectedPost = post) }
+    }
+
+    fun setIsFollowing(isFollowing: Boolean) {
+        uiState.update { it.copy(isFollowing= isFollowing) }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        clearUiState()
     }
 }

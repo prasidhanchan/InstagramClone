@@ -68,11 +68,11 @@ fun PostCard(
     onSaveClick: () -> Unit,
     onUnfollowClick: () -> Unit,
     onDeletePostClick: (Post) -> Unit,
-    onUsernameClick: () -> Unit
+    onUsernameClick: (String) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-    val hasLiked = post.likes.any { postId -> postId == currentUserId }
+    val hasLiked = post.likes.any { userId -> userId == currentUserId }
     var likeState by remember { mutableStateOf(hasLiked) }
 
     var size by remember { mutableFloatStateOf(1.3f) }
@@ -112,7 +112,7 @@ fun PostCard(
                         .clickable(
                             indication = null,
                             interactionSource = interactionSource,
-                            onClick = onUsernameClick
+                            onClick = { onUsernameClick(post.userId) }
                         ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start

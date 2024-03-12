@@ -38,8 +38,8 @@ fun PostsScreen(
     onSendClick: () -> Unit,
     onSaveClick: () -> Unit,
     onUnfollowClick: () -> Unit,
-    onDeletePostClick: (Post) -> Unit,
-    onUsernameClick: () -> Unit,
+    onDeletePostClick: (Post) -> Unit = {  },
+    onUsernameClick: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
     Column(
@@ -67,10 +67,26 @@ fun PostsScreen(
                 }
             }
         )
-        if (uiState.myPosts.isNotEmpty()) {
+        // For my profile
+        if (isMyProfile && uiState.myPosts.isNotEmpty()) {
             Posts(
                 enableHeader = false,
                 posts = uiState.myPosts,
+                currentUserId = currentUserId,
+                onLikeClick = onLikeClick,
+                onUnLikeClick = onUnlikeClick,
+                onSendClick = onSendClick,
+                onSaveClick = onSaveClick,
+                onUsernameClick = onUsernameClick,
+                onUnfollowClick = onUnfollowClick,
+                onDeletePostClick = onDeletePostClick,
+                scrollState = scrollState
+            )
+            // For Other user's profile
+        } else if (!isMyProfile && uiState.selectedUserPosts.isNotEmpty()) {
+            Posts(
+                enableHeader = false,
+                posts = uiState.selectedUserPosts,
                 currentUserId = currentUserId,
                 onLikeClick = onLikeClick,
                 onUnLikeClick = onUnlikeClick,

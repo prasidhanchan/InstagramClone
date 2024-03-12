@@ -12,5 +12,10 @@ interface ProfileRepository {
     suspend fun convertToUrl(newImage: Uri, onSuccess: (String) -> Unit, onError: (String) -> Unit)
     suspend fun changePassword(password: String, onSuccess: () -> Unit, onError: (String) -> Unit)
     fun logOut()
+    suspend fun getMyPosts(): DataOrException<List<Post>, Boolean, Exception>
     fun deletePost(post: Post, onSuccess: () -> Unit, onError: (String) -> Unit)
+    suspend fun getUserProfile(userId: String): DataOrException<IGUser, Boolean, Exception>
+    suspend fun getUserPosts(userId: String): DataOrException<List<Post>, Boolean, Exception>
+    suspend fun follow(userId: String, onSuccess: () -> Unit, onError: (String) -> Unit)
+    suspend fun unFollow(userId: String, onSuccess: () -> Unit, onError: (String) -> Unit)
 }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -40,7 +41,7 @@ fun HomeScreen(
     onUnfollowClick: () -> Unit,
     onDeletePostClick: (Post) -> Unit,
     setSelectedPost: (Post) -> Unit,
-    onUsernameClick: () -> Unit
+    onUsernameClick: (String) -> Unit
 ) {
     val stories = listOf(
         Story(
@@ -67,6 +68,7 @@ fun HomeScreen(
     )
 
     var showDeleteDialog by remember { mutableStateOf(false) }
+    val scrollState = rememberLazyListState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -106,7 +108,8 @@ fun HomeScreen(
                     showDeleteDialog = true
                     setSelectedPost(it)
                 },
-                onUsernameClick = onUsernameClick
+                onUsernameClick = onUsernameClick,
+                scrollState = scrollState
             )
         }
     }

@@ -19,8 +19,8 @@ fun Posts(
     onSaveClick: () -> Unit,
     onUnfollowClick: () -> Unit,
     onDeletePostClick: (Post) -> Unit,
-    onUsernameClick: () -> Unit,
-    scrollState: LazyListState = LazyListState(),
+    onUsernameClick: (String) -> Unit,
+    scrollState: LazyListState,
     topContent: @Composable () -> Unit = {  }
 ) {
     LazyColumn(

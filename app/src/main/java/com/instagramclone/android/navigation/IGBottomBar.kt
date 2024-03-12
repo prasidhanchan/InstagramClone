@@ -71,12 +71,12 @@ fun IGBottomBar(
                     .clickable(
                         indication = null,
                         interactionSource = interactionSource,
-                        onClick = { navigateToRoute(NavScreens.ProfileScreen) }
+                        onClick = { navigateToRoute(NavScreens.MyProfileScreen) }
                     ),
                 shape = CircleShape,
                 color = Utils.IgOffBlack,
                 border = BorderStroke(
-                    color = if (currentScreen?.hierarchy?.any { it.route == NavScreens.ProfileScreen.route } == true) {
+                    color = if (currentScreen?.hierarchy?.any { it.route == NavScreens.MyProfileScreen.route } == true) {
                         Color.White
                     } else {
                         Color.Transparent
