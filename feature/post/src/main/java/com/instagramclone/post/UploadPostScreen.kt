@@ -34,7 +34,7 @@ import com.instagramclone.ui.components.IGRegularAppBar
 import com.instagramclone.util.constants.Utils
 
 @Composable
-fun SharePostScreen(
+fun UploadPostScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
     onCaptionChange: (String) -> Unit,
@@ -121,7 +121,7 @@ fun SharePostScreen(
 )
 @Composable
 private fun SharePostScreenPreview() {
-    SharePostScreen(
+    UploadPostScreen(
         innerPadding = PaddingValues(),
         uiState = UiState(),
         onCaptionChange = {  },

@@ -33,12 +33,12 @@ fun PostsScreen(
     isMyProfile: Boolean,
     scrollState: LazyListState,
     onFollowClick: () -> Unit,
-    onLikeClick: () -> Unit,
-    onUnlikeClick: () -> Unit,
+    onLikeClick: (Post) -> Unit,
+    onUnlikeClick: (Post) -> Unit,
     onSendClick: () -> Unit,
     onSaveClick: () -> Unit,
     onUnfollowClick: () -> Unit,
-    onDeletePostClick: (Post) -> Unit = {  },
+    onDeletePostClick: (Post) -> Unit = { },
     onUsernameClick: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -54,7 +54,7 @@ fun PostsScreen(
             text = stringResource(id = R.string.posts),
             onBackClick = onBackClick,
             trailingIcon = {
-                if (!isMyProfile) {
+                if (!isMyProfile && !uiState.isFollowing) {
                     Text(
                         modifier = Modifier.clickable(onClick = onFollowClick),
                         text = stringResource(id = R.string.follow),
@@ -70,36 +70,37 @@ fun PostsScreen(
         // For my profile
         if (isMyProfile && uiState.myPosts.isNotEmpty()) {
             Posts(
-                enableHeader = false,
                 posts = uiState.myPosts,
                 currentUserId = currentUserId,
+                enableHeader = false,
                 onLikeClick = onLikeClick,
                 onUnLikeClick = onUnlikeClick,
                 onSendClick = onSendClick,
                 onSaveClick = onSaveClick,
-                onUsernameClick = onUsernameClick,
                 onUnfollowClick = onUnfollowClick,
                 onDeletePostClick = onDeletePostClick,
+                onUsernameClick = onUsernameClick,
                 scrollState = scrollState
             )
             // For Other user's profile
         } else if (!isMyProfile && uiState.selectedUserPosts.isNotEmpty()) {
             Posts(
-                enableHeader = false,
                 posts = uiState.selectedUserPosts,
                 currentUserId = currentUserId,
+                enableHeader = false,
                 onLikeClick = onLikeClick,
                 onUnLikeClick = onUnlikeClick,
                 onSendClick = onSendClick,
                 onSaveClick = onSaveClick,
-                onUsernameClick = onUsernameClick,
                 onUnfollowClick = onUnfollowClick,
                 onDeletePostClick = onDeletePostClick,
+                onUsernameClick = onUsernameClick,
                 scrollState = scrollState
             )
         } else {
             IGLoader()
         }
+
         BackHandler(
             enabled = uiState.showPostScreen,
             onBack = onBackClick
@@ -132,14 +133,14 @@ fun PostScreenPreview() {
         currentUserId = "",
         isMyProfile = true,
         scrollState = LazyListState(),
-        onFollowClick = {  },
-        onLikeClick = {  },
-        onUnlikeClick = {  },
-        onSendClick = {  },
-        onSaveClick = {  },
-        onUnfollowClick = {  },
-        onDeletePostClick = {  },
-        onUsernameClick = {  },
-        onBackClick = {  }
+        onFollowClick = { },
+        onLikeClick = { },
+        onUnlikeClick = { },
+        onSendClick = { },
+        onSaveClick = { },
+        onUnfollowClick = { },
+        onDeletePostClick = { },
+        onUsernameClick = { },
+        onBackClick = { }
     )
 }

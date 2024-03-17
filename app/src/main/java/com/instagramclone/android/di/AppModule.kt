@@ -6,7 +6,7 @@ import com.google.firebase.firestore.Query
 import com.instagramclone.firebase.repository.AuthRepositoryImpl
 import com.instagramclone.firebase.repository.HomeRepositoryImpl
 import com.instagramclone.firebase.repository.ProfileRepositoryImpl
-import com.instagramclone.firebase.repository.ShareContentRepositoryImpl
+import com.instagramclone.firebase.repository.UploadContentRepositoryImpl
 import com.instagramclone.post.ContentResolver
 import dagger.Module
 import dagger.Provides
@@ -40,7 +40,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideShareContentRepository() = ShareContentRepositoryImpl()
+    fun provideShareContentRepository() = UploadContentRepositoryImpl()
 
     @Singleton
     @Provides

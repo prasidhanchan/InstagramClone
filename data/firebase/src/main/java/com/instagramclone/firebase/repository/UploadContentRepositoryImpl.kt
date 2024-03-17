@@ -6,7 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.instagramclone.util.models.Post
 
-class ShareContentRepositoryImpl : ShareContentRepository {
+class UploadContentRepositoryImpl : UploadContentRepository {
     private val dbPost = FirebaseFirestore.getInstance().collection("Posts")
     private val currentUser = FirebaseAuth.getInstance().currentUser
     override suspend fun uploadPost(

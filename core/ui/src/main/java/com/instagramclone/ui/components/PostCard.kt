@@ -30,8 +30,10 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,8 +64,8 @@ import com.instagramclone.util.models.Post
 fun PostCard(
     post: Post,
     currentUserId: String,
-    onLikeClick: () -> Unit,
-    onUnLikeClick: () -> Unit,
+    onLikeClick: (Post) -> Unit,
+    onUnLikeClick: (Post) -> Unit,
     onSendClick: () -> Unit,
     onSaveClick: () -> Unit,
     onUnfollowClick: () -> Unit,
@@ -72,8 +74,10 @@ fun PostCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-    val hasLiked = post.likes.any { userId -> userId == currentUserId }
-    var likeState by remember { mutableStateOf(hasLiked) }
+    var hasLiked by rememberSaveable {
+        mutableStateOf(post.likes.any { userId -> userId == currentUserId })
+    }
+    var likeCount by rememberSaveable { mutableIntStateOf(post.likes.size) }
 
     var size by remember { mutableFloatStateOf(1.3f) }
     val scale by animateFloatAsState(
@@ -204,7 +208,7 @@ fun PostCard(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start
                         ) {
-                            if (likeState) {
+                            if (hasLiked) {
                                 Icon(
                                     modifier = Modifier
                                         .scale(scale)
@@ -214,13 +218,14 @@ fun PostCard(
                                             interactionSource = interactionSource,
                                             onClick = {
                                                 size = 1.6f
-                                                likeState = !likeState
-                                                onUnLikeClick()
+                                                hasLiked = false
+                                                likeCount -= 1
+                                                onUnLikeClick(post)
                                             }
                                         ),
                                     painter = painterResource(id = R.drawable.heart_filled),
                                     tint = Utils.IgLikeRed,
-                                    contentDescription = stringResource(R.string.like_unlike)
+                                    contentDescription = stringResource(R.string.unlike)
                                 )
                             } else {
                                 Icon(
@@ -232,13 +237,14 @@ fun PostCard(
                                             interactionSource = interactionSource,
                                             onClick = {
                                                 size = 1.6f
-                                                likeState = !likeState
-                                                onLikeClick()
+                                                hasLiked = true
+                                                likeCount += 1
+                                                onLikeClick(post)
                                             }
                                         ),
                                     painter = painterResource(id = R.drawable.heart_outlined),
                                     tint = Color.White,
-                                    contentDescription = stringResource(R.string.like_unlike)
+                                    contentDescription = stringResource(R.string.like)
                                 )
                             }
                             Icon(
@@ -289,7 +295,7 @@ fun PostCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 15.dp),
-                    text = stringResource(R.string.likes, post.likes.size),
+                    text = stringResource(if (likeCount == 1) R.string.post_like else R.string.post_likes, likeCount),
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -509,6 +515,5 @@ fun PostCardPreview() {
         onSaveClick = { },
         onUnfollowClick = { },
         onDeletePostClick = { },
-        onUsernameClick = { },
-    )
+    ) { }
 }

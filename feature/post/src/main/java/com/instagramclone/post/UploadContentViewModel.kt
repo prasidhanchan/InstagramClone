@@ -2,7 +2,7 @@ package com.instagramclone.post
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.instagramclone.firebase.repository.ShareContentRepositoryImpl
+import com.instagramclone.firebase.repository.UploadContentRepositoryImpl
 import com.instagramclone.util.models.Image
 import com.instagramclone.util.models.Post
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,9 +15,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ShareContentViewModel @Inject constructor(
+class UploadContentViewModel @Inject constructor(
     private val contentResolver: ContentResolver,
-    private val shareContentRepository: ShareContentRepositoryImpl
+    private val shareContentRepository: UploadContentRepositoryImpl
 ) : ViewModel() {
     var uiState = MutableStateFlow(UiState())
         private set
@@ -69,5 +69,14 @@ class ShareContentViewModel @Inject constructor(
 
     fun setCaption(caption: String) {
         uiState.update { it.copy(caption = caption) }
+    }
+
+    private fun clearUiState() {
+        uiState.update { UiState() }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        clearUiState()
     }
 }

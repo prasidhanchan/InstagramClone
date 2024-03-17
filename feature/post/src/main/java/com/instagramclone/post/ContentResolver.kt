@@ -13,8 +13,6 @@ import javax.inject.Inject
 class ContentResolver @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private val imageList = MutableStateFlow(mutableListOf<Image>())
-
     private val projection = arrayOf(
         MediaStore.Images.ImageColumns._ID,
         MediaStore.MediaColumns.DISPLAY_NAME,
@@ -29,6 +27,7 @@ class ContentResolver @Inject constructor(
      * @return returns List of [Image]
      */
     fun getImages(): Flow<List<Image>> {
+        val imageList = MutableStateFlow(mutableListOf<Image>())
         val cursor = context.contentResolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             projection,
@@ -56,7 +55,6 @@ class ContentResolver @Inject constructor(
             }
         }
         cursor?.close()
-
         return imageList.asStateFlow()
     }
 }

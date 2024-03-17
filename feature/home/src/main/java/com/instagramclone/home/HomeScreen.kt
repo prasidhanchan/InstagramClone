@@ -34,8 +34,8 @@ fun HomeScreen(
     uiState: UiState,
     selectedPost: Post,
     currentUserId: String,
-    onLikeClick: () -> Unit,
-    onUnLikeClick: () -> Unit,
+    onLikeClick: (Post) -> Unit,
+    onUnLikeClick: (Post) -> Unit,
     onSendClick: () -> Unit,
     onSaveClick: () -> Unit,
     onUnfollowClick: () -> Unit,
@@ -82,21 +82,6 @@ fun HomeScreen(
         ) {
             Posts(
                 innerPadding = innerPadding,
-                topContent = {
-                    IGHomeAppBar()
-
-                    Stories(
-                        profileImage = uiState.profileImage,
-                        onAddStoryClick = { /* TODO */ },
-                        onStoryClick = { /* TODO */ },
-                        stories = stories
-                    )
-                    HorizontalDivider(
-                        modifier = Modifier.padding(top = 8.dp),
-                        thickness = 0.5.dp,
-                        color = Color.White.copy(alpha = 0.2f)
-                    )
-                },
                 posts = uiState.posts,
                 currentUserId = currentUserId,
                 onLikeClick = onLikeClick,
@@ -110,7 +95,21 @@ fun HomeScreen(
                 },
                 onUsernameClick = onUsernameClick,
                 scrollState = scrollState
-            )
+            ) {
+                IGHomeAppBar()
+
+                Stories(
+                    profileImage = uiState.profileImage,
+                    onAddStoryClick = { /* TODO */ },
+                    onStoryClick = { /* TODO */ },
+                    stories = stories
+                )
+                HorizontalDivider(
+                    modifier = Modifier.padding(top = 8.dp),
+                    thickness = 0.5.dp,
+                    color = Color.White.copy(alpha = 0.2f)
+                )
+            }
         }
     }
     IGDialog(
@@ -167,7 +166,6 @@ fun HomeScreenPreview() {
         onSaveClick = { },
         onUnfollowClick = { },
         onDeletePostClick = { },
-        setSelectedPost = { },
-        onUsernameClick = { },
-    )
+        setSelectedPost = { }
+    ) { }
 }

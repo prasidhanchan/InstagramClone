@@ -29,9 +29,9 @@ import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
 import com.instagramclone.home.HomeScreen
 import com.instagramclone.home.HomeViewModel
-import com.instagramclone.post.ShareContentScreen
-import com.instagramclone.post.ShareContentViewModel
-import com.instagramclone.post.SharePostScreen
+import com.instagramclone.post.UploadContentScreen
+import com.instagramclone.post.UploadContentViewModel
+import com.instagramclone.post.UploadPostScreen
 import com.instagramclone.profile.EditProfileScreen
 import com.instagramclone.profile.EditTextScreen
 import com.instagramclone.profile.MyProfileScreen
@@ -48,7 +48,7 @@ fun InnerScreenNavigation(
     navHostController: NavHostController,
     viewModelHome: HomeViewModel,
     viewModelProfile: ProfileViewModel = hiltViewModel(),
-    viewModelShare: ShareContentViewModel = hiltViewModel(),
+    viewModelUpload: UploadContentViewModel = hiltViewModel(),
     innerPadding: PaddingValues,
     navigateToLogin: () -> Unit
 ) {
@@ -80,8 +80,24 @@ fun InnerScreenNavigation(
                 uiState = uiState,
                 selectedPost = uiStateProfile.selectedPost,
                 currentUserId = currentUser?.uid!!,
-                onLikeClick = { },
-                onUnLikeClick = { },
+                onLikeClick = {
+                    viewModelProfile.like(
+                        userId = it.userId,
+                        timeStamp = it.timeStamp,
+                        onSuccess = {
+
+                        }
+                    )
+                },
+                onUnLikeClick = {
+                    viewModelProfile.unLike(
+                        userId = it.userId,
+                        timeStamp = it.timeStamp,
+                        onSuccess = {
+
+                        }
+                    )
+                },
                 onSendClick = { },
                 onSaveClick = { },
                 onUnfollowClick = { },
@@ -98,7 +114,7 @@ fun InnerScreenNavigation(
                 setSelectedPost = { viewModelProfile.setSelectedPost(it) },
                 onUsernameClick = { userId ->
                     navHostController.navigate(NavScreens.UserProfileScreen.route + "/$userId")
-                },
+                }
             )
         }
         composable(
@@ -136,12 +152,28 @@ fun InnerScreenNavigation(
                 selectedPost = uiState.selectedPost,
                 currentUserId = currentUser?.uid.toString(),
                 scrollState = scrollState,
-                onFollowClick = { },
-                onLikeClick = { },
-                onUnlikeClick = { },
+                onFollowClick = { }, // Not required
+                onUnfollowClick = { }, // Not required
+                onLikeClick = {
+                    viewModelProfile.like(
+                        userId = it.userId,
+                        timeStamp = it.timeStamp,
+                        onSuccess = {
+                            viewModelProfile.setIsUserDetailChanged(value = true)
+                        }
+                    )
+                },
+                onUnlikeClick = {
+                    viewModelProfile.unLike(
+                        userId = it.userId,
+                        timeStamp = it.timeStamp,
+                        onSuccess = {
+                            viewModelProfile.setIsUserDetailChanged(value = true)
+                        }
+                    )
+                },
                 onSendClick = { },
-                onSaveClick = { },
-                onUnfollowClick = { },
+                onSaveClick = { }, // Not required
                 onDeletePostClick = { post ->
                     viewModelProfile.deletePost(
                         post = post,
@@ -152,13 +184,16 @@ fun InnerScreenNavigation(
                         }
                     )
                 },
-                onUsernameClick = { },
+                onUsernameClick = { userId ->
+                    viewModelProfile.setShowPostsScreen(value = false, postIndex = 0)
+                    navHostController.navigate(NavScreens.UserProfileScreen.route + "/$userId")
+                },
                 onEditProfileClick = { navHostController.navigate(NavScreens.EditProfileScreen.route) },
                 onPostClick = { postIndex ->
-                    viewModelProfile.setShowPostScreen(value = true, postIndex = postIndex)
+                    viewModelProfile.setShowPostsScreen(value = true, postIndex = postIndex)
                 },
                 setShowPostScreen = {
-                    viewModelProfile.setShowPostScreen(value = it, postIndex = 0)
+                    viewModelProfile.setShowPostsScreen(value = it, postIndex = 0)
                 },
                 setSelectedPost = { viewModelProfile.setSelectedPost(it) },
                 onSettingsAndPrivacyClicked = {
@@ -206,12 +241,29 @@ fun InnerScreenNavigation(
                     viewModelProfile.follow(
                         userId = userId!!,
                         onSuccess = {
+                            viewModelProfile.setIsFollowing(isFollowing = true) // For PostsScreen follow click
                             viewModelProfile.setIsUserDetailChanged(value = true)
                         }
                     )
                 },
-                onLikeClick = { },
-                onUnlikeClick = { },
+                onLikeClick = {
+                    viewModelProfile.like(
+                        userId = it.userId,
+                        timeStamp = it.timeStamp,
+                        onSuccess = {
+                            viewModelHome.getAllPosts()
+                        }
+                    )
+                },
+                onUnlikeClick = {
+                    viewModelProfile.unLike(
+                        userId = it.userId,
+                        timeStamp = it.timeStamp,
+                        onSuccess = {
+                            viewModelHome.getAllPosts()
+                        }
+                    )
+                },
                 onSendClick = { },
                 onSaveClick = { },
                 onUnfollowClick = {
@@ -222,15 +274,18 @@ fun InnerScreenNavigation(
                         }
                     )
                 },
-                onUsernameClick = { },
+                onUsernameClick = { id ->
+                    viewModelProfile.setShowPostsScreen(value = false, postIndex = 0)
+                    navHostController.navigate(NavScreens.UserProfileScreen.route + "/$id")
+                },
                 onPostClick = {
-                    viewModelProfile.setShowPostScreen(value = true, postIndex = it)
+                    viewModelProfile.setShowPostsScreen(value = true, postIndex = it)
                 },
                 onEditProfileClick = {
                     navHostController.navigate(NavScreens.EditProfileScreen.route)
                 },
                 setShowPostScreen = {
-                    viewModelProfile.setShowPostScreen(value = it, postIndex = 0)
+                    viewModelProfile.setShowPostsScreen(value = it, postIndex = 0)
                 },
                 setIsFollowing = {
                     viewModelProfile.setIsFollowing(it)
@@ -532,7 +587,7 @@ fun InnerScreenNavigation(
             )
         }
         composable(
-            route = NavScreens.ShareContentScreen.route,
+            route = NavScreens.UploadContentScreen.route,
             enterTransition = {
                 slideInHorizontally(
                     animationSpec = tween(),
@@ -546,11 +601,11 @@ fun InnerScreenNavigation(
                 )
             }
         ) {
-            val uiState by viewModelShare.uiState.collectAsState()
+            val uiState by viewModelUpload.uiState.collectAsState()
 
             val permissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission()
-            ) {  }
+            ) { }
 
             LaunchedEffect(key1 = Unit) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -573,19 +628,19 @@ fun InnerScreenNavigation(
                 }
             }
 
-            ShareContentScreen(
+            UploadContentScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
-                onImageSelected = { viewModelShare.setImage(image = it) },
-                onNextClick = { navHostController.navigate(NavScreens.SharePostScreen.route) },
+                onImageSelected = { viewModelUpload.setImage(image = it) },
+                onNextClick = { navHostController.navigate(NavScreens.UploadPostScreen.route) },
                 onBackClick = {
                     navHostController.popBackStack()
-                    viewModelShare.setImage(uiState.images.firstOrNull())
+                    viewModelUpload.setImage(uiState.images.firstOrNull())
                 }
             )
         }
         composable(
-            route = NavScreens.SharePostScreen.route,
+            route = NavScreens.UploadPostScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween()
@@ -597,18 +652,18 @@ fun InnerScreenNavigation(
                 )
             }
         ) {
-            val uiState by viewModelShare.uiState.collectAsState()
+            val uiState by viewModelUpload.uiState.collectAsState()
             val uiStateProfile by viewModelProfile.uiState.collectAsState()
 
             val timeStamp = System.currentTimeMillis()
 
-            SharePostScreen(
+            UploadPostScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
-                onCaptionChange = { viewModelShare.setCaption(caption = it) },
+                onCaptionChange = { viewModelUpload.setCaption(caption = it) },
                 onBackClick = { navHostController.popBackStack() },
                 onShareClick = {
-                    viewModelShare.uploadPost(
+                    viewModelUpload.uploadPost(
                         post = Post(
                             profileImage = uiStateProfile.profileImage,
                             userId = currentUser?.uid!!,

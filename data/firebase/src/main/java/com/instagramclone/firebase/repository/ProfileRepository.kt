@@ -18,4 +18,6 @@ interface ProfileRepository {
     suspend fun getUserPosts(userId: String): DataOrException<List<Post>, Boolean, Exception>
     suspend fun follow(userId: String, onSuccess: () -> Unit, onError: (String) -> Unit)
     suspend fun unFollow(userId: String, onSuccess: () -> Unit, onError: (String) -> Unit)
+    suspend fun like(userId: String, timeStamp: Long, onSuccess: () -> Unit, onError: (String) -> Unit)
+    suspend fun unLike(userId: String, timeStamp: Long, onSuccess: () -> Unit, onError: (String) -> Unit)
 }

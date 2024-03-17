@@ -368,6 +368,52 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Function to like a user [Post]
+     * @param userId Requires user of the the selected post
+     * @param timeStamp Requires the timeStamp of the selected post
+     * @param onSuccess onSuccess lambda triggered when the post is liked successfully
+     */
+    fun like(
+        userId: String,
+        timeStamp: Long,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            profileRepository.like(
+                userId = userId,
+                timeStamp = timeStamp,
+                onSuccess = onSuccess,
+                onError = { error ->
+                    uiState.update { it.copy(error = error) }
+                }
+            )
+        }
+    }
+
+    /**
+     * Function to unlike a user [Post]
+     * @param userId Requires user of the the selected post
+     * @param timeStamp Requires the timeStamp of the selected post
+     * @param onSuccess onSuccess lambda triggered when the post is unliked successfully
+     */
+    fun unLike(
+        userId: String,
+        timeStamp: Long,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            profileRepository.unLike(
+                userId = userId,
+                timeStamp = timeStamp,
+                onSuccess = onSuccess,
+                onError = { error ->
+                    uiState.update { it.copy(error = error) }
+                }
+            )
+        }
+    }
+
     fun setText(text: String) {
         uiState.update { it.copy(textState = text) }
     }
@@ -392,7 +438,7 @@ class ProfileViewModel @Inject constructor(
         uiState.update { UiState() }
     }
 
-    fun setShowPostScreen(value: Boolean, postIndex: Int) {
+    fun setShowPostsScreen(value: Boolean, postIndex: Int) {
         uiState.update {
             it.copy(
                 showPostScreen = value,

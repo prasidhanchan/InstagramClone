@@ -266,4 +266,38 @@ class ProfileRepositoryImpl @Inject constructor(
             }
             .await()
     }
+
+    override suspend fun like(
+        userId: String,
+        timeStamp: Long,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        dbPost.document("${userId}-${timeStamp}")
+            .update("likes", FieldValue.arrayUnion(currentUser?.uid))
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
+                onError(it.message.toString())
+            }
+            .await()
+    }
+
+    override suspend fun unLike(
+        userId: String,
+        timeStamp: Long,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        dbPost.document("${userId}-${timeStamp}")
+            .update("likes", FieldValue.arrayRemove(currentUser?.uid))
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
+                onError(it.message.toString())
+            }
+            .await()
+    }
 }

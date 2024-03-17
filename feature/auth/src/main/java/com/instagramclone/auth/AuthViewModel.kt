@@ -138,7 +138,7 @@ class AuthViewModel @Inject constructor(
                                 it.copy(
                                     isLoading = false,
                                     errorTitle = context.getString(R.string.incorrect_password),
-                                    errorSubTitle = context.getString(R.string.incorrect_passowrd_message),
+                                    errorSubTitle = context.getString(R.string.incorrect_password_message),
                                     showDialog = true
                                 )
                             }

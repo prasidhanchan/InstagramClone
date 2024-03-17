@@ -25,7 +25,7 @@ import com.instagramclone.ui.R
 import com.instagramclone.util.constants.Utils
 
 @Composable
-fun ShareContentScreen(
+fun UploadContentScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
     onImageSelected: (Image) -> Unit,
@@ -51,6 +51,7 @@ fun ShareContentScreen(
                 trailingIcon = {
                     Text(
                         modifier = Modifier.clickable(
+                            enabled = uiState.selectedImage?.data != null,
                             indication = null,
                             interactionSource = interactionSource,
                             onClick = onNextClick
@@ -78,7 +79,7 @@ fun ShareContentScreen(
 @Preview
 @Composable
 private fun ShareContentScreenPreview() {
-    ShareContentScreen(
+    UploadContentScreen(
         innerPadding = PaddingValues(),
         uiState = UiState(),
         onImageSelected = { },

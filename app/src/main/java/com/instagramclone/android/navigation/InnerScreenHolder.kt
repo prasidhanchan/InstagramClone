@@ -5,9 +5,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -21,7 +18,6 @@ fun InnerScreenHolder(
     navigateToLogin: () -> Unit
 ) {
     val navHostController = rememberNavController()
-    var currentRoute by remember { mutableStateOf<NavScreens>(NavScreens.HomeScreen) }
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination?.route
 
@@ -42,13 +38,6 @@ fun InnerScreenHolder(
             if (showBottomBar) {
                 IGBottomBar(
                     profileImage = uiState.profileImage,
-                    navigateToRoute = { item ->
-                        currentRoute = item
-                        navHostController.navigate(item.route) {
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
                     navHostController = navHostController
                 )
             }

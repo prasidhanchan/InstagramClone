@@ -37,11 +37,9 @@ import com.instagramclone.util.constants.Utils
 @Composable
 fun IGBottomBar(
     profileImage: String?,
-    navigateToRoute: (NavScreens) -> Unit,
     navHostController: NavHostController
 ) {
     val items = NavScreens.Items.list
-    val interactionSource = remember { MutableInteractionSource() }
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentScreen = navBackStackEntry?.destination
 
@@ -61,41 +59,17 @@ fun IGBottomBar(
             items.forEach { item ->
                 IGBottomBarItem(
                     isSelected = currentScreen?.hierarchy?.any { it.route == item.route } == true,
+                    isProfile = item.route == NavScreens.MyProfileScreen.route,
+                    profileImage = profileImage,
                     item = item,
-                    onClick = navigateToRoute
+                    onClick = {
+                        navHostController.navigate(item.route) {
+                            popUpTo(NavScreens.HomeScreen.route)
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 )
-            }
-            Surface(
-                modifier = Modifier
-                    .size(26.dp)
-                    .clickable(
-                        indication = null,
-                        interactionSource = interactionSource,
-                        onClick = { navigateToRoute(NavScreens.MyProfileScreen) }
-                    ),
-                shape = CircleShape,
-                color = Utils.IgOffBlack,
-                border = BorderStroke(
-                    color = if (currentScreen?.hierarchy?.any { it.route == NavScreens.MyProfileScreen.route } == true) {
-                        Color.White
-                    } else {
-                        Color.Transparent
-                    },
-                    width = 1.5.dp)
-            ) {
-                if (profileImage?.isNotEmpty() == true) {
-                    AsyncImage(
-                        modifier = Modifier.fillMaxSize(),
-                        model = profileImage,
-                        contentScale = ContentScale.Crop,
-                        contentDescription = stringResource(id = R.string.profile_image)
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.profile),
-                        contentDescription = stringResource(id = R.string.profile_image)
-                    )
-                }
             }
         }
     }
@@ -105,31 +79,69 @@ fun IGBottomBar(
 fun IGBottomBarItem(
     isSelected: Boolean,
     item: NavScreens,
+    isProfile: Boolean = false,
+    profileImage: String? = null,
     onClick: (NavScreens) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    Box(
-        modifier = Modifier.clickable(
-            indication = null,
-            interactionSource = interactionSource,
-            onClick = {
-                onClick(item)
+
+    if (!isProfile) {
+        Box(
+            modifier = Modifier.clickable(
+                indication = null,
+                interactionSource = interactionSource,
+                onClick = {
+                    onClick(item)
+                }
+            ),
+            contentAlignment = Alignment.Center,
+            content = {
+                Icon(
+                    modifier = Modifier.clickable(
+                        indication = null,
+                        interactionSource = interactionSource,
+                        onClick = { onClick(item) }
+                    ),
+                    painter = painterResource(id = if (isSelected) item.iconFilled!! else item.iconOutlined!!),
+                    tint = Color.White,
+                    contentDescription = item.name
+                )
             }
-        ),
-        contentAlignment = Alignment.Center,
-        content = {
-            Icon(
-                modifier = Modifier.clickable(
+        )
+    } else {
+        Surface(
+            modifier = Modifier
+                .size(26.dp)
+                .clickable(
                     indication = null,
                     interactionSource = interactionSource,
                     onClick = { onClick(item) }
                 ),
-                painter = painterResource(id = if (isSelected) item.iconFilled!! else item.iconOutlined!!),
-                tint = Color.White,
-                contentDescription = item.name
-            )
+            shape = CircleShape,
+            color = Utils.IgOffBlack,
+            border = BorderStroke(
+                color = if (isSelected) {
+                    Color.White
+                } else {
+                    Color.Transparent
+                },
+                width = 1.5.dp)
+        ) {
+            if (profileImage?.isNotEmpty() == true) {
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = profileImage,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = stringResource(id = R.string.profile_image)
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.profile),
+                    contentDescription = stringResource(id = R.string.profile_image)
+                )
+            }
         }
-    )
+    }
 }
 
 @Preview(apiLevel = 33)
@@ -137,7 +149,6 @@ fun IGBottomBarItem(
 fun IGBottomBarPreview() {
     IGBottomBar(
         profileImage = "",
-        navigateToRoute = { },
         navHostController = rememberNavController()
     )
 }

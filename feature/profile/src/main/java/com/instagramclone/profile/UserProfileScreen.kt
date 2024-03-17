@@ -64,8 +64,8 @@ fun UserProfileScreen(
     currentUserId: String,
     scrollState: LazyListState,
     onFollowClick: () -> Unit,
-    onLikeClick: () -> Unit,
-    onUnlikeClick: () -> Unit,
+    onLikeClick: (Post) -> Unit,
+    onUnlikeClick: (Post) -> Unit,
     onSendClick: () -> Unit,
     onSaveClick: () -> Unit,
     onUnfollowClick: () -> Unit,
@@ -119,13 +119,13 @@ fun UserProfileScreen(
                         following = uiState.selectedUserProfile.followingList.size,
                         isFollowing = uiState.isFollowing,
                         onFollowClick = {
-                            setIsFollowing(true) // Manually setting t avoid refreshing screen
+                            setIsFollowing(true) // Manually setting to avoid refreshing screen
                             currentFollower += 1 // Manually Adding follower
                             currentFollowing += 1 // Manually Adding following
                             onFollowClick()
                         },
                         onUnFollowClick = {
-                            setIsFollowing(false) // Manually setting t avoid refreshing screen
+                            setIsFollowing(false) // Manually setting to avoid refreshing screen
                             currentFollower -= 1 // Manually Removing follower
                             currentFollowing -= 1 // Manually Remove following
                             onUnfollowClick()
