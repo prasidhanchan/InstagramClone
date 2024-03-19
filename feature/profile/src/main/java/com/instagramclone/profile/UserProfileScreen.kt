@@ -1,9 +1,6 @@
 package com.instagramclone.profile
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -17,12 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -62,17 +57,10 @@ fun UserProfileScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
     currentUserId: String,
-    scrollState: LazyListState,
     onFollowClick: () -> Unit,
-    onLikeClick: (Post) -> Unit,
-    onUnlikeClick: (Post) -> Unit,
-    onSendClick: () -> Unit,
-    onSaveClick: () -> Unit,
     onUnfollowClick: () -> Unit,
-    onUsernameClick: (String) -> Unit,
-    onPostClick: (Int) -> Unit,
+    navigateToPostsWithPostIndex: (String) -> Unit,
     onEditProfileClick: () -> Unit,
-    setShowPostScreen: (Boolean) -> Unit,
     setIsFollowing: (Boolean) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -168,7 +156,9 @@ fun UserProfileScreen(
                                 .background(color = Utils.IgOffBlack)
                                 .clickable(
                                     onClick = {
-                                        onPostClick(uiState.selectedUserPosts.indexOf(myPost))
+                                        navigateToPostsWithPostIndex(
+                                            "${myPost.userId}-${uiState.selectedUserPosts.indexOf(myPost)}"
+                                        )
                                     }
                                 ),
                             contentAlignment = Alignment.Center
@@ -186,33 +176,6 @@ fun UserProfileScreen(
                     }
                 }
             }
-        }
-        AnimatedVisibility(
-            visible = uiState.showPostScreen,
-            enter = slideInHorizontally(
-                animationSpec = tween(durationMillis = 250),
-                initialOffsetX = { it }
-            ),
-            exit = slideOutHorizontally(
-                animationSpec = tween(durationMillis = 250),
-                targetOffsetX = { it }
-            )
-        ) {
-            PostsScreen(
-                innerPadding = innerPadding,
-                uiState = uiState,
-                currentUserId = currentUserId,
-                isMyProfile = currentUserId == uiState.selectedUserProfile.userId,
-                scrollState = scrollState,
-                onFollowClick = onFollowClick,
-                onLikeClick = onLikeClick,
-                onUnlikeClick = onUnlikeClick,
-                onSendClick = onSendClick,
-                onSaveClick = onSaveClick,
-                onUnfollowClick = onUnfollowClick,
-                onUsernameClick = onUsernameClick,
-                onBackClick = { setShowPostScreen(false) }
-            )
         }
 
         if (showSheet) {
@@ -240,6 +203,7 @@ fun UserProfileScreen(
     } else {
         IGLoader()
     }
+    BackHandler(onBack = onBackClick)
 }
 
 @Composable
@@ -320,18 +284,10 @@ private fun UserProfileScreenPreview() {
             )
         ),
         currentUserId = "",
-        scrollState = rememberLazyListState(),
         onFollowClick = { },
-        onLikeClick = { },
-        onUnlikeClick = { },
-        onSendClick = { },
-        onSaveClick = { },
         onUnfollowClick = { },
-        onUsernameClick = { },
-        onPostClick = { },
+        navigateToPostsWithPostIndex = { },
         onEditProfileClick = { },
-        setShowPostScreen = { },
-        setIsFollowing = { },
-        onBackClick = { }
-    )
+        setIsFollowing = { }
+    ) { }
 }

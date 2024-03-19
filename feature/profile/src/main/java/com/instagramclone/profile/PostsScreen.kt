@@ -1,6 +1,5 @@
 package com.instagramclone.profile
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,10 +17,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import com.instagramclone.ui.components.IGRegularAppBar
-import com.instagramclone.ui.components.Posts
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGLoader
+import com.instagramclone.ui.components.IGRegularAppBar
+import com.instagramclone.ui.components.Posts
 import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.models.Post
 
@@ -100,11 +99,6 @@ fun PostsScreen(
         } else {
             IGLoader()
         }
-
-        BackHandler(
-            enabled = uiState.showPostScreen,
-            onBack = onBackClick
-        )
     }
 }
 

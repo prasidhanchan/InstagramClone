@@ -25,6 +25,7 @@ sealed class NavScreens(
     data object ReelsScreen: NavScreens(iconOutlined = R.drawable.reel_outlined, iconFilled = R.drawable.reel_filled, name = "Reels", route = "ReelsScreen")
     data object MyProfileScreen: NavScreens(name = "MyProfile", route = "MyProfileScreen")
     data object UserProfileScreen: NavScreens(name = "UserProfile", route = "UserProfileScreen")
+    data object PostsScreen: NavScreens(name = "Posts", route = "PostsScreen")
     data object EditProfileScreen: NavScreens(name = "EditProfile", route = "EditProfileScreen")
     data object EditTextScreen: NavScreens(name = "EditText", route = "EditTextScreen")
     data object SettingsAndPrivacyScreen: NavScreens(name = "SettingsAndPrivacy", route = "SettingsAndPrivacyScreen")

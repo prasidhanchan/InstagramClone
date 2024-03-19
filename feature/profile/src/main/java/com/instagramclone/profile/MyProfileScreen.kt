@@ -1,9 +1,5 @@
 package com.instagramclone.profile
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,12 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -56,19 +50,11 @@ fun MyProfileScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
     selectedPost: Post,
-    currentUserId: String,
-    scrollState: LazyListState,
     onFollowClick: () -> Unit,
-    onLikeClick: (Post) -> Unit,
-    onUnlikeClick: (Post) -> Unit,
-    onSendClick: () -> Unit,
-    onSaveClick: () -> Unit,
     onUnfollowClick: () -> Unit,
     onDeletePostClick: (Post) -> Unit,
-    onUsernameClick: (String) -> Unit,
     onEditProfileClick: () -> Unit,
-    onPostClick: (Int) -> Unit,
-    setShowPostScreen: (Boolean) -> Unit,
+    navigateToPostsWithPostIndex: (String) -> Unit,
     setSelectedPost: (Post) -> Unit,
     onSettingsAndPrivacyClicked: () -> Unit
 ) {
@@ -150,7 +136,9 @@ fun MyProfileScreen(
                                 .background(color = Utils.IgOffBlack)
                                 .clickable(
                                     onClick = {
-                                        onPostClick(uiState.myPosts.indexOf(myPost))
+                                        navigateToPostsWithPostIndex(
+                                            "${myPost.userId}-${uiState.myPosts.indexOf(myPost)}"
+                                        )
                                     }
                                 ),
                             contentAlignment = Alignment.Center
@@ -168,37 +156,6 @@ fun MyProfileScreen(
                     }
                 }
             }
-        }
-        AnimatedVisibility(
-            visible = uiState.showPostScreen,
-            enter = slideInHorizontally(
-                animationSpec = tween(durationMillis = 250),
-                initialOffsetX = { it }
-            ),
-            exit = slideOutHorizontally(
-                animationSpec = tween(durationMillis = 250),
-                targetOffsetX = { it }
-            )
-        ) {
-            PostsScreen(
-                innerPadding = innerPadding,
-                uiState = uiState,
-                currentUserId = currentUserId,
-                isMyProfile = true,
-                scrollState = scrollState,
-                onFollowClick = onFollowClick,
-                onLikeClick = onLikeClick,
-                onUnlikeClick = onUnlikeClick,
-                onSendClick = onSendClick,
-                onSaveClick = onSaveClick,
-                onUnfollowClick = onUnfollowClick,
-                onDeletePostClick = {
-                    showDeleteDialog = true
-                    setSelectedPost(it)
-                },
-                onUsernameClick = onUsernameClick,
-                onBackClick = { setShowPostScreen(false) }
-            )
         }
 
         if (showSheet) {
@@ -280,20 +237,11 @@ private fun MyProfileScreenPreview() {
             following = listOf("")
         ),
         selectedPost = Post(),
-        currentUserId = "",
-        scrollState = rememberLazyListState(),
         onFollowClick = { },
-        onLikeClick = { },
-        onUnlikeClick = { },
-        onSendClick = { },
-        onSaveClick = { },
         onUnfollowClick = { },
         onDeletePostClick = { },
-        onUsernameClick = { },
         onEditProfileClick = { },
-        onPostClick = { },
-        setShowPostScreen = { },
-        setSelectedPost = { },
-        onSettingsAndPrivacyClicked = { }
-    )
+        navigateToPostsWithPostIndex = { },
+        setSelectedPost = { }
+    ) { }
 }

@@ -35,6 +35,7 @@ import com.instagramclone.post.UploadPostScreen
 import com.instagramclone.profile.EditProfileScreen
 import com.instagramclone.profile.EditTextScreen
 import com.instagramclone.profile.MyProfileScreen
+import com.instagramclone.profile.PostsScreen
 import com.instagramclone.profile.ProfileViewModel
 import com.instagramclone.profile.SettingsAndPrivacyScreen
 import com.instagramclone.profile.UserProfileScreen
@@ -105,7 +106,7 @@ fun InnerScreenNavigation(
                     viewModelProfile.deletePost(
                         post = post,
                         onSuccess = {
-                            viewModelProfile.getCurrentUserData()
+                            viewModelProfile.getMyData()
                             viewModelHome.getAllPosts()
                             viewModelProfile.getMyPosts()
                         }
@@ -131,18 +132,12 @@ fun InnerScreenNavigation(
             }
         ) {
             val uiState by viewModelProfile.uiState.collectAsState()
-            val scrollState = rememberLazyListState()
 
             LaunchedEffect(key1 = uiState.isUserDetailChanged) {
                 if (uiState.isUserDetailChanged) {
-                    viewModelProfile.getCurrentUserData()
+                    viewModelProfile.getMyData()
+                    viewModelProfile.getMyPosts()
                     viewModelProfile.setIsUserDetailChanged(false)
-                }
-            }
-
-            LaunchedEffect(key1 = uiState.showPostScreen) {
-                if (uiState.postIndex != null) {
-                    scrollState.scrollToItem(uiState.postIndex!!)
                 }
             }
 
@@ -150,50 +145,23 @@ fun InnerScreenNavigation(
                 innerPadding = innerPadding,
                 uiState = uiState,
                 selectedPost = uiState.selectedPost,
-                currentUserId = currentUser?.uid.toString(),
-                scrollState = scrollState,
                 onFollowClick = { }, // Not required
                 onUnfollowClick = { }, // Not required
-                onLikeClick = {
-                    viewModelProfile.like(
-                        userId = it.userId,
-                        timeStamp = it.timeStamp,
-                        onSuccess = {
-                            viewModelProfile.setIsUserDetailChanged(value = true)
-                        }
-                    )
-                },
-                onUnlikeClick = {
-                    viewModelProfile.unLike(
-                        userId = it.userId,
-                        timeStamp = it.timeStamp,
-                        onSuccess = {
-                            viewModelProfile.setIsUserDetailChanged(value = true)
-                        }
-                    )
-                },
-                onSendClick = { },
-                onSaveClick = { }, // Not required
                 onDeletePostClick = { post ->
                     viewModelProfile.deletePost(
                         post = post,
                         onSuccess = {
-                            viewModelProfile.getCurrentUserData()
+                            viewModelProfile.getMyData()
                             viewModelHome.getAllPosts()
                             viewModelProfile.getMyPosts()
                         }
                     )
                 },
-                onUsernameClick = { userId ->
-                    viewModelProfile.setShowPostsScreen(value = false, postIndex = 0)
-                    navHostController.navigate(NavScreens.UserProfileScreen.route + "/$userId")
-                },
                 onEditProfileClick = { navHostController.navigate(NavScreens.EditProfileScreen.route) },
-                onPostClick = { postIndex ->
-                    viewModelProfile.setShowPostsScreen(value = true, postIndex = postIndex)
-                },
-                setShowPostScreen = {
-                    viewModelProfile.setShowPostsScreen(value = it, postIndex = 0)
+                navigateToPostsWithPostIndex = {
+                    navHostController.navigate(
+                        NavScreens.PostsScreen.route + "/${it.substringBefore("-")}/${it.substringAfter("-")}"
+                    ) // userId-1
                 },
                 setSelectedPost = { viewModelProfile.setSelectedPost(it) },
                 onSettingsAndPrivacyClicked = {
@@ -203,6 +171,85 @@ fun InnerScreenNavigation(
         }
         composable(
             route = "${NavScreens.UserProfileScreen.route}/{userId}",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    animationSpec = tween(350),
+                    initialOffsetX = { it }
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    animationSpec = tween(350),
+                    targetOffsetX = { it }
+                )
+            }
+        ) { backStack ->
+            val uiState by viewModelProfile.uiState.collectAsState()
+
+            val userId = backStack.arguments?.getString("userId")
+
+            LaunchedEffect(key1 = Unit) {
+                if (uiState.selectedUserPosts.isEmpty()) {
+                    viewModelProfile.getUserProfile(userId = userId!!)
+                    viewModelProfile.getUserPosts(userId = userId)
+                }
+            }
+
+            UserProfileScreen(
+                innerPadding = innerPadding,
+                uiState = uiState,
+                currentUserId = currentUser?.uid!!,
+                onFollowClick = {
+                    viewModelProfile.follow(
+                        userId = userId!!,
+                        onSuccess = {
+                            viewModelProfile.setIsFollowing(isFollowing = true) // For PostsScreen follow click
+                            viewModelProfile.setIsUserDetailChanged(value = true)
+                        }
+                    )
+                },
+                onUnfollowClick = {
+                    viewModelProfile.unFollow(
+                        userId = userId!!,
+                        onSuccess = {
+                            viewModelProfile.setIsUserDetailChanged(value = true)
+                        }
+                    )
+                },
+                navigateToPostsWithPostIndex = {
+                    navHostController.navigate(
+                        NavScreens.PostsScreen.route + "/${it.substringBefore("-")}/${it.substringAfter("-")}"
+                    ) // userId-1
+                },
+                onEditProfileClick = {
+                    navHostController.navigate(NavScreens.EditProfileScreen.route)
+                },
+                setIsFollowing = {
+                    viewModelProfile.setIsFollowing(it)
+                },
+                onBackClick = {
+                    navHostController.popBackStack()
+                    viewModelProfile.clearUserProfile()
+                }
+            )
+        }
+        composable(
+            route = "${NavScreens.PostsScreen.route}/{userId}/{postIndex}",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.StringType
+                    nullable = true
+                },
+                navArgument("postIndex") {
+                    type = NavType.IntType
+                }
+            ),
             enterTransition = {
                 slideInHorizontally(
                     animationSpec = tween(350),
@@ -220,29 +267,26 @@ fun InnerScreenNavigation(
             val scrollState = rememberLazyListState()
 
             val userId = backStack.arguments?.getString("userId")
+            val postIndex = backStack.arguments?.getInt("postIndex")
 
             LaunchedEffect(key1 = Unit) {
-                viewModelProfile.getUserProfile(userId = userId!!)
-                viewModelProfile.getUserPosts(userId = userId)
-            }
-
-            LaunchedEffect(key1 = uiState.postIndex) {
-                if (uiState.postIndex != null) {
-                    scrollState.scrollToItem(uiState.postIndex!!)
+                if (postIndex != null) {
+                    scrollState.scrollToItem(postIndex)
                 }
             }
 
-            UserProfileScreen(
+            PostsScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
                 currentUserId = currentUser?.uid!!,
+                isMyProfile = currentUser.uid == userId,
                 scrollState = scrollState,
                 onFollowClick = {
                     viewModelProfile.follow(
                         userId = userId!!,
                         onSuccess = {
-                            viewModelProfile.setIsFollowing(isFollowing = true) // For PostsScreen follow click
                             viewModelProfile.setIsUserDetailChanged(value = true)
+                            viewModelHome.getAllPosts()
                         }
                     )
                 },
@@ -251,6 +295,9 @@ fun InnerScreenNavigation(
                         userId = it.userId,
                         timeStamp = it.timeStamp,
                         onSuccess = {
+                            if (currentUser.uid == userId) {
+                                viewModelProfile.setIsUserDetailChanged(value = true)
+                            }
                             viewModelHome.getAllPosts()
                         }
                     )
@@ -260,6 +307,9 @@ fun InnerScreenNavigation(
                         userId = it.userId,
                         timeStamp = it.timeStamp,
                         onSuccess = {
+                            if (currentUser.uid == userId) {
+                                viewModelProfile.setIsUserDetailChanged(value = true)
+                            }
                             viewModelHome.getAllPosts()
                         }
                     )
@@ -271,24 +321,20 @@ fun InnerScreenNavigation(
                         userId = userId!!,
                         onSuccess = {
                             viewModelProfile.setIsUserDetailChanged(value = true)
+                            viewModelHome.getAllPosts()
+                        }
+                    )
+                },
+                onDeletePostClick = {
+                    viewModelProfile.deletePost(
+                        post = it,
+                        onSuccess = {
+                            viewModelHome.getAllPosts()
                         }
                     )
                 },
                 onUsernameClick = { id ->
-                    viewModelProfile.setShowPostsScreen(value = false, postIndex = 0)
                     navHostController.navigate(NavScreens.UserProfileScreen.route + "/$id")
-                },
-                onPostClick = {
-                    viewModelProfile.setShowPostsScreen(value = true, postIndex = it)
-                },
-                onEditProfileClick = {
-                    navHostController.navigate(NavScreens.EditProfileScreen.route)
-                },
-                setShowPostScreen = {
-                    viewModelProfile.setShowPostsScreen(value = it, postIndex = 0)
-                },
-                setIsFollowing = {
-                    viewModelProfile.setIsFollowing(it)
                 },
                 onBackClick = {
                     navHostController.popBackStack()
@@ -312,7 +358,8 @@ fun InnerScreenNavigation(
 
             LaunchedEffect(key1 = uiState.isUserDetailChanged) {
                 if (uiState.isUserDetailChanged) {
-                    viewModelProfile.getCurrentUserData()
+                    viewModelProfile.getMyData()
+                    viewModelProfile.getMyPosts()
                 }
             }
 
@@ -402,7 +449,9 @@ fun InnerScreenNavigation(
                         }
                     )
                 },
-                onBackClick = { navHostController.popBackStack() }
+                onBackClick = {
+                    navHostController.popBackStack()
+                }
             )
         }
         composable(
@@ -440,7 +489,7 @@ fun InnerScreenNavigation(
             }
 
             LaunchedEffect(key1 = Unit) {
-                viewModelProfile.getCurrentUserData()
+                viewModelProfile.getMyData()
                 if (text == context.getString(R.string.username)) {
                     viewModelProfile.getAllUsernames()
                 }
@@ -583,7 +632,9 @@ fun InnerScreenNavigation(
                         }
                     )
                 },
-                onBackClick = { navHostController.popBackStack() }
+                onBackClick = {
+                    navHostController.popBackStack()
+                }
             )
         }
         composable(

@@ -59,6 +59,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val result = homeRepository.getAllPost()
 
+            delay(500L)
             withContext(Dispatchers.Main) {
                 if (result.e == null && !result.isLoading!!) {
                     uiState.update {

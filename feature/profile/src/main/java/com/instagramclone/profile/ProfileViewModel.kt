@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.firebase.repository.ProfileRepositoryImpl
 import com.instagramclone.ui.R
 import com.instagramclone.util.models.Post
@@ -29,14 +30,14 @@ class ProfileViewModel @Inject constructor(
         private set
 
     init {
-        getCurrentUserData()
+        getMyData()
         getMyPosts()
     }
 
     /**
      * Function to get current user data from Firestore
      */
-    fun getCurrentUserData() {
+    fun getMyData() {
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
             val result = profileRepository.getUserData()
@@ -278,7 +279,7 @@ class ProfileViewModel @Inject constructor(
             delay(1000L)
             withContext(Dispatchers.Main) {
                 if (result.e == null && !result.isLoading!!) {
-                    uiState.update {uiState ->
+                    uiState.update { uiState ->
                         uiState.copy(
                             selectedUserProfile = result.data!!,
                             isFollowing = result.data!!.followersList.any { it == currentUser?.uid }
@@ -438,15 +439,6 @@ class ProfileViewModel @Inject constructor(
         uiState.update { UiState() }
     }
 
-    fun setShowPostsScreen(value: Boolean, postIndex: Int) {
-        uiState.update {
-            it.copy(
-                showPostScreen = value,
-                postIndex = postIndex
-            )
-        }
-    }
-
     fun setNewImage(newImage: Uri?) {
         uiState.update { it.copy(newProfileImage = newImage) }
     }
@@ -472,7 +464,19 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun setIsFollowing(isFollowing: Boolean) {
-        uiState.update { it.copy(isFollowing= isFollowing) }
+        uiState.update { it.copy(isFollowing = isFollowing) }
+    }
+
+    fun clearUserProfile() {
+        viewModelScope.launch {
+            delay(500L) //Delaying so that Ui is not cleared before popping backstack
+            uiState.update {
+                it.copy(
+                    selectedUserProfile = IGUser(),
+                    selectedUserPosts = emptyList()
+                )
+            }
+        }
     }
 
     override fun onCleared() {
