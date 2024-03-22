@@ -1,8 +1,8 @@
 package com.instagramclone.android.di
 
 import android.content.Context
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.instagramclone.firebase.repository.AuthRepositoryImpl
 import com.instagramclone.firebase.repository.HomeRepositoryImpl
 import com.instagramclone.firebase.repository.ProfileRepositoryImpl
@@ -25,8 +25,7 @@ object AppModule {
     @Singleton
     @Provides
     fun provideHomeRepository() = HomeRepositoryImpl(
-        dbPosts = FirebaseFirestore.getInstance().collection("Posts")
-            .orderBy("timeStamp", Query.Direction.DESCENDING)
+        dbPosts = FirebaseDatabase.getInstance().getReference("Posts")
     )
 
     @Singleton
@@ -34,8 +33,7 @@ object AppModule {
     fun provideProfileRepository() =
         ProfileRepositoryImpl(
             queryUser = FirebaseFirestore.getInstance().collection("Users"),
-            queryPost = FirebaseFirestore.getInstance().collection("Posts")
-                .orderBy("timeStamp", Query.Direction.DESCENDING)
+            dbPostRef = FirebaseDatabase.getInstance().getReference("Posts")
         )
 
     @Singleton

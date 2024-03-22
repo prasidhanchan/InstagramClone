@@ -14,6 +14,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -218,19 +220,21 @@ class ProfileViewModel @Inject constructor(
 
             delay(800L)
             withContext(Dispatchers.Main) {
-                if (result.e == null && !result.isLoading!!) {
-                    uiState.update {
-                        it.copy(
-                            myPosts = result.data!!,
-                            isLoading = false
-                        )
-                    }
-                } else {
-                    uiState.update {
-                        it.copy(
-                            error = result.e?.message.toString(),
-                            isLoading = false
-                        )
+                result.distinctUntilChanged().collectLatest { result ->
+                    if (result.e == null && !result.isLoading!!) {
+                        uiState.update {
+                            it.copy(
+                                myPosts = result.data!!,
+                                isLoading = false
+                            )
+                        }
+                    } else {
+                        uiState.update {
+                            it.copy(
+                                error = result.e?.message.toString(),
+                                isLoading = false
+                            )
+                        }
                     }
                 }
             }

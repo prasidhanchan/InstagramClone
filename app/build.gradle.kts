@@ -82,13 +82,16 @@ dependencies {
     implementation(platform(libs.firebase.bom))
 
     // Firebase Firestore
-    implementation (libs.firebase.firestore)
+    implementation(libs.firebase.firestore)
+
+    // Firebase Realtime Database
+    implementation(libs.firebase.realtime.database)
 
     // Firebase Authentication
     implementation(libs.firebase.authentication)
 
     // Firebase Storage
-    implementation (libs.firebase.storage)
+    implementation(libs.firebase.storage)
 
     // Facebook SDK
     implementation(libs.facebook.sdk)
@@ -125,5 +128,5 @@ dependencies {
     implementation(project(":feature:auth"))
     implementation(project(":feature:home"))
     implementation(project(":feature:profile"))
-    implementation(project(":feature:post"))
+    implementation(project(":feature:upload"))
 }

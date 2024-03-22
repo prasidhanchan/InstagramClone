@@ -7,6 +7,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,23 +59,25 @@ class HomeViewModel @Inject constructor(
     fun getAllPosts() {
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
-            val result = homeRepository.getAllPost()
+            val mResult = homeRepository.getAllPost()
 
-            delay(500L)
-            withContext(Dispatchers.Main) {
-                if (result.e == null && !result.isLoading!!) {
-                    uiState.update {
-                        it.copy(
-                            posts = result.data!!,
-                            isLoading = false
-                        )
-                    }
-                } else {
-                    uiState.update {
-                        it.copy(
-                            error = result.e.toString(),
-                            isLoading = false
-                        )
+            delay(1000L)
+            mResult.distinctUntilChanged().collectLatest { result ->
+                withContext(Dispatchers.Main) {
+                    if (result.e == null && !result.isLoading!!) {
+                        uiState.update {
+                            it.copy(
+                                posts = result.data!!,
+                                isLoading = false
+                            )
+                        }
+                    } else {
+                        uiState.update {
+                            it.copy(
+                                error = result.e.toString(),
+                                isLoading = false
+                            )
+                        }
                     }
                 }
             }

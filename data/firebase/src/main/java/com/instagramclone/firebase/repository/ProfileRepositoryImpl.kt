@@ -3,6 +3,11 @@ package com.instagramclone.firebase.repository
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.getValue
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -11,17 +16,19 @@ import com.google.firebase.storage.FirebaseStorage
 import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.util.models.DataOrException
 import com.instagramclone.util.models.Post
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class ProfileRepositoryImpl @Inject constructor(
     private val queryUser: Query,
-    private val queryPost: Query
+    private val dbPostRef: DatabaseReference
 ) : ProfileRepository {
     private val currentUser = FirebaseAuth.getInstance().currentUser
     private val dbUser = FirebaseFirestore.getInstance().collection("Users")
-    private val dbPost = FirebaseFirestore.getInstance().collection("Posts")
 
     private val storageRefPost = FirebaseStorage.getInstance().reference.child("Posts")
 
@@ -128,42 +135,60 @@ class ProfileRepositoryImpl @Inject constructor(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        dbPost.document("${currentUser?.uid}-${post.timeStamp}").delete()
-            .addOnSuccessListener {
-                storageRefPost.child("${currentUser?.uid}-${post.timeStamp}.jpg").delete()
+        if (currentUser != null) {
+            try {
+                dbPostRef.child("${post.userId}-${post.timeStamp}")
+                    .removeValue()
                     .addOnSuccessListener {
-                        onSuccess()
+                        storageRefPost.child("Posts").child("${post.userId}-${post.timeStamp}")
+                            .delete()
+                            .addOnSuccessListener {
+                                onSuccess()
+                            }
+                            .addOnFailureListener {  error ->
+                                onError(error.message.toString())
+                            }
                     }
-                    .addOnFailureListener {
-                        onError(it.message.toString())
+                    .addOnFailureListener { error ->
+                        onError(error.message.toString())
                     }
+            } catch (e: Exception) {
+                onError(e.message.toString())
             }
-            .addOnFailureListener {
-                onError(it.message.toString())
-            }
+        }
     }
 
-    override suspend fun getMyPosts(): DataOrException<List<Post>, Boolean, Exception> {
-        val dataOrException: DataOrException<List<Post>, Boolean, Exception> = DataOrException()
+    override suspend fun getMyPosts(): Flow<DataOrException<List<Post>, Boolean, Exception>> {
+        val dataOrException: MutableStateFlow<DataOrException<List<Post>, Boolean, Exception>> =
+            MutableStateFlow(DataOrException(isLoading = true))
 
         try {
-            dataOrException.isLoading = true
-            queryPost.get()
-                .addOnSuccessListener { querySnap ->
-                    dataOrException.data = querySnap.documents.map { docSnap ->
-                        docSnap.toObject(Post::class.java)!!
+            val valueEventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    dataOrException.update {
+                        it.copy(
+                            data = snapshot.children.map { dataSnap ->
+                                dataSnap.getValue<Post>()!!
+                            }
+                                .filter { post -> post.userId == currentUser?.uid }
+                                .sortedByDescending { post -> post.timeStamp }
+                        )
                     }
-                        .filter { it.userId == currentUser?.uid }
-                    dataOrException.isLoading = false
+                    dataOrException.update { it.copy(isLoading = false) }
                 }
-                .addOnFailureListener {
-                    dataOrException.e = it
-                    dataOrException.isLoading = false
+
+                override fun onCancelled(error: DatabaseError) {
+                    throw error.toException()
                 }
-                .await()
-                .asFlow()
+            }
+            dbPostRef.addValueEventListener(valueEventListener)
         } catch (e: Exception) {
-            dataOrException.e = e
+            dataOrException.update {
+                it.copy(
+                    e = e,
+                    isLoading = false
+                )
+            }
         }
         return dataOrException
     }
@@ -201,17 +226,17 @@ class ProfileRepositoryImpl @Inject constructor(
 
         try {
             dataOrException.isLoading = true
-            queryPost.get()
-                .addOnSuccessListener { querySnap ->
-                    dataOrException.data = querySnap.documents.map { docSnap ->
-                        docSnap.toObject(Post::class.java)!!
+            dbPostRef.get()
+                .addOnSuccessListener {
+                    dataOrException.data = it.children.map { dataSnap ->
+                        dataSnap.getValue<Post>()!!
                     }
-                        .filter { it.userId == userId }
+                        .filter { post -> post.userId == userId }
+                        .sortedByDescending { post -> post.timeStamp }
                     dataOrException.isLoading = false
                 }
                 .addOnFailureListener {
                     dataOrException.e = it
-                    dataOrException.isLoading = false
                 }
         } catch (e: Exception) {
             dataOrException.e = e
@@ -273,15 +298,31 @@ class ProfileRepositoryImpl @Inject constructor(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        dbPost.document("${userId}-${timeStamp}")
-            .update("likes", FieldValue.arrayUnion(currentUser?.uid))
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener {
-                onError(it.message.toString())
-            }
-            .await()
+        if (currentUser != null) {
+            val likes = mutableListOf<String>()
+            val ref = dbPostRef.child("${userId}-${timeStamp}")
+
+            ref.get()
+                .addOnSuccessListener {
+                    val post = it.getValue<Post>()
+
+                    post?.likes?.forEach { userId ->
+                        likes.add(userId)
+                    }
+                    likes.add(currentUser.uid)
+                    ref.updateChildren(mapOf("likes" to likes))
+                        .addOnSuccessListener {
+                            onSuccess()
+                        }
+                        .addOnFailureListener { error ->
+                            onError(error.message.toString())
+                        }
+                }
+                .addOnFailureListener { error ->
+                    onError(error.message.toString())
+                }
+                .await()
+        }
     }
 
     override suspend fun unLike(
@@ -290,14 +331,27 @@ class ProfileRepositoryImpl @Inject constructor(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        dbPost.document("${userId}-${timeStamp}")
-            .update("likes", FieldValue.arrayRemove(currentUser?.uid))
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener {
-                onError(it.message.toString())
-            }
-            .await()
+        if (currentUser != null) {
+            val likes = mutableListOf<String>()
+            val ref = dbPostRef.child("$userId-$timeStamp")
+
+            ref.get()
+                .addOnSuccessListener {
+                    val post = it.getValue<Post>()
+
+                    post?.likes?.forEach { userId ->
+                        likes.add(userId)
+                    }
+                    likes.remove(currentUser.uid)
+                    ref.updateChildren(mapOf("likes" to likes))
+                        .addOnSuccessListener {
+                            onSuccess()
+                        }
+                        .addOnFailureListener { error ->
+                            onError(error.message.toString())
+                        }
+                }
+                .await()
+        }
     }
 }

@@ -107,8 +107,6 @@ fun InnerScreenNavigation(
                         post = post,
                         onSuccess = {
                             viewModelProfile.getMyData()
-                            viewModelHome.getAllPosts()
-                            viewModelProfile.getMyPosts()
                         }
                     )
                 },
@@ -728,8 +726,7 @@ fun InnerScreenNavigation(
                             navHostController.navigate(NavScreens.HomeScreen.route) {
                                 popUpTo(navHostController.graph.startDestinationId)
                             }
-                            viewModelHome.getAllPosts()
-                            viewModelProfile.getMyPosts()
+                            viewModelUpload.setCaption(caption = "")
                         }
                     )
                 }

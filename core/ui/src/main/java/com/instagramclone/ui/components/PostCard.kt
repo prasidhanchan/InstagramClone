@@ -33,7 +33,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,10 +73,10 @@ fun PostCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-    var hasLiked by rememberSaveable {
+    var hasLiked by remember(post.likes) {
         mutableStateOf(post.likes.any { userId -> userId == currentUserId })
     }
-    var likeCount by rememberSaveable { mutableIntStateOf(post.likes.size) }
+    var likeCount by remember(post.likes) { mutableIntStateOf(post.likes.size) }
 
     var size by remember { mutableFloatStateOf(1.3f) }
     val scale by animateFloatAsState(
@@ -515,5 +514,6 @@ fun PostCardPreview() {
         onSaveClick = { },
         onUnfollowClick = { },
         onDeletePostClick = { },
-    ) { }
+        onUsernameClick = { }
+    )
 }

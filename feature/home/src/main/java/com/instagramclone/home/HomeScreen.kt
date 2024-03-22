@@ -19,14 +19,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGDialog
 import com.instagramclone.ui.components.IGHomeAppBar
+import com.instagramclone.ui.components.IGLoader
 import com.instagramclone.ui.components.Posts
 import com.instagramclone.ui.components.Stories
 import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.models.Post
 import com.instagramclone.util.models.Story
-import com.instagramclone.ui.R
 
 @Composable
 fun HomeScreen(
@@ -74,61 +75,65 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize(),
         color = Utils.IgBlack
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Posts(
-                innerPadding = innerPadding,
-                posts = uiState.posts,
-                currentUserId = currentUserId,
-                onLikeClick = onLikeClick,
-                onUnLikeClick = onUnLikeClick,
-                onSendClick = onSendClick,
-                onSaveClick = onSaveClick,
-                onUnfollowClick = onUnfollowClick,
-                onDeletePostClick = {
-                    showDeleteDialog = true
-                    setSelectedPost(it)
-                },
-                onUsernameClick = onUsernameClick,
-                scrollState = scrollState
+        if (!uiState.isLoading && uiState.posts.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                IGHomeAppBar()
+                Posts(
+                    innerPadding = innerPadding,
+                    posts = uiState.posts,
+                    currentUserId = currentUserId,
+                    onLikeClick = onLikeClick,
+                    onUnLikeClick = onUnLikeClick,
+                    onSendClick = onSendClick,
+                    onSaveClick = onSaveClick,
+                    onUnfollowClick = onUnfollowClick,
+                    onDeletePostClick = {
+                        showDeleteDialog = true
+                        setSelectedPost(it)
+                    },
+                    onUsernameClick = onUsernameClick,
+                    scrollState = scrollState
+                ) {
+                    IGHomeAppBar()
 
-                Stories(
-                    profileImage = uiState.profileImage,
-                    onAddStoryClick = { /* TODO */ },
-                    onStoryClick = { /* TODO */ },
-                    stories = stories
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(top = 8.dp),
-                    thickness = 0.5.dp,
-                    color = Color.White.copy(alpha = 0.2f)
-                )
+                    Stories(
+                        profileImage = uiState.profileImage,
+                        onAddStoryClick = { /* TODO */ },
+                        onStoryClick = { /* TODO */ },
+                        stories = stories
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(top = 8.dp),
+                        thickness = 0.5.dp,
+                        color = Color.White.copy(alpha = 0.2f)
+                    )
+                }
             }
+            IGDialog(
+                title = stringResource(R.string.delete_this_post),
+                subTitle = stringResource(R.string.delete_post_permanently),
+                showDialog = showDeleteDialog,
+                showBlueOrRedButton = true,
+                blueOrRedButton = Utils.IgError,
+                button1Text = stringResource(id = R.string.cancel),
+                button2Text = stringResource(id = R.string.delete),
+                onBlueOrRedClick = {
+                    showDeleteDialog = false
+                    onDeletePostClick(selectedPost)
+                },
+                onWhiteClick = {
+                    showDeleteDialog = false
+                    setSelectedPost(Post()) // Clearing selected post on cancel click
+                }
+            )
+        } else {
+            IGLoader()
         }
     }
-    IGDialog(
-        title = stringResource(R.string.delete_this_post),
-        subTitle = stringResource(R.string.delete_post_permanently),
-        showDialog = showDeleteDialog,
-        showBlueOrRedButton = true,
-        blueOrRedButton = Utils.IgError,
-        button1Text = stringResource(id = R.string.cancel),
-        button2Text = stringResource(id = R.string.delete),
-        onBlueOrRedClick = {
-            showDeleteDialog = false
-            onDeletePostClick(selectedPost)
-        },
-        onWhiteClick = {
-            showDeleteDialog = false
-            setSelectedPost(Post()) // Clearing selected post on cancel click
-        }
-    )
 }
 
 @Preview(
@@ -166,6 +171,7 @@ fun HomeScreenPreview() {
         onSaveClick = { },
         onUnfollowClick = { },
         onDeletePostClick = { },
-        setSelectedPost = { }
-    ) { }
+        setSelectedPost = { },
+        onUsernameClick = { }
+    )
 }

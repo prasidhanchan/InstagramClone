@@ -4,6 +4,7 @@ import android.net.Uri
 import com.instagramclone.firebase.models.IGUser
 import com.instagramclone.util.models.DataOrException
 import com.instagramclone.util.models.Post
+import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {
     suspend fun getUserData(): DataOrException<IGUser, Boolean, Exception>
@@ -12,7 +13,7 @@ interface ProfileRepository {
     suspend fun convertToUrl(newImage: Uri, onSuccess: (String) -> Unit, onError: (String) -> Unit)
     suspend fun changePassword(password: String, onSuccess: () -> Unit, onError: (String) -> Unit)
     fun logOut()
-    suspend fun getMyPosts(): DataOrException<List<Post>, Boolean, Exception>
+    suspend fun getMyPosts(): Flow<DataOrException<List<Post>, Boolean, Exception>>
     fun deletePost(post: Post, onSuccess: () -> Unit, onError: (String) -> Unit)
     suspend fun getUserProfile(userId: String): DataOrException<IGUser, Boolean, Exception>
     suspend fun getUserPosts(userId: String): DataOrException<List<Post>, Boolean, Exception>
