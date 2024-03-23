@@ -86,10 +86,6 @@ class AuthRepositoryImpl : AuthRepository {
             .addOnFailureListener { onError(it.message.toString()) }
     }
 
-    override fun logOut() {
-        FirebaseAuth.getInstance().signOut()
-    }
-
     override fun addUserToDB(
         igUser: IGUser,
         onSuccess: () -> Unit,

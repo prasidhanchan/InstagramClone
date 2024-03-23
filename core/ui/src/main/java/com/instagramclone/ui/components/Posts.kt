@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import com.instagramclone.util.models.Post
 
 /**
@@ -52,20 +54,46 @@ fun Posts(
                 items = posts,
                 key = { post -> post.images }
             ) { post ->
-                if (posts.isNotEmpty()) {
-                    PostCard(
-                        post = post,
-                        currentUserId = currentUserId,
-                        onLikeClick = onLikeClick,
-                        onUnLikeClick = onUnLikeClick,
-                        onSendClick = onSendClick,
-                        onSaveClick = onSaveClick,
-                        onUnfollowClick = onUnfollowClick,
-                        onDeletePostClick = onDeletePostClick,
-                        onUsernameClick = onUsernameClick
-                    )
-                }
+                PostCard(
+                    post = post,
+                    currentUserId = currentUserId,
+                    onLikeClick = onLikeClick,
+                    onUnLikeClick = onUnLikeClick,
+                    onSendClick = onSendClick,
+                    onSaveClick = onSaveClick,
+                    onUnfollowClick = onUnfollowClick,
+                    onDeletePostClick = onDeletePostClick,
+                    onUsernameClick = onUsernameClick
+                )
             }
         }
+    )
+}
+
+@Preview
+@Composable
+private fun PostsPreview() {
+    Posts(
+        posts = listOf(
+            Post(
+                images = listOf("a"),
+                username = "pra_sidh_22",
+                isVerified = true
+            ),
+            Post(
+                images = listOf("b"),
+                username = "kawaki",
+                isVerified = true
+            ),
+        ),
+        currentUserId = "",
+        onLikeClick = { },
+        onUnLikeClick = { },
+        onSendClick = { },
+        onSaveClick = { },
+        onUnfollowClick = { },
+        onDeletePostClick = { },
+        onUsernameClick = { },
+        scrollState = rememberLazyListState()
     )
 }

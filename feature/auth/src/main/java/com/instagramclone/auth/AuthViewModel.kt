@@ -191,10 +191,6 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    /** Function to log out of Firebase Account */
-    fun logOut() = authRepository.logOut()
-
-
     /** Function to add user data to Firestore
      * @param igUser requires [IGUser] model class
      * @param onSuccess on Success lambda triggered on successful insertion of data
@@ -410,17 +406,14 @@ class AuthViewModel @Inject constructor(
     }
 
     fun clearUiState() {
-        uiState.update { uiState ->
-            uiState.copy(
-                emailOrUsername = "",
-                password = "",
-                profileImage = null,
-                errorOrSuccess = "",
-                errorOrSuccessEmail = "",
-                errorOrSuccessUsername = "",
-                errorTitle = "",
-                errorSubTitle = ""
-            )
+        viewModelScope.launch {
+            delay(500L)
+            uiState.update { UiState() }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        clearUiState()
     }
 }

@@ -1,6 +1,6 @@
 package com.instagramclone.firebase.repository
 
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.Query
@@ -22,8 +22,7 @@ class HomeRepositoryImpl @Inject constructor(
 ) : HomeRepository {
 
     private val dbUser = FirebaseFirestore.getInstance().collection("Users")
-    private val currentUser = FirebaseAuth.getInstance().currentUser
-    override suspend fun getUserData(): DataOrException<IGUser, Boolean, Exception> {
+    override suspend fun getUserData(currentUser: FirebaseUser?): DataOrException<IGUser, Boolean, Exception> {
         val dataOrException: DataOrException<IGUser, Boolean, Exception> = DataOrException()
 
         if (currentUser != null) {

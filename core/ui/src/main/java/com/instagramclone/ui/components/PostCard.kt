@@ -1,6 +1,7 @@
 package com.instagramclone.ui.components
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -78,13 +79,14 @@ fun PostCard(
     }
     var likeCount by remember(post.likes) { mutableIntStateOf(post.likes.size) }
 
-    var size by remember { mutableFloatStateOf(1.3f) }
+    var size by remember { mutableFloatStateOf(1.4f) }
     val scale by animateFloatAsState(
         animationSpec = spring(
-            dampingRatio = 1f
+            dampingRatio = 1f,
+            stiffness = Spring.StiffnessMedium
         ),
         targetValue = size,
-        finishedListener = { size = 1.3f },
+        finishedListener = { size = 1.4f },
         label = "like"
     )
 
@@ -178,15 +180,22 @@ fun PostCard(
                     }
                 }
 
-                AsyncImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .defaultMinSize(minHeight = 200.dp),
-                    model = post.images.first(), //TODO integrate Pager
-                    contentScale = ContentScale.Crop,
-                    filterQuality = FilterQuality.Low,
-                    contentDescription = stringResource(R.string.post, post.username)
-                )
+                AnimatedLike(
+                    onDoubleTap = {
+                        onLikeClick(post)
+                        size = 1.6f
+                    }
+                ) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .defaultMinSize(minHeight = 200.dp),
+                        model = post.images.first(), //TODO integrate Pager
+                        contentScale = ContentScale.Crop,
+                        filterQuality = FilterQuality.Low,
+                        contentDescription = stringResource(R.string.post, post.username)
+                    )
+                }
 
                 Row(
                     modifier = Modifier
@@ -211,7 +220,7 @@ fun PostCard(
                                 Icon(
                                     modifier = Modifier
                                         .scale(scale)
-                                        .padding(horizontal = 8.dp)
+                                        .padding(horizontal = 10.dp)
                                         .clickable(
                                             indication = null,
                                             interactionSource = interactionSource,
@@ -230,7 +239,7 @@ fun PostCard(
                                 Icon(
                                     modifier = Modifier
                                         .scale(scale)
-                                        .padding(horizontal = 8.dp)
+                                        .padding(horizontal = 10.dp)
                                         .clickable(
                                             indication = null,
                                             interactionSource = interactionSource,
@@ -248,7 +257,8 @@ fun PostCard(
                             }
                             Icon(
                                 modifier = Modifier
-                                    .padding(horizontal = 8.dp)
+                                    .scale(1.1f)
+                                    .padding(horizontal = 10.dp)
                                     .clickable(
                                         indication = null,
                                         interactionSource = interactionSource,
@@ -263,7 +273,7 @@ fun PostCard(
                             )
                             Icon(
                                 modifier = Modifier
-                                    .scale(1.1f)
+                                    .scale(1.2f)
                                     .padding(horizontal = 8.dp)
                                     .clickable(
                                         indication = null,
@@ -278,7 +288,7 @@ fun PostCard(
                     }
                     Icon(
                         modifier = Modifier
-                            .scale(1.3f)
+                            .scale(1.4f)
                             .weight(0.6f)
                             .clickable(
                                 indication = null,
@@ -294,7 +304,10 @@ fun PostCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 15.dp),
-                    text = stringResource(if (likeCount == 1) R.string.post_like else R.string.post_likes, likeCount),
+                    text = stringResource(
+                        if (likeCount == 1) R.string.post_like else R.string.post_likes,
+                        likeCount
+                    ),
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,

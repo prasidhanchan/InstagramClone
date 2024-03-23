@@ -47,8 +47,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun InnerScreenNavigation(
     navHostController: NavHostController,
-    viewModelHome: HomeViewModel,
-    viewModelProfile: ProfileViewModel = hiltViewModel(),
+    viewModelHome: HomeViewModel = hiltViewModel(),
+    viewModelProfile: ProfileViewModel,
     viewModelUpload: UploadContentViewModel = hiltViewModel(),
     innerPadding: PaddingValues,
     navigateToLogin: () -> Unit
@@ -79,8 +79,10 @@ fun InnerScreenNavigation(
             HomeScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
+                profileImage = uiStateProfile.profileImage,
+                username = uiStateProfile.username,
                 selectedPost = uiStateProfile.selectedPost,
-                currentUserId = currentUser?.uid!!,
+                currentUserId = currentUser?.uid ?: "",
                 onLikeClick = {
                     viewModelProfile.like(
                         userId = it.userId,
@@ -158,7 +160,8 @@ fun InnerScreenNavigation(
                 onEditProfileClick = { navHostController.navigate(NavScreens.EditProfileScreen.route) },
                 navigateToPostsWithPostIndex = {
                     navHostController.navigate(
-                        NavScreens.PostsScreen.route + "/${it.substringBefore("-")}/${it.substringAfter("-")}"
+                        NavScreens.PostsScreen.route +
+                                "/${it.substringBefore("-")}/${it.substringAfter("-")}"
                     ) // userId-1
                 },
                 setSelectedPost = { viewModelProfile.setSelectedPost(it) },
@@ -202,7 +205,7 @@ fun InnerScreenNavigation(
             UserProfileScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
-                currentUserId = currentUser?.uid!!,
+                currentUserId = currentUser?.uid ?: "",
                 onFollowClick = {
                     viewModelProfile.follow(
                         userId = userId!!,
@@ -222,7 +225,8 @@ fun InnerScreenNavigation(
                 },
                 navigateToPostsWithPostIndex = {
                     navHostController.navigate(
-                        NavScreens.PostsScreen.route + "/${it.substringBefore("-")}/${it.substringAfter("-")}"
+                        NavScreens.PostsScreen.route +
+                                "/${it.substringBefore("-")}/${it.substringAfter("-")}"
                     ) // userId-1
                 },
                 onEditProfileClick = {
@@ -276,15 +280,24 @@ fun InnerScreenNavigation(
             PostsScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
-                currentUserId = currentUser?.uid!!,
-                isMyProfile = currentUser.uid == userId,
+                currentUserId = currentUser?.uid ?: "",
+                isMyProfile = currentUser?.uid == userId,
                 scrollState = scrollState,
                 onFollowClick = {
                     viewModelProfile.follow(
                         userId = userId!!,
                         onSuccess = {
                             viewModelProfile.setIsUserDetailChanged(value = true)
-                            viewModelHome.getAllPosts()
+//                            viewModelHome.getAllPosts()
+                        }
+                    )
+                },
+                onUnfollowClick = {
+                    viewModelProfile.unFollow(
+                        userId = userId!!,
+                        onSuccess = {
+                            viewModelProfile.setIsUserDetailChanged(value = true)
+//                            viewModelHome.getAllPosts()
                         }
                     )
                 },
@@ -293,10 +306,10 @@ fun InnerScreenNavigation(
                         userId = it.userId,
                         timeStamp = it.timeStamp,
                         onSuccess = {
-                            if (currentUser.uid == userId) {
+                            if (currentUser?.uid == userId) {
                                 viewModelProfile.setIsUserDetailChanged(value = true)
                             }
-                            viewModelHome.getAllPosts()
+//                            viewModelHome.getAllPosts()
                         }
                     )
                 },
@@ -305,29 +318,20 @@ fun InnerScreenNavigation(
                         userId = it.userId,
                         timeStamp = it.timeStamp,
                         onSuccess = {
-                            if (currentUser.uid == userId) {
+                            if (currentUser?.uid == userId) {
                                 viewModelProfile.setIsUserDetailChanged(value = true)
                             }
-                            viewModelHome.getAllPosts()
+//                            viewModelHome.getAllPosts()
                         }
                     )
                 },
                 onSendClick = { },
                 onSaveClick = { },
-                onUnfollowClick = {
-                    viewModelProfile.unFollow(
-                        userId = userId!!,
-                        onSuccess = {
-                            viewModelProfile.setIsUserDetailChanged(value = true)
-                            viewModelHome.getAllPosts()
-                        }
-                    )
-                },
                 onDeletePostClick = {
                     viewModelProfile.deletePost(
                         post = it,
                         onSuccess = {
-                            viewModelHome.getAllPosts()
+//                            viewModelHome.getAllPosts()
                         }
                     )
                 },
@@ -357,7 +361,7 @@ fun InnerScreenNavigation(
             LaunchedEffect(key1 = uiState.isUserDetailChanged) {
                 if (uiState.isUserDetailChanged) {
                     viewModelProfile.getMyData()
-                    viewModelProfile.getMyPosts()
+//                    viewModelProfile.getMyPosts()
                 }
             }
 

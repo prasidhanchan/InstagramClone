@@ -3,6 +3,7 @@ package com.instagramclone.firebase.repository
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -27,12 +28,11 @@ class ProfileRepositoryImpl @Inject constructor(
     private val queryUser: Query,
     private val dbPostRef: DatabaseReference
 ) : ProfileRepository {
-    private val currentUser = FirebaseAuth.getInstance().currentUser
     private val dbUser = FirebaseFirestore.getInstance().collection("Users")
 
     private val storageRefPost = FirebaseStorage.getInstance().reference.child("Posts")
 
-    override suspend fun getUserData(): DataOrException<IGUser, Boolean, Exception> {
+    override suspend fun getUserData(currentUser: FirebaseUser?): DataOrException<IGUser, Boolean, Exception> {
         val dataOrException: DataOrException<IGUser, Boolean, Exception> = DataOrException()
 
         if (currentUser != null) {
@@ -67,6 +67,7 @@ class ProfileRepositoryImpl @Inject constructor(
     override suspend fun updateUserDetails(
         key: String,
         value: String,
+        currentUser: FirebaseUser?,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -84,6 +85,7 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override suspend fun convertToUrl(
         newImage: Uri,
+        currentUser: FirebaseUser?,
         onSuccess: (String) -> Unit,
         onError: (String) -> Unit
     ) {
@@ -109,6 +111,7 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override suspend fun changePassword(
         password: String,
+        currentUser: FirebaseUser?,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -132,6 +135,7 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override fun deletePost(
         post: Post,
+        currentUser: FirebaseUser?,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -145,7 +149,7 @@ class ProfileRepositoryImpl @Inject constructor(
                             .addOnSuccessListener {
                                 onSuccess()
                             }
-                            .addOnFailureListener {  error ->
+                            .addOnFailureListener { error ->
                                 onError(error.message.toString())
                             }
                     }
@@ -158,7 +162,7 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMyPosts(): Flow<DataOrException<List<Post>, Boolean, Exception>> {
+    override suspend fun getMyPosts(currentUser: FirebaseUser?): Flow<DataOrException<List<Post>, Boolean, Exception>> {
         val dataOrException: MutableStateFlow<DataOrException<List<Post>, Boolean, Exception>> =
             MutableStateFlow(DataOrException(isLoading = true))
 
@@ -221,26 +225,37 @@ class ProfileRepositoryImpl @Inject constructor(
         return dataOrException
     }
 
-    override suspend fun getUserPosts(userId: String): DataOrException<List<Post>, Boolean, Exception> {
-        val dataOrException: DataOrException<List<Post>, Boolean, Exception> = DataOrException()
+    override suspend fun getUserPosts(userId: String): Flow<DataOrException<List<Post>, Boolean, Exception>> {
+        val dataOrException: MutableStateFlow<DataOrException<List<Post>, Boolean, Exception>> =
+            MutableStateFlow(DataOrException())
 
         try {
-            dataOrException.isLoading = true
-            dbPostRef.get()
-                .addOnSuccessListener {
-                    dataOrException.data = it.children.map { dataSnap ->
-                        dataSnap.getValue<Post>()!!
+            val valueEventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    dataOrException.update {
+                        it.copy(
+                            data = snapshot.children.map { dataSnap ->
+                                dataSnap.getValue<Post>()!!
+                            }
+                                .filter { post -> post.userId == userId }
+                                .sortedByDescending { post -> post.timeStamp },
+                            isLoading = false
+                        )
                     }
-                        .filter { post -> post.userId == userId }
-                        .sortedByDescending { post -> post.timeStamp }
-                    dataOrException.isLoading = false
                 }
-                .addOnFailureListener {
-                    dataOrException.e = it
+
+                override fun onCancelled(error: DatabaseError) {
+                    throw error.toException()
                 }
+            }
+            dbPostRef.addValueEventListener(valueEventListener)
         } catch (e: Exception) {
-            dataOrException.e = e
-            dataOrException.isLoading = false
+            dataOrException.update {
+                it.copy(
+                    e = e,
+                    isLoading = false
+                )
+            }
         }
 
         return dataOrException
@@ -248,6 +263,7 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override suspend fun follow(
         userId: String,
+        currentUser: FirebaseUser?,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -271,6 +287,7 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override suspend fun unFollow(
         userId: String,
+        currentUser: FirebaseUser?,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -295,6 +312,7 @@ class ProfileRepositoryImpl @Inject constructor(
     override suspend fun like(
         userId: String,
         timeStamp: Long,
+        currentUser: FirebaseUser?,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -309,14 +327,16 @@ class ProfileRepositoryImpl @Inject constructor(
                     post?.likes?.forEach { userId ->
                         likes.add(userId)
                     }
-                    likes.add(currentUser.uid)
-                    ref.updateChildren(mapOf("likes" to likes))
-                        .addOnSuccessListener {
-                            onSuccess()
-                        }
-                        .addOnFailureListener { error ->
-                            onError(error.message.toString())
-                        }
+                    if (!likes.contains(currentUser.uid)) {
+                        likes.add(currentUser.uid)
+                        ref.updateChildren(mapOf("likes" to likes))
+                            .addOnSuccessListener {
+                                onSuccess()
+                            }
+                            .addOnFailureListener { error ->
+                                onError(error.message.toString())
+                            }
+                    }
                 }
                 .addOnFailureListener { error ->
                     onError(error.message.toString())
@@ -328,6 +348,7 @@ class ProfileRepositoryImpl @Inject constructor(
     override suspend fun unLike(
         userId: String,
         timeStamp: Long,
+        currentUser: FirebaseUser?,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {

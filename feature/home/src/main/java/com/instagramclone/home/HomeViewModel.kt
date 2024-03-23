@@ -2,6 +2,7 @@ package com.instagramclone.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.instagramclone.firebase.repository.HomeRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,15 +23,20 @@ class HomeViewModel @Inject constructor(
     var uiState = MutableStateFlow(UiState())
         private set
 
+    private val currentUser = FirebaseAuth.getInstance().currentUser
+
     init {
         getUserData()
         getAllPosts()
     }
 
+    /**
+     * Function to get Current user data
+     */
     fun getUserData() {
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
-            val result = homeRepository.getUserData()
+            val result = homeRepository.getUserData(currentUser = currentUser)
 
             delay(1000L)
             if (result.e == null && !result.isLoading!!) {
@@ -56,6 +62,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Function to get all the Posts
+     */
     fun getAllPosts() {
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {

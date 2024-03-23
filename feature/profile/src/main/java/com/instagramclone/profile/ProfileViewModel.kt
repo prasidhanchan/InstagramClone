@@ -28,6 +28,9 @@ class ProfileViewModel @Inject constructor(
 
     private val _usernames: MutableStateFlow<List<String>?> = MutableStateFlow(null)
     val usernames = _usernames.asStateFlow()
+
+    private val currentUser = FirebaseAuth.getInstance().currentUser
+
     var uiState = MutableStateFlow(UiState())
         private set
 
@@ -42,7 +45,7 @@ class ProfileViewModel @Inject constructor(
     fun getMyData() {
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
-            val result = profileRepository.getUserData()
+            val result = profileRepository.getUserData(currentUser = currentUser)
 
             delay(1500L)
             if (result.data != null) {
@@ -122,6 +125,7 @@ class ProfileViewModel @Inject constructor(
                     else -> "links"
                 },
                 value = value,
+                currentUser = currentUser,
                 onSuccess = {
                     onSuccess()
                     uiState.update { it.copy(isUpdating = false) }
@@ -150,6 +154,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             profileRepository.convertToUrl(
                 newImage = newImage,
+                currentUser = currentUser,
                 onSuccess = { downloadUrl ->
                     uiState.update { it.copy(isUpdating = false) }
                     onSuccess(downloadUrl)
@@ -190,6 +195,7 @@ class ProfileViewModel @Inject constructor(
                     if (newPasswordState.length > 6) {
                         profileRepository.changePassword(
                             password = newPasswordState,
+                            currentUser = currentUser,
                             onSuccess = onSuccess,
                             onError = { error ->
                                 uiState.update { it.copy(error = error) }
@@ -216,7 +222,7 @@ class ProfileViewModel @Inject constructor(
     fun getMyPosts() {
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
-            val result = profileRepository.getMyPosts()
+            val result = profileRepository.getMyPosts(currentUser = currentUser)
 
             delay(800L)
             withContext(Dispatchers.Main) {
@@ -254,6 +260,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             profileRepository.deletePost(
                 post = post,
+                currentUser = currentUser,
                 onSuccess = {
                     onSuccess()
                     uiState.update { it.copy(isLoading = false) }
@@ -314,19 +321,21 @@ class ProfileViewModel @Inject constructor(
 
             delay(1500L)
             withContext(Dispatchers.Main) {
-                if (result.e == null && !result.isLoading!!) {
-                    uiState.update {
-                        it.copy(
-                            selectedUserPosts = result.data!!,
-                            isLoading = false
-                        )
-                    }
-                } else {
-                    uiState.update {
-                        it.copy(
-                            error = result.e?.message.toString(),
-                            isLoading = false
-                        )
+                result.distinctUntilChanged().collectLatest { result ->
+                    if (result.e == null && !result.isLoading!!) {
+                        uiState.update {
+                            it.copy(
+                                selectedUserPosts = result.data!!,
+                                isLoading = false
+                            )
+                        }
+                    } else {
+                        uiState.update {
+                            it.copy(
+                                error = result.e?.message.toString(),
+                                isLoading = false
+                            )
+                        }
                     }
                 }
             }
@@ -345,6 +354,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             profileRepository.follow(
                 userId = userId,
+                currentUser = currentUser,
                 onSuccess = onSuccess,
                 onError = { error ->
                     uiState.update { it.copy(error = error) }
@@ -365,6 +375,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             profileRepository.unFollow(
                 userId = userId,
+                currentUser = currentUser,
                 onSuccess = onSuccess,
                 onError = { error ->
                     uiState.update { it.copy(error = error) }
@@ -388,6 +399,7 @@ class ProfileViewModel @Inject constructor(
             profileRepository.like(
                 userId = userId,
                 timeStamp = timeStamp,
+                currentUser = currentUser,
                 onSuccess = onSuccess,
                 onError = { error ->
                     uiState.update { it.copy(error = error) }
@@ -411,6 +423,7 @@ class ProfileViewModel @Inject constructor(
             profileRepository.unLike(
                 userId = userId,
                 timeStamp = timeStamp,
+                currentUser = currentUser,
                 onSuccess = onSuccess,
                 onError = { error ->
                     uiState.update { it.copy(error = error) }

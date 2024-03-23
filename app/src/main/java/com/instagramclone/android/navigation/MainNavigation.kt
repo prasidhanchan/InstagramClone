@@ -94,13 +94,11 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             val uiState by viewModel.uiState.collectAsState()
             val emailList by viewModel.emailList.collectAsState()
 
-            val scope = rememberCoroutineScope()
-
             val loginManager = LoginManager.getInstance()
             val callBack = remember { CallbackManager.Factory.create() }
             val launcher = rememberLauncherForActivityResult(
                 contract = loginManager.createLogInActivityResultContract(callBack),
-                onResult = {  }
+                onResult = { }
             )
 
             FacebookLogin(
@@ -109,12 +107,15 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 context = context,
                 onSuccess = {
                     val currentUser = FirebaseAuth.getInstance().currentUser
-                    val displayName = currentUser?.displayName?.toIGUsername() //Prasidh Anchan -> prasidh_anchan
+                    val displayName =
+                        currentUser?.displayName?.toIGUsername() //Prasidh Anchan -> prasidh_anchan
 
                     if (emailList?.contains(currentUser?.email) == true) {
                         navController.popBackStack()
                         navController.navigate(NavScreens.InnerScreenHolder.route) {
-                            navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
+                            navController.graph.startDestinationRoute?.let { route ->
+                                popUpTo(route)
+                            }
                         }
                         viewModel.clearUiState()
                     } else {
@@ -125,20 +126,25 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                                 password = context.getString(R.string.facebook_login)
                             ),
                             onSuccess = {
-                                scope.launch {
-                                    navController.popBackStack()
-                                    navController.navigate(NavScreens.InnerScreenHolder.route) {
-                                        navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
+                                navController.popBackStack()
+                                navController.navigate(NavScreens.InnerScreenHolder.route) {
+                                    navController.graph.startDestinationRoute?.let { route ->
+                                        popUpTo(route)
                                     }
-                                    delay(1000L)
-                                    viewModel.clearUiState()
                                 }
+                                viewModel.clearUiState()
                             }
                         )
                     }
                 },
-                onError = { viewModel.setErrorOrSuccess(errorOrSuccess = it.message.toString()) }
+                onError = {
+                    viewModel.setErrorOrSuccess(errorOrSuccess = it.message.toString())
+                }
             )
+
+            LaunchedEffect(key1 = Unit) {
+                startDestination = NavScreens.LoginScreen.route
+            }
 
             LoginScreen(
                 uiState = uiState,
@@ -159,8 +165,11 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                             password = uiState.password,
                             context = context,
                             onSuccess = {
+                                navController.popBackStack()
                                 navController.navigate(NavScreens.InnerScreenHolder.route) {
-                                    navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
+                                    navController.graph.startDestinationRoute?.let { route ->
+                                        popUpTo(route)
+                                    }
                                 }
                                 viewModel.clearUiState()
                             }
@@ -171,8 +180,11 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                             password = uiState.password.trim(),
                             context = context,
                             onSuccess = {
+                                navController.popBackStack()
                                 navController.navigate(NavScreens.InnerScreenHolder.route) {
-                                    navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
+                                    navController.graph.startDestinationRoute?.let { route ->
+                                        popUpTo(route)
+                                    }
                                 }
                                 viewModel.clearUiState()
                             }
@@ -493,7 +505,8 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 onValueChange = { viewModel.setEmailOrUsername(emailOrUsername = it) },
                 onSuccess = {
                     val currentUser = FirebaseAuth.getInstance().currentUser
-                    val displayName = currentUser?.displayName?.toIGUsername() //Prasidh Anchan -> prasidh_anchan
+                    val displayName =
+                        currentUser?.displayName?.toIGUsername() //Prasidh Anchan -> prasidh_anchan
 
                     if (emailList?.contains(currentUser?.email) == true) {
                         navController.popBackStack()
@@ -508,7 +521,8 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                             ),
                             onSuccess = {
                                 navController.navigate(NavScreens.InnerScreenHolder.route) {
-                                    navController.graph.startDestinationRoute?.let { route -> popUpTo(route)
+                                    navController.graph.startDestinationRoute?.let { route ->
+                                        popUpTo(route)
                                     }
                                 }
                                 viewModel.clearUiState()
@@ -517,7 +531,8 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                     }
                 },
                 onError = {
-                    viewModel.setErrorOrSuccess(errorOrSuccess = it.message.toString()) },
+                    viewModel.setErrorOrSuccess(errorOrSuccess = it.message.toString())
+                },
                 onNextClicked = {
                     viewModel.filterUser(
                         onSuccess = {
@@ -565,14 +580,15 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 )
             }
         ) {
-            startDestination = NavScreens.InnerScreenHolder.route
+            LaunchedEffect(key1 = Unit) {
+                startDestination = NavScreens.InnerScreenHolder.route
+            }
 
             InnerScreenHolder(
                 navigateToLogin = {
                     navController.popBackStack()
-                    navController.navigate(NavScreens.LoginScreen.route) {
-                        navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
-                    }
+                    navController.clearBackStack(NavScreens.InnerScreenHolder.route)
+                    navController.navigate(NavScreens.LoginScreen.route)
                 }
             )
         }

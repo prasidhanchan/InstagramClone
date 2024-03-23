@@ -33,6 +33,8 @@ import com.instagramclone.util.models.Story
 fun HomeScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
+    profileImage: String,
+    username: String,
     selectedPost: Post,
     currentUserId: String,
     onLikeClick: (Post) -> Unit,
@@ -101,7 +103,7 @@ fun HomeScreen(
                     IGHomeAppBar()
 
                     Stories(
-                        profileImage = uiState.profileImage,
+                        profileImage = profileImage,
                         onAddStoryClick = { /* TODO */ },
                         onStoryClick = { /* TODO */ },
                         stories = stories
@@ -162,7 +164,18 @@ fun HomeScreenPreview() {
     )
     HomeScreen(
         innerPadding = PaddingValues(),
-        uiState = UiState(stories = stories),
+        uiState = UiState(
+            stories = stories,
+            posts = listOf(
+                Post(
+                    images = listOf(""),
+                    username = "kawaki",
+                    isVerified = true
+                )
+            )
+        ),
+        profileImage = "",
+        username = "pra_sidh_22",
         selectedPost = Post(),
         currentUserId = "12345",
         onLikeClick = { },

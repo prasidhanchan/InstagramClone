@@ -9,7 +9,6 @@ interface AuthRepository {
     fun loginUser(email: String, password: String, onSuccess: () -> Unit, onError: (String) -> Unit)
     suspend fun loginUserWithUsername(username: String, password: String, onSuccess: () -> Unit, onError: (String) -> Unit)
     fun sendPasswordResetEmail(email: String, onSuccess: () -> Unit, onError: (String) -> Unit)
-    fun logOut()
     fun addUserToDB(igUser: IGUser, onSuccess: () -> Unit, onError: (String) -> Unit)
     suspend fun convertToUrl(uri: Uri?): DataOrException<Uri?, Boolean, Exception>
     fun updateProfileImage(profileImage: String, onSuccess: () -> Unit, onError: (String) -> Unit)

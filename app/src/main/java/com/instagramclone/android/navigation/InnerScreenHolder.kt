@@ -9,12 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.instagramclone.home.HomeViewModel
+import com.instagramclone.profile.ProfileViewModel
 import com.instagramclone.util.constants.Utils
 
 @Composable
 fun InnerScreenHolder(
-    viewModel: HomeViewModel = hiltViewModel(),
+    viewModel: ProfileViewModel = hiltViewModel(),
     navigateToLogin: () -> Unit
 ) {
     val navHostController = rememberNavController()
@@ -45,7 +45,7 @@ fun InnerScreenHolder(
         content = { innerPadding ->
             InnerScreenNavigation(
                 innerPadding = innerPadding,
-                viewModelHome = viewModel,
+                viewModelProfile = viewModel,
                 navHostController = navHostController,
                 navigateToLogin = navigateToLogin
             )

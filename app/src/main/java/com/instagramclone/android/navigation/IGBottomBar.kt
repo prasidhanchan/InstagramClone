@@ -66,7 +66,7 @@ fun IGBottomBar(
                         navHostController.navigate(item.route) {
                             popUpTo(NavScreens.HomeScreen.route)
                             launchSingleTop = true
-                            restoreState = true
+//                            restoreState = true
                         }
                     }
                 )

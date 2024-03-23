@@ -51,6 +51,9 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     ksp(libs.androidx.hilt.compiler)
 
+    // Firebase Auth
+    implementation(libs.firebase.authentication)
+
     implementation(libs.material3)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.compose.bom))
