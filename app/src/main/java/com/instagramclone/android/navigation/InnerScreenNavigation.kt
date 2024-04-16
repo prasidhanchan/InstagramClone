@@ -685,12 +685,11 @@ fun InnerScreenNavigation(
                 innerPadding = innerPadding,
                 uiState = uiState,
                 onImageSelected = { viewModelUpload.setImage(image = it) },
-                onNextClick = { navHostController.navigate(NavScreens.UploadPostScreen.route) },
-                onBackClick = {
-                    navHostController.popBackStack()
-                    viewModelUpload.setImage(uiState.images.firstOrNull())
-                }
-            )
+                onNextClick = { navHostController.navigate(NavScreens.UploadPostScreen.route) }
+            ) {
+                navHostController.popBackStack()
+                viewModelUpload.setImage(uiState.images.firstOrNull())
+            }
         }
         composable(
             route = NavScreens.UploadPostScreen.route,
@@ -710,6 +709,7 @@ fun InnerScreenNavigation(
 
             val timeStamp = System.currentTimeMillis()
 
+            // TODO: Rename screen to AddCaptionScreen
             UploadPostScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,

@@ -140,5 +140,7 @@
     <string name="delete_this_post">Delete this post?</string>
     <string name="delete_post_permanently">Are you sure you want to delete this post permanently?</string>
     <string name="credential_expired">The supplied auth credential is incorrect, malformed or has expired.</string>
+    <string name="post_caps">POST</string>
+    <string name="story_caps">STORY</string>
 
 </resources>
