@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.Utils.IgBlack
+import com.instagramclone.util.constants.Utils.IgBackground
 
 /**
  * Upload card composable for displaying Text in a row ex: POST, STORY.
@@ -32,7 +32,7 @@ import com.instagramclone.util.constants.Utils.IgBlack
  * @param onClick On Click triggered when the text is clicked, passes the current text selected.
  */
 @Composable
-fun UploadCard(
+internal fun UploadSelectionCard(
     modifier: Modifier = Modifier,
     selectedText: String,
     onClick: (String) -> Unit
@@ -42,7 +42,7 @@ fun UploadCard(
             .wrapContentSize(Alignment.Center)
             .padding(bottom = 25.dp),
         shape = RoundedCornerShape(25.dp),
-        color = IgBlack.copy(alpha = 0.75f)
+        color = IgBackground.copy(alpha = 0.75f)
     ) {
         Row(
             modifier = Modifier.wrapContentSize(Alignment.Center),
@@ -101,8 +101,8 @@ fun UploadCardText(
     showBackground = true
 )
 @Composable
-private fun UploadCardPreview() {
-    UploadCard(
+private fun UploadSelectionCardPreview() {
+    UploadSelectionCard(
         selectedText = "POST",
         onClick = { }
     )
