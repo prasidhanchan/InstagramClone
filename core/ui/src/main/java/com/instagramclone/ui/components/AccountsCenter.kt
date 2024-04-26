@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,7 +44,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgAccountsCenterCardColor
+import com.instagramclone.util.constants.Utils.IgAccountsCenterColors
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgError
 
 enum class AccountsCenterState {
     MAIN,
@@ -55,13 +58,13 @@ enum class AccountsCenterState {
 
 @Composable
 fun AccountsCenter(
+    visible: Boolean,
     email: String,
     phone: String,
     password: String,
     newPassword: String,
     rePassword: String,
     error: String,
-    visible: Boolean,
     buttonLoading: Boolean,
     onPasswordChange: (String) -> Unit,
     onNewPasswordChange: (String) -> Unit,
@@ -93,13 +96,7 @@ fun AccountsCenter(
                     .fillMaxSize()
                     .background(
                         brush = Brush.linearGradient(
-                            colors = listOf(
-                                Color(0xFF383131),
-                                Color(0xFF261B38),
-                                Color(0xFF261B38),
-                                Color(0xFF261B38),
-                                Color(0xFF383131)
-                            )
+                            colors = IgAccountsCenterColors
                         )
                     )
                     .padding(all = 15.dp),
@@ -177,7 +174,7 @@ fun MainScreenContent(
                 style = TextStyle(
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Center
             )
@@ -189,7 +186,7 @@ fun MainScreenContent(
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Center
             )
@@ -202,7 +199,7 @@ fun MainScreenContent(
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             )
             AccountCenterCard(
@@ -252,7 +249,7 @@ fun PersonalDetailsContent(
                 style = TextStyle(
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Start
             )
@@ -264,7 +261,7 @@ fun PersonalDetailsContent(
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Start
             )
@@ -318,7 +315,7 @@ fun PasswordAndSecurityContent(
                 style = TextStyle(
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Start
             )
@@ -330,7 +327,7 @@ fun PasswordAndSecurityContent(
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Start
             )
@@ -384,7 +381,7 @@ fun ChangePasswordContent(
                 style = TextStyle(
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Start
             )
@@ -396,7 +393,7 @@ fun ChangePasswordContent(
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Start
             )
@@ -404,16 +401,18 @@ fun ChangePasswordContent(
             IGTextBoxPassword(
                 modifier = Modifier.padding(vertical = 10.dp),
                 value = password,
-                isTrailingIconEnabled = true,
                 onValueChange = onPasswordChange,
+                isTrailingIconEnabled = true,
+                color = IgBackground,
                 placeHolder = stringResource(R.string.current_password),
                 autoCorrect = false,
                 onConfirm = { }
             )
             IGTextBoxPassword(
                 value = newPassword,
-                isTrailingIconEnabled = true,
                 onValueChange = onNewPasswordChange,
+                isTrailingIconEnabled = true,
+                color = IgBackground,
                 placeHolder = stringResource(R.string.new_password),
                 autoCorrect = false,
                 onConfirm = { }
@@ -421,8 +420,9 @@ fun ChangePasswordContent(
             IGTextBoxPassword(
                 modifier = Modifier.padding(vertical = 10.dp),
                 value = rePassword,
-                isTrailingIconEnabled = true,
                 onValueChange = onRePasswordChange,
+                isTrailingIconEnabled = true,
+                color = IgBackground,
                 placeHolder = stringResource(R.string.re_type_new_password),
                 autoCorrect = false,
                 onConfirm = { onButtonClick() }
@@ -437,7 +437,7 @@ fun ChangePasswordContent(
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Utils.IgError
+                        color = IgError
                     ),
                     textAlign = TextAlign.Start
                 )
@@ -478,7 +478,7 @@ fun DragHandle(
                     onClick = onDismiss
                 ),
             painter = icon,
-            tint = Utils.IgOffWhite,
+            tint = MaterialTheme.colorScheme.onBackground,
             contentDescription = stringResource(R.string.close)
         )
         if (showMetaLogo) {
@@ -487,7 +487,7 @@ fun DragHandle(
                     .weight(1f)
                     .padding(top = 20.dp),
                 painter = painterResource(id = R.drawable.meta),
-                tint = Utils.IgOffWhite,
+                tint = MaterialTheme.colorScheme.onBackground,
                 contentDescription = stringResource(R.string.meta)
             )
             Spacer(modifier = Modifier.weight(0.1f))
@@ -517,7 +517,7 @@ fun AccountCenterCard(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight(Alignment.Top),
-        color = Color(0x92383131),
+        color = IgAccountsCenterCardColor,
         shape = cornerRadius
     ) {
         Row(
@@ -539,7 +539,7 @@ fun AccountCenterCard(
             Icon(
                 modifier = Modifier.weight(1f),
                 painter = icon,
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.onBackground,
                 contentDescription = cardText
             )
             Text(
@@ -550,7 +550,7 @@ fun AccountCenterCard(
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Start
             )
@@ -558,7 +558,7 @@ fun AccountCenterCard(
                 Icon(
                     modifier = Modifier.weight(1f),
                     painter = painterResource(id = R.drawable.arrow_right),
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     contentDescription = stringResource(R.string.open)
                 )
             }
@@ -568,8 +568,7 @@ fun AccountCenterCard(
 
 @Preview(
     apiLevel = 33,
-    showBackground = true,
-    backgroundColor = 0XFF000000
+    showBackground = true
 )
 @Composable
 fun AccountCenterCardPreview() {
@@ -582,8 +581,7 @@ fun AccountCenterCardPreview() {
 
 @Preview(
     apiLevel = 33,
-    showBackground = true,
-    backgroundColor = 0XFF000000
+    showBackground = true
 )
 @Composable
 fun AccountCenterPreview() {
@@ -606,8 +604,7 @@ fun AccountCenterPreview() {
 
 @Preview(
     apiLevel = 33,
-    showBackground = true,
-    backgroundColor = 0XFF000000
+    showBackground = true
 )
 @Composable
 fun ChangePasswordPreview() {

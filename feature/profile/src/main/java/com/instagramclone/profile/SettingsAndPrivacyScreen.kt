@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -28,11 +28,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.instagramclone.ui.components.IGRegularAppBar
-import com.instagramclone.util.constants.Utils
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.AccountsCenter
+import com.instagramclone.ui.components.IGRegularAppBar
 import com.instagramclone.ui.components.MoreCard
+import com.instagramclone.util.constants.Utils.IgError
+import com.instagramclone.util.constants.Utils.IgOffColor
 
 @Composable
 fun SettingsAndPrivacyScreen(
@@ -75,13 +76,13 @@ fun SettingsAndPrivacyScreen(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Utils.IgOffWhite
+                        color = IgOffColor
                     ),
                     textAlign = TextAlign.Start
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.meta),
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     contentDescription = stringResource(R.string.meta)
                 )
             }
@@ -96,7 +97,7 @@ fun SettingsAndPrivacyScreen(
                 Icon(
                     modifier = Modifier.weight(1f),
                     painter = painterResource(id = R.drawable.profile_black),
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     contentDescription = stringResource(R.string.accounts_center)
                 )
                 Column(
@@ -112,7 +113,7 @@ fun SettingsAndPrivacyScreen(
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         ),
                         textAlign = TextAlign.Start
                     )
@@ -121,7 +122,7 @@ fun SettingsAndPrivacyScreen(
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Utils.IgOffWhite
+                            color = IgOffColor
                         ),
                         textAlign = TextAlign.Start
                     )
@@ -129,7 +130,7 @@ fun SettingsAndPrivacyScreen(
                 Icon(
                     modifier = Modifier.weight(1f),
                     painter = painterResource(id = R.drawable.arrow_right),
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     contentDescription = stringResource(R.string.open)
                 )
             }
@@ -146,13 +147,13 @@ fun SettingsAndPrivacyScreen(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Utils.IgOffWhite
+                        color = IgOffColor
                     ),
                     textAlign = TextAlign.Start
                 )
             }
             MoreCard(
-                fontColor = Utils.IgError,
+                fontColor = IgError,
                 title = stringResource(R.string.log_out),
                 onClick = onLogoutClick
             )
@@ -165,7 +166,7 @@ fun SettingsAndPrivacyScreen(
         password = uiState.passwordState,
         newPassword = uiState.newPasswordState,
         rePassword = uiState.rePasswordState,
-        error = uiState.error,
+        error = uiState.error ?: "",
         visible = showAccountCenter,
         buttonLoading = uiState.isUpdating,
         onPasswordChange = onPasswordChange,
@@ -178,8 +179,7 @@ fun SettingsAndPrivacyScreen(
 
 @Preview(
     apiLevel = 33,
-    showBackground = true,
-    backgroundColor = 0XFF000000
+    showBackground = true
 )
 @Composable
 fun SettingsAndPrivacyScreenPreview() {

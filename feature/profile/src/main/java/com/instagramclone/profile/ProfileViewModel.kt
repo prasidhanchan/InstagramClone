@@ -48,7 +48,7 @@ class ProfileViewModel @Inject constructor(
             val result = profileRepository.getUserData(currentUser = currentUser)
 
             delay(1500L)
-            if (result.data != null) {
+            if (result.data != null && result.e == null && !result.isLoading!!) {
                 uiState.update { uiState ->
                     uiState.copy(
                         profileImage = result.data?.profileImage!!,
@@ -68,7 +68,7 @@ class ProfileViewModel @Inject constructor(
             } else {
                 uiState.update {
                     it.copy(
-                        error = result.e?.message.toString(),
+                        error = result.e?.message,
                         isLoading = false
                     )
                 }
@@ -91,7 +91,7 @@ class ProfileViewModel @Inject constructor(
             } else {
                 uiState.update {
                     it.copy(
-                        error = result.e?.message.toString(),
+                        error = result.e?.message,
                         isLoading = false
                     )
                 }
@@ -237,7 +237,7 @@ class ProfileViewModel @Inject constructor(
                     } else {
                         uiState.update {
                             it.copy(
-                                error = result.e?.message.toString(),
+                                error = result.e?.message,
                                 isLoading = false
                             )
                         }
@@ -301,7 +301,7 @@ class ProfileViewModel @Inject constructor(
                 } else {
                     uiState.update {
                         it.copy(
-                            error = result.e?.message.toString(),
+                            error = result.e?.message,
                             isLoading = false
                         )
                     }
@@ -332,7 +332,7 @@ class ProfileViewModel @Inject constructor(
                     } else {
                         uiState.update {
                             it.copy(
-                                error = result.e?.message.toString(),
+                                error = result.e?.message,
                                 isLoading = false
                             )
                         }

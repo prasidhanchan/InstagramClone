@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,7 +36,8 @@ import com.instagramclone.ui.components.IGButton
 import com.instagramclone.ui.components.IGDialog
 import com.instagramclone.ui.components.IGTextBox
 import com.instagramclone.ui.components.IGTextBoxPassword
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgBlue
 
 @Composable
 fun LoginScreen(
@@ -56,7 +57,7 @@ fun LoginScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Utils.IgBlack
+        containerColor = IgBackground
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -75,8 +76,8 @@ fun LoginScreen(
             Icon(
                 modifier = Modifier.padding(vertical = 20.dp),
                 painter = painterResource(id = R.drawable.instagram_logo),
-                tint = Color.White,
-                contentDescription = "Logo"
+                tint = MaterialTheme.colorScheme.onBackground,
+                contentDescription = stringResource(R.string.logo)
             )
             IGTextBox(
                 modifier = Modifier.padding(vertical = 8.dp),
@@ -129,7 +130,7 @@ fun LoginScreen(
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.White.copy(alpha = 0.5f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                     )
                 )
                 Text(
@@ -137,7 +138,7 @@ fun LoginScreen(
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }
@@ -151,7 +152,7 @@ fun LoginScreen(
             ) {
                 HorizontalDivider(
                     modifier = Modifier.weight(1f),
-                    color = Color.White.copy(alpha = 0.2f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
                 )
                 Text(
                     modifier = Modifier.weight(0.2f),
@@ -159,13 +160,13 @@ fun LoginScreen(
                     style = TextStyle(
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     ),
                     textAlign = TextAlign.Center
                 )
                 HorizontalDivider(
                     modifier = Modifier.weight(1f),
-                    color = Color.White.copy(alpha = 0.2f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
                 )
             }
 
@@ -180,7 +181,7 @@ fun LoginScreen(
                 Icon(
                     modifier = Modifier.padding(horizontal = 5.dp),
                     painter = painterResource(id = R.drawable.facebook),
-                    tint = Utils.IgBlue,
+                    tint = IgBlue,
                     contentDescription = stringResource(id = R.string.facebook_login)
                 )
                 Text(
@@ -189,7 +190,7 @@ fun LoginScreen(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Utils.IgBlue
+                        color = IgBlue
                     ),
                     textAlign = TextAlign.Center
                 )
@@ -209,7 +210,7 @@ fun LoginScreen(
                 ) {
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 18.dp),
-                        color = Color.White.copy(alpha = 0.2f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
                     )
 
                     Row(
@@ -228,7 +229,7 @@ fun LoginScreen(
                             style = TextStyle(
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Normal,
-                                color = Color.White.copy(alpha = 0.5f)
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                             )
                         )
                         Text(
@@ -236,7 +237,7 @@ fun LoginScreen(
                             style = TextStyle(
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         )
                     }
@@ -244,14 +245,14 @@ fun LoginScreen(
             }
         }
 
-        if (uiState.errorTitle == "Incorrect password") {
+        if (uiState.errorTitle == stringResource(id = R.string.incorrect_password)) {
             IGDialog(
                 title = uiState.errorTitle,
                 subTitle = uiState.errorSubTitle,
                 showDialog = uiState.showDialog,
                 showBlueOrRedButton = false,
                 button1Text = stringResource(id = R.string.ok),
-                onBlueOrRedClick = {  },
+                onBlueOrRedClick = { },
                 onWhiteClick = onDismiss
             )
         } else {
@@ -278,12 +279,13 @@ fun LoginScreenPreview() {
             emailOrUsername = "Prasidh",
             password = "12345"
         ),
-        navigateToSignUp = {  },
-        onForgotPasswordClicked = {  },
-        onFaceBookClicked = {  },
-        onEmailOrUserNameChange = {  },
-        onPasswordChange = {  },
-        onConfirm = {  },
-        onDismiss = {  }
-    ) { }
+        navigateToSignUp = { },
+        onForgotPasswordClicked = { },
+        onFaceBookClicked = { },
+        onEmailOrUserNameChange = { },
+        onPasswordChange = { },
+        onConfirm = { },
+        onDismiss = { },
+        onLogin = { }
+    )
 }

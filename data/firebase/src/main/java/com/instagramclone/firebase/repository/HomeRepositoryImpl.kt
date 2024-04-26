@@ -22,6 +22,7 @@ class HomeRepositoryImpl @Inject constructor(
 ) : HomeRepository {
 
     private val dbUser = FirebaseFirestore.getInstance().collection("Users")
+
     override suspend fun getUserData(currentUser: FirebaseUser?): DataOrException<IGUser, Boolean, Exception> {
         val dataOrException: DataOrException<IGUser, Boolean, Exception> = DataOrException()
 

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,7 +33,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgOffBackground
 
 @Composable
 fun IGBottomBar(
@@ -47,7 +49,7 @@ fun IGBottomBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(65.dp),
-        color = Utils.IgBlack
+        color = IgBackground
     ) {
         Row(
             modifier = Modifier
@@ -66,7 +68,6 @@ fun IGBottomBar(
                         navHostController.navigate(item.route) {
                             popUpTo(NavScreens.HomeScreen.route)
                             launchSingleTop = true
-//                            restoreState = true
                         }
                     }
                 )
@@ -103,7 +104,7 @@ fun IGBottomBarItem(
                         onClick = { onClick(item) }
                     ),
                     painter = painterResource(id = if (isSelected) item.iconFilled!! else item.iconOutlined!!),
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     contentDescription = item.name
                 )
             }
@@ -118,10 +119,10 @@ fun IGBottomBarItem(
                     onClick = { onClick(item) }
                 ),
             shape = CircleShape,
-            color = Utils.IgOffBlack,
+            color = IgOffBackground,
             border = BorderStroke(
                 color = if (isSelected) {
-                    Color.White
+                    MaterialTheme.colorScheme.onBackground
                 } else {
                     Color.Transparent
                 },

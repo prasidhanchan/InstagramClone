@@ -31,7 +31,7 @@ import com.instagramclone.home.HomeScreen
 import com.instagramclone.home.HomeViewModel
 import com.instagramclone.post.UploadContentScreen
 import com.instagramclone.post.UploadContentViewModel
-import com.instagramclone.post.UploadPostScreen
+import com.instagramclone.post.AddCaptionScreen
 import com.instagramclone.profile.EditProfileScreen
 import com.instagramclone.profile.EditTextScreen
 import com.instagramclone.profile.MyProfileScreen
@@ -46,11 +46,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun InnerScreenNavigation(
+    innerPadding: PaddingValues,
     navHostController: NavHostController,
     viewModelHome: HomeViewModel = hiltViewModel(),
-    viewModelProfile: ProfileViewModel,
     viewModelUpload: UploadContentViewModel = hiltViewModel(),
-    innerPadding: PaddingValues,
+    viewModelProfile: ProfileViewModel,
     navigateToLogin: () -> Unit
 ) {
     val currentUser = FirebaseAuth.getInstance().currentUser
@@ -83,19 +83,19 @@ fun InnerScreenNavigation(
                 username = uiStateProfile.username,
                 selectedPost = uiStateProfile.selectedPost,
                 currentUserId = currentUser?.uid ?: "",
-                onLikeClick = {
+                onLikeClick = { post ->
                     viewModelProfile.like(
-                        userId = it.userId,
-                        timeStamp = it.timeStamp,
+                        userId = post.userId,
+                        timeStamp = post.timeStamp,
                         onSuccess = {
 
                         }
                     )
                 },
-                onUnLikeClick = {
+                onUnLikeClick = { post ->
                     viewModelProfile.unLike(
-                        userId = it.userId,
-                        timeStamp = it.timeStamp,
+                        userId = post.userId,
+                        timeStamp = post.timeStamp,
                         onSuccess = {
 
                         }
@@ -118,6 +118,7 @@ fun InnerScreenNavigation(
                 }
             )
         }
+
         composable(
             route = NavScreens.MyProfileScreen.route,
             enterTransition = {
@@ -170,6 +171,7 @@ fun InnerScreenNavigation(
                 }
             )
         }
+
         composable(
             route = "${NavScreens.UserProfileScreen.route}/{userId}",
             arguments = listOf(
@@ -241,6 +243,7 @@ fun InnerScreenNavigation(
                 }
             )
         }
+
         composable(
             route = "${NavScreens.PostsScreen.route}/{userId}/{postIndex}",
             arguments = listOf(
@@ -288,7 +291,6 @@ fun InnerScreenNavigation(
                         userId = userId!!,
                         onSuccess = {
                             viewModelProfile.setIsUserDetailChanged(value = true)
-//                            viewModelHome.getAllPosts()
                         }
                     )
                 },
@@ -297,7 +299,6 @@ fun InnerScreenNavigation(
                         userId = userId!!,
                         onSuccess = {
                             viewModelProfile.setIsUserDetailChanged(value = true)
-//                            viewModelHome.getAllPosts()
                         }
                     )
                 },
@@ -309,7 +310,6 @@ fun InnerScreenNavigation(
                             if (currentUser?.uid == userId) {
                                 viewModelProfile.setIsUserDetailChanged(value = true)
                             }
-//                            viewModelHome.getAllPosts()
                         }
                     )
                 },
@@ -321,7 +321,6 @@ fun InnerScreenNavigation(
                             if (currentUser?.uid == userId) {
                                 viewModelProfile.setIsUserDetailChanged(value = true)
                             }
-//                            viewModelHome.getAllPosts()
                         }
                     )
                 },
@@ -331,7 +330,7 @@ fun InnerScreenNavigation(
                     viewModelProfile.deletePost(
                         post = it,
                         onSuccess = {
-//                            viewModelHome.getAllPosts()
+
                         }
                     )
                 },
@@ -361,7 +360,6 @@ fun InnerScreenNavigation(
             LaunchedEffect(key1 = uiState.isUserDetailChanged) {
                 if (uiState.isUserDetailChanged) {
                     viewModelProfile.getMyData()
-//                    viewModelProfile.getMyPosts()
                 }
             }
 
@@ -710,7 +708,7 @@ fun InnerScreenNavigation(
             val timeStamp = System.currentTimeMillis()
 
             // TODO: Rename screen to AddCaptionScreen
-            UploadPostScreen(
+            AddCaptionScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
                 onCaptionChange = { viewModelUpload.setCaption(caption = it) },

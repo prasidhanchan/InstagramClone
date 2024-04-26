@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -37,13 +38,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBlue
+import com.instagramclone.util.constants.Utils.IgOffBackground
 
 @Composable
 fun IGTextBoxPassword(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
+    color: Color = IgOffBackground,
     placeHolder: String,
     cornerRadius: Dp = 5.dp,
     imeAction: ImeAction = ImeAction.Next,
@@ -74,14 +77,14 @@ fun IGTextBoxPassword(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                 )
             )
         },
         textStyle = TextStyle(
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onBackground
         ),
         shape = RoundedCornerShape(cornerRadius),
         enabled = enabled,
@@ -98,12 +101,12 @@ fun IGTextBoxPassword(
             else -> KeyboardActions(onSend = onConfirm)
         },
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = Utils.IgOffBlack,
-            unfocusedContainerColor = Utils.IgOffBlack,
+            focusedContainerColor = color,
+            unfocusedContainerColor = color,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            focusedTextColor = Color.White.copy(alpha = 0.5f),
-            unfocusedTextColor = Color.White.copy(alpha = 0.5f)
+            focusedTextColor = color.copy(alpha = 0.5f),
+            unfocusedTextColor = color.copy(alpha = 0.5f)
         ),
         trailingIcon = {
             if (isTrailingIconEnabled) {
@@ -118,7 +121,7 @@ fun IGTextBoxPassword(
                         painter = painterResource(
                             id = if (showPassword) R.drawable.eye_crossed else R.drawable.eye,
                         ),
-                        tint = if (showPassword) Utils.IgBlue else Color.White.copy(alpha = 0.5f),
+                        tint = if (showPassword) IgBlue else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                         contentDescription = "Show/Hide password"
                     )
                 }

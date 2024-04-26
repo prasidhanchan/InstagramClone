@@ -1,4 +1,4 @@
-package com.instagramclone.ui.components
+package com.instagramclone.profile.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -13,6 +13,7 @@ import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,7 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgLikeRed
+import com.instagramclone.util.constants.Utils.IgOffBackground
+import com.instagramclone.util.constants.Utils.IgOffColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,11 +53,11 @@ fun IGBottomSheetProfile(
             shape = RoundedCornerShape(
                 topStart = 10.dp, topEnd = 10.dp
             ),
-            containerColor = Utils.IgOffBlack,
+            containerColor = IgOffBackground,
             dragHandle = {
                 BottomSheetDefaults.DragHandle(
                     width = 40.dp,
-                    color = Utils.IgOffWhite
+                    color = IgOffColor
                 )
             }
         ) {
@@ -73,10 +75,11 @@ fun IGBottomSheetProfile(
                     contentDescription = profileDescription
                 )
             }
+
             HorizontalDivider(
                 modifier = Modifier.padding(top = 10.dp, bottom = 15.dp),
                 thickness = 1.dp,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Row(
@@ -94,7 +97,7 @@ fun IGBottomSheetProfile(
                 Icon(
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp),
                     painter = painterResource(id = R.drawable.gallery),
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     contentDescription = stringResource(id = R.string.new_profile_picture)
                 )
                 Text(
@@ -102,10 +105,11 @@ fun IGBottomSheetProfile(
                     style = TextStyle(
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }
+
             if (profileImage.isNotEmpty()) {
                 Row(
                     modifier = Modifier
@@ -122,7 +126,7 @@ fun IGBottomSheetProfile(
                     Icon(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp),
                         painter = painterResource(id = R.drawable.delete),
-                        tint = Utils.IgLikeRed,
+                        tint = IgLikeRed,
                         contentDescription = stringResource(R.string.remove_current_picture)
                     )
                     Text(
@@ -130,7 +134,7 @@ fun IGBottomSheetProfile(
                         style = TextStyle(
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Utils.IgLikeRed
+                            color = IgLikeRed
                         )
                     )
                 }
@@ -141,8 +145,7 @@ fun IGBottomSheetProfile(
 
 @Preview(
     apiLevel = 33,
-    showBackground = true,
-    backgroundColor = 0XFF000000
+    showBackground = true
 )
 @Composable
 private fun IGBottomSheetProfilePreview() {

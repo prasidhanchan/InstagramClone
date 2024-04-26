@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -37,7 +38,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgError
+import com.instagramclone.util.constants.Utils.IgOffBackground
 
 @Composable
 fun IGTextBox(
@@ -71,14 +73,14 @@ fun IGTextBox(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                 )
             )
         },
         textStyle = TextStyle(
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onBackground
         ),
         shape = RoundedCornerShape(cornerRadius),
         enabled = enabled,
@@ -95,8 +97,8 @@ fun IGTextBox(
             else -> KeyboardActions(onSend = onConfirm)
         },
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = Utils.IgOffBlack,
-            unfocusedContainerColor = Utils.IgOffBlack,
+            focusedContainerColor = IgOffBackground,
+            unfocusedContainerColor = IgOffBackground,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             focusedTextColor = Color.White.copy(alpha = 0.5f),
@@ -136,7 +138,7 @@ fun IGTextBox(
                                 else -> return@TextField
                             },
                         ),
-                        tint = if (isErrorOrSuccess != stringResource(id = R.string.available)) Utils.IgError else Color.Green,
+                        tint = if (isErrorOrSuccess != stringResource(id = R.string.available)) IgError else Color.Green,
                         contentDescription = stringResource(R.string.tick_cross)
                     )
                 }

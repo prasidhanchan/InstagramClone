@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,10 +36,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBlue
+import com.instagramclone.util.constants.Utils.IgOffBackground
 
 @Composable
-fun AddStoryCard(
+internal fun AddStoryCard(
     profileImage: String,
     onClick: () -> Unit
 ) {
@@ -65,7 +67,7 @@ fun AddStoryCard(
             Surface(
                 modifier = Modifier.size(75.dp),
                 shape = CircleShape,
-                color = Utils.IgOffBlack
+                color = IgOffBackground
             ) {
                 if (profileImage.isNotEmpty()) {
                     AsyncImage(
@@ -87,8 +89,8 @@ fun AddStoryCard(
                     .size(28.dp)
                     .offset(x = (-2).dp),
                 shape = CircleShape,
-                color = Utils.IgBlue,
-                border = BorderStroke(width = 2.dp, color = Utils.IgOffBlack)
+                color = IgBlue,
+                border = BorderStroke(width = 2.dp, color = IgOffBackground)
             ) {
                 Icon(
                     modifier = Modifier.padding(5.dp),
@@ -103,8 +105,8 @@ fun AddStoryCard(
             text = stringResource(R.string.your_story),
             style = TextStyle(
                 fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.White
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
             )
         )
     }

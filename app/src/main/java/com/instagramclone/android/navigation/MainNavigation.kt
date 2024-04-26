@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,7 +43,7 @@ import kotlinx.coroutines.launch
 fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
     val navController = rememberNavController()
     val context = LocalContext.current
-    var startDestination by remember { mutableStateOf(NavScreens.SplashScreen.route) }
+    var startDestination by rememberSaveable { mutableStateOf(NavScreens.SplashScreen.route) }
 
     NavHost(
         navController = navController,
@@ -63,7 +64,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         ) {
             val currentUser = FirebaseAuth.getInstance().currentUser
 
-            LaunchedEffect(key1 = true) {
+            LaunchedEffect(key1 = Unit) {
                 if (currentUser != null) {
                     startDestination = NavScreens.InnerScreenHolder.route
                     delay(1000L)
@@ -78,6 +79,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             }
             SplashScreen()
         }
+
         composable(
             route = NavScreens.LoginScreen.route,
             enterTransition = {
@@ -193,6 +195,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
+
         composable(
             route = NavScreens.AddEmailScreen.route,
             enterTransition = {
@@ -265,6 +268,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
+
         composable(
             route = NavScreens.ChooseUsernameScreen.route,
             enterTransition = {
@@ -345,6 +349,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
+
         composable(
             route = NavScreens.CreatePasswordScreen.route,
             enterTransition = {
@@ -372,7 +377,9 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
-        composable(route = NavScreens.WelcomeScreen.route,
+
+        composable(
+            route = NavScreens.WelcomeScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -408,6 +415,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
+
         composable(
             route = NavScreens.AddProfileScreen.route,
             enterTransition = {
@@ -443,6 +451,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
+
         composable(
             route = NavScreens.ProfileAddedScreen.route,
             enterTransition = {
@@ -481,6 +490,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
+
         composable(
             route = NavScreens.LoginHelpScreen.route,
             enterTransition = {
@@ -544,6 +554,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 }
             )
         }
+
         composable(
             route = NavScreens.AccessAccountScreen.route,
             enterTransition = {

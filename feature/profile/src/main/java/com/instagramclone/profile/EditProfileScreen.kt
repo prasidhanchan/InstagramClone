@@ -41,7 +41,7 @@ import coil.compose.AsyncImage
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.AccountsCenter
 import com.instagramclone.ui.components.EditTextBox
-import com.instagramclone.ui.components.IGBottomSheetProfile
+import com.instagramclone.profile.components.IGBottomSheetProfile
 import com.instagramclone.ui.components.IGLoader
 import com.instagramclone.ui.components.IGRegularAppBar
 import com.instagramclone.ui.components.IGWaitDialog
@@ -96,7 +96,7 @@ fun EditProfileScreen(
                     .padding(vertical = 20.dp)
                     .size(80.dp),
                 shape = CircleShape,
-                color = Utils.IgOffBlack
+                color = Utils.IgOffBackground
             ) {
                 if (uiState.profileImage.isNotEmpty()) {
                     AsyncImage(
@@ -162,6 +162,8 @@ fun EditProfileScreen(
                     .padding(horizontal = 20.dp)
                     .fillMaxWidth()
                     .clickable(
+                        indication = null,
+                        interactionSource = interactionSource,
                         onClick = { sheetState = true }
                     ),
                 text = stringResource(R.string.personal_information_settings),
@@ -177,6 +179,7 @@ fun EditProfileScreen(
                 color = Color.White.copy(alpha = 0.2f)
             )
         }
+
         IGBottomSheetProfile(
             profileImage = uiState.profileImage,
             profileDescription = uiState.name,
@@ -227,7 +230,7 @@ fun EditProfileScreen(
             password = uiState.passwordState,
             newPassword = uiState.newPasswordState,
             rePassword = uiState.rePasswordState,
-            error = uiState.error,
+            error = uiState.error ?: "",
             visible = sheetState,
             buttonLoading = uiState.isUpdating,
             onPasswordChange = onPasswordChange,
@@ -243,8 +246,7 @@ fun EditProfileScreen(
 
 @Preview(
     apiLevel = 33,
-    showBackground = true,
-    backgroundColor = 0xFF000000
+    showBackground = true
 )
 @Composable
 fun EditProfileScreenPreview() {

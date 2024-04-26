@@ -33,7 +33,7 @@ fun IGRadioButton(
         color = Color.Transparent,
         border = BorderStroke(
             width = if (selected) 8.dp else 2.dp,
-            color = if (selected) Utils.IgBlue else Utils.IgOffWhite
+            color = if (selected) Utils.IgBlue else Utils.IgOffColor
         ),
         content = {  }
     )

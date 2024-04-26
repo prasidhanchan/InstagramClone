@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgOffBackground
 import com.instagramclone.util.models.Story
 
 @Composable
@@ -102,8 +104,8 @@ fun StoryCard(
                         shape = CircleShape,
                         width = if (story.isViewed) 1.dp else 2.dp
                     )
-                    .border(width = 5.dp, color = Utils.IgBlack, shape = CircleShape),
-                color = Utils.IgOffBlack
+                    .border(width = 5.dp, color = IgBackground, shape = CircleShape),
+                color = IgOffBackground
             ) {
                 if (story.profileImage.isNotEmpty()) {
                     AsyncImage(
@@ -125,8 +127,8 @@ fun StoryCard(
                 text = story.username,
                 style = TextStyle(
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.White
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             )
         }

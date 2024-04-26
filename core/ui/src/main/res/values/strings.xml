@@ -142,5 +142,7 @@
     <string name="credential_expired">The supplied auth credential is incorrect, malformed or has expired.</string>
     <string name="post_caps">POST</string>
     <string name="story_caps">STORY</string>
+    <string name="logo">Logo</string>
+    <string name="add_profile">Add Profile</string>
 
 </resources>

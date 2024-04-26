@@ -6,15 +6,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -28,9 +27,9 @@ import com.instagramclone.auth.UiState
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGButton
 import com.instagramclone.ui.components.IGTextBoxPassword
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgError
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CreatePasswordScreen(
     uiState: UiState,
@@ -42,7 +41,7 @@ fun CreatePasswordScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Utils.IgBlack
+        containerColor = IgBackground
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -58,7 +57,7 @@ fun CreatePasswordScreen(
                 style = TextStyle(
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             )
             Text(
@@ -67,7 +66,7 @@ fun CreatePasswordScreen(
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                 ),
                 textAlign = TextAlign.Center
             )
@@ -97,7 +96,7 @@ fun CreatePasswordScreen(
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Utils.IgError
+                        color = IgError
                     ),
                     textAlign = TextAlign.Start
                 )

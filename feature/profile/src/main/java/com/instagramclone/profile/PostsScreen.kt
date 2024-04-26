@@ -45,7 +45,7 @@ fun PostsScreen(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize()
-            .background(color = Utils.IgBlack),
+            .background(color = Utils.IgBackground),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

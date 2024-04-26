@@ -17,6 +17,8 @@
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
+            tools:ignore="DiscouragedApi, LockedOrientationActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
             android:theme="@style/Theme.Instagram">
             <intent-filter>

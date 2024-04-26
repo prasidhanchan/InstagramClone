@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,17 +16,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGDialog
-import com.instagramclone.ui.components.IGHomeAppBar
+import com.instagramclone.home.components.IGHomeAppBar
 import com.instagramclone.ui.components.IGLoader
 import com.instagramclone.ui.components.Posts
 import com.instagramclone.ui.components.Stories
 import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
 import com.instagramclone.util.models.Post
 import com.instagramclone.util.models.Story
 
@@ -75,9 +76,9 @@ fun HomeScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Utils.IgBlack
+        color = IgBackground
     ) {
-        if (!uiState.isLoading && uiState.posts.isNotEmpty()) {
+        if (!uiState.isLoading) {
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -93,9 +94,9 @@ fun HomeScreen(
                     onSendClick = onSendClick,
                     onSaveClick = onSaveClick,
                     onUnfollowClick = onUnfollowClick,
-                    onDeletePostClick = {
+                    onDeletePostClick = { post ->
                         showDeleteDialog = true
-                        setSelectedPost(it)
+                        setSelectedPost(post)
                     },
                     onUsernameClick = onUsernameClick,
                     scrollState = scrollState
@@ -111,10 +112,11 @@ fun HomeScreen(
                     HorizontalDivider(
                         modifier = Modifier.padding(top = 8.dp),
                         thickness = 0.5.dp,
-                        color = Color.White.copy(alpha = 0.2f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
                     )
                 }
             }
+
             IGDialog(
                 title = stringResource(R.string.delete_this_post),
                 subTitle = stringResource(R.string.delete_post_permanently),

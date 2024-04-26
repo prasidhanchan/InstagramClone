@@ -57,6 +57,9 @@ dependencies {
     implementation(libs.compose.preview)
     implementation(libs.compose.tooling)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.material3)
+    implementation(libs.junit)
     implementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(platform(libs.compose.bom))
 }

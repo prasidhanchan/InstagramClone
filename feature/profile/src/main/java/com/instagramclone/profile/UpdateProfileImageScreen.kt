@@ -35,7 +35,7 @@ fun UpdateProfileImageScreen(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize()
-            .background(color = Utils.IgBlack)
+            .background(color = Utils.IgBackground)
     ) {
         IGRegularAppBar(
             text = "Update profile picture",

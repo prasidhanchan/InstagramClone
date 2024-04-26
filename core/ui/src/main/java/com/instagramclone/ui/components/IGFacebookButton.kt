@@ -52,7 +52,7 @@ fun IGFacebookButton(
         modifier = modifier
             .fillMaxWidth()
             .height(50.dp),
-        color = Utils.IgButtonBlack,
+        color = Utils.IgButtonColor,
         shape = RoundedCornerShape(cornerRadius)
     ) {
         Row(

@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -62,7 +63,7 @@ fun EditTextBox(
                 style = TextStyle(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                 )
             )
             BasicTextField(
@@ -73,7 +74,7 @@ fun EditTextBox(
                 textStyle = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 cursorBrush = SolidColor(Color.White),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text),
@@ -82,7 +83,7 @@ fun EditTextBox(
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
                 thickness = 0.8.dp,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }
@@ -90,8 +91,7 @@ fun EditTextBox(
 
 @Preview(
     apiLevel = 33,
-    showBackground = true,
-    backgroundColor = 0xFF000000
+    showBackground = true
 )
 @Composable
 fun EditTextBoxPreview() {

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +28,8 @@ import com.instagramclone.auth.UiState
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGButton
 import com.instagramclone.ui.components.IGWaitDialog
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgBlue
 
 @Composable
 fun ProfileAddedScreen(
@@ -37,7 +39,7 @@ fun ProfileAddedScreen(
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Utils.IgBlack
+        containerColor = IgBackground
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -55,7 +57,7 @@ fun ProfileAddedScreen(
                 AsyncImage(
                     modifier = Modifier.fillMaxSize(),
                     model = uiState.profileImage,
-                    contentDescription = "Profile Image"
+                    contentDescription = stringResource(id = R.string.profile_image)
                 )
             }
             Text(
@@ -64,7 +66,7 @@ fun ProfileAddedScreen(
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Center
             )
@@ -76,7 +78,7 @@ fun ProfileAddedScreen(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Utils.IgBlue
+                    color = IgBlue
                 )
             )
 
@@ -99,7 +101,7 @@ fun ProfileAddedScreen(
 fun ProfileAddedScreenPreview() {
     ProfileAddedScreen(
         uiState = UiState(emailOrUsername = ""),
-        navigateToHomeScreen = {  },
-        onChangePhotoClicked = {  }
+        navigateToHomeScreen = { },
+        onChangePhotoClicked = { }
     )
 }

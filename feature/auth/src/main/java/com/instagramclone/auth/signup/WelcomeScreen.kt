@@ -4,12 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -21,7 +21,7 @@ import com.instagramclone.auth.UiState
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGButton
 import com.instagramclone.ui.components.IGWaitDialog
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
 
 @Composable
 fun WelcomeScreen(
@@ -30,7 +30,7 @@ fun WelcomeScreen(
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Utils.IgBlack
+        containerColor = IgBackground
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -49,7 +49,7 @@ fun WelcomeScreen(
                 style = TextStyle(
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Center
             )
@@ -59,7 +59,7 @@ fun WelcomeScreen(
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                 ),
                 textAlign = TextAlign.Center
             )
@@ -83,6 +83,6 @@ fun WelcomeScreen(
 fun WelcomeScreenPreview() {
     WelcomeScreen(
         uiState = UiState(username = "Prasidh"),
-        onCompleteSignUpClicked = {  }
+        onCompleteSignUpClicked = { }
     )
 }

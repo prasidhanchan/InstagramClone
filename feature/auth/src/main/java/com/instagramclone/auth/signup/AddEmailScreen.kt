@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +35,8 @@ import com.instagramclone.auth.UiState
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGButton
 import com.instagramclone.ui.components.IGTextBox
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgError
 
 @Composable
 fun AddEmailScreen(
@@ -48,7 +50,7 @@ fun AddEmailScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Utils.IgBlack
+        containerColor = IgBackground
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -67,7 +69,7 @@ fun AddEmailScreen(
             Icon(
                 modifier = Modifier.scale(2f),
                 painter = painterResource(id = R.drawable.profile_pic),
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.onBackground,
                 contentDescription = stringResource(R.string.profile_pic)
             )
 
@@ -77,10 +79,11 @@ fun AddEmailScreen(
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Center
             )
+
             HorizontalDivider(thickness = 2.dp, color = Color.White)
 
             IGTextBox(
@@ -94,7 +97,7 @@ fun AddEmailScreen(
                 isTrailingIconEnabled = true,
                 isErrorOrSuccess = uiState.errorOrSuccessEmail,
                 clearText = clearEmail,
-                onConfirm = {  }
+                onConfirm = { }
             )
 
             AnimatedVisibility(
@@ -109,7 +112,7 @@ fun AddEmailScreen(
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Utils.IgError
+                        color = IgError
                     ),
                     textAlign = TextAlign.Start
                 )
@@ -136,7 +139,7 @@ fun AddEmailScreen(
                 ) {
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 18.dp),
-                        color = Color.White.copy(alpha = 0.2f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
                     )
 
                     Row(
@@ -155,7 +158,7 @@ fun AddEmailScreen(
                             style = TextStyle(
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Normal,
-                                color = Color.White.copy(alpha = 0.5f)
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                             )
                         )
                         Text(
@@ -163,7 +166,7 @@ fun AddEmailScreen(
                             style = TextStyle(
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         )
                     }

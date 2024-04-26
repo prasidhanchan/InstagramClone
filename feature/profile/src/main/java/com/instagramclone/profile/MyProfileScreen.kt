@@ -18,6 +18,7 @@ import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -28,20 +29,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.instagramclone.profile.components.IGProfileAppBar
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGDialog
 import com.instagramclone.ui.components.IGLoader
-import com.instagramclone.ui.components.IGProfileAppBar
 import com.instagramclone.ui.components.MoreCard
 import com.instagramclone.ui.components.ProfileCard
 import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgOffBackground
+import com.instagramclone.util.constants.Utils.IgOffColor
 import com.instagramclone.util.models.Post
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +67,7 @@ fun MyProfileScreen(
     if (!uiState.isLoading) {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = Utils.IgBlack
+            color = IgBackground
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
@@ -113,13 +116,13 @@ fun MyProfileScreen(
                         Icon(
                             modifier = Modifier.padding(vertical = 10.dp),
                             painter = painterResource(id = R.drawable.grid),
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onBackground,
                             contentDescription = stringResource(com.instagramclone.profile.R.string.posts)
                         )
                         HorizontalDivider(
                             modifier = Modifier.padding(bottom = 2.dp),
                             thickness = 1.dp,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -133,7 +136,7 @@ fun MyProfileScreen(
                             modifier = Modifier
                                 .padding(1.dp)
                                 .size(120.dp)
-                                .background(color = Utils.IgOffBlack)
+                                .background(color = IgOffBackground)
                                 .clickable(
                                     onClick = {
                                         navigateToPostsWithPostIndex(
@@ -163,10 +166,10 @@ fun MyProfileScreen(
                 dragHandle = {
                     BottomSheetDefaults.DragHandle(
                         width = 40.dp,
-                        color = Utils.IgOffWhite
+                        color = IgOffColor
                     )
                 },
-                containerColor = Utils.IgOffBlack,
+                containerColor = IgOffBackground,
                 onDismissRequest = { showSheet = false }
             ) {
                 Column(

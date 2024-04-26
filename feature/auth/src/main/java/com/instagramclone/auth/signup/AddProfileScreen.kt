@@ -11,12 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -29,7 +29,8 @@ import com.instagramclone.auth.UiState
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGButton
 import com.instagramclone.ui.components.IGDialog
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgBlue
 
 @Composable
 fun AddProfileScreen(
@@ -50,7 +51,7 @@ fun AddProfileScreen(
     )
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Utils.IgBlack
+        containerColor = IgBackground
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -62,8 +63,8 @@ fun AddProfileScreen(
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.add_photo),
-                tint = Color.White,
-                contentDescription = "Add Profile"
+                tint = MaterialTheme.colorScheme.onBackground,
+                contentDescription = stringResource(R.string.add_profile)
             )
             Text(
                 modifier = Modifier.padding(top = 40.dp, bottom = 5.dp),
@@ -71,7 +72,7 @@ fun AddProfileScreen(
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.Center
             )
@@ -83,7 +84,7 @@ fun AddProfileScreen(
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                 ),
                 textAlign = TextAlign.Center
             )
@@ -102,7 +103,7 @@ fun AddProfileScreen(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Utils.IgBlue
+                    color = IgBlue
                 )
             )
         }

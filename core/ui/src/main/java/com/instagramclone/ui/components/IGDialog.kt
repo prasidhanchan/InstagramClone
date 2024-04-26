@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgOffBackground
+import com.instagramclone.util.constants.Utils.IgOffColor
 
 @Composable
 fun IGDialog(
@@ -51,7 +55,7 @@ fun IGDialog(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Utils.IgBlack.copy(alpha = 0.6f)),
+                .background(color = IgBackground.copy(alpha = 0.6f)),
             contentAlignment = Alignment.Center
         ) {
             Surface(
@@ -59,7 +63,7 @@ fun IGDialog(
                     .wrapContentHeight(Alignment.CenterVertically)
                     .fillMaxWidth(0.66f),
                 shape = RoundedCornerShape(20.dp),
-                color = Utils.IgOffBlack
+                color = IgOffBackground
             ) {
                 Column(
                     modifier = Modifier,
@@ -72,7 +76,7 @@ fun IGDialog(
                         style = TextStyle(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onBackground,
                             textAlign = TextAlign.Center
                         )
                     )
@@ -83,18 +87,17 @@ fun IGDialog(
                             style = TextStyle(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Normal,
-                                color = Color.White.copy(alpha = 0.6f),
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                                 textAlign = TextAlign.Center
                             )
                         )
                     }
 
-
                     if (showBlueOrRedButton) {
                         HorizontalDivider(
                             modifier = Modifier.padding(top = 30.dp),
                             thickness = 0.2.dp,
-                            color = Utils.IgOffWhite.copy(alpha = 0.2f)
+                            color = IgOffColor.copy(alpha = 0.2f)
                         )
                         Box(
                             modifier = Modifier
@@ -119,7 +122,7 @@ fun IGDialog(
                         HorizontalDivider(
                             modifier = if (!showBlueOrRedButton) Modifier.padding(top = 30.dp) else Modifier,
                             thickness = 0.2.dp,
-                            color = Utils.IgOffWhite.copy(alpha = 0.2f)
+                            color = IgOffColor.copy(alpha = 0.2f)
                         )
                         Box(
                             modifier = Modifier
@@ -133,7 +136,7 @@ fun IGDialog(
                                 style = TextStyle(
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Normal,
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     textAlign = TextAlign.Center
                                 )
                             )

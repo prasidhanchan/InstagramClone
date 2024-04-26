@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -19,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,9 +34,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.instagramclone.auth.UiState
 import com.instagramclone.ui.R
-import com.instagramclone.ui.components.AccessAccountTopBar
+import com.instagramclone.auth.components.AccessAccountTopBar
 import com.instagramclone.ui.components.IGDialog
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
 
 @Composable
 fun AccessAccountScreen(
@@ -47,7 +47,7 @@ fun AccessAccountScreen(
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Utils.IgBlack,
+        containerColor = IgBackground,
         topBar = { AccessAccountTopBar(popBack = popBack) }
     ) { innerPadding ->
         Column(
@@ -71,7 +71,7 @@ fun AccessAccountScreen(
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
             )
@@ -79,13 +79,13 @@ fun AccessAccountScreen(
                 modifier = Modifier
                     .padding(top = 20.dp, end = 10.dp),
                 thickness = 0.5.dp,
-                color = Color.White.copy(alpha = 0.2f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
             )
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(45.dp),
-                color = Utils.IgBlack
+                color = IgBackground
             ) {
                 Row(
                     modifier = Modifier
@@ -97,7 +97,7 @@ fun AccessAccountScreen(
                     Icon(
                         modifier = Modifier.padding(horizontal = 5.dp),
                         painter = painterResource(id = R.drawable.email),
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         contentDescription = stringResource(id = R.string.email)
                     )
                     Text(
@@ -106,30 +106,38 @@ fun AccessAccountScreen(
                         style = TextStyle(
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     )
                 }
             }
+
             HorizontalDivider(
                 modifier = Modifier
                     .padding(end = 10.dp),
                 thickness = 0.5.dp,
-                color = Color.White.copy(alpha = 0.2f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
             )
         }
-        val subStringBefore = uiState.email.substringBefore(stringResource(R.string.gmail_com)).length
+        val subStringBefore =
+            uiState.email.substringBefore(stringResource(R.string.gmail_com)).length
         IGDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
             title = stringResource(R.string.email_sent),
-            subTitle = stringResource(R.string.password_reset_message, uiState.email.substring(0, 1) + "*******" + uiState.email.substring(subStringBefore - 1, subStringBefore)),
+            subTitle = stringResource(
+                R.string.password_reset_message,
+                uiState.email.substring(
+                    0,
+                    1
+                ) + "*******" + uiState.email.substring(subStringBefore - 1, subStringBefore)
+            ),
             showDialog = uiState.showDialog,
             showBlueOrRedButton = true,
             showWhiteButton = false,
             button1Text = "",
             button2Text = stringResource(R.string.ok),
             onBlueOrRedClick = { setDialog(false) },
-            onWhiteClick = {  }
+            onWhiteClick = { }
         )
     }
 }
@@ -139,8 +147,8 @@ fun AccessAccountScreen(
 fun AccessAccountScreenPreview() {
     AccessAccountScreen(
         uiState = UiState(email = "prasidh@gmail.com"),
-        setDialog = {  },
-        popBack = {  },
-        onSendEmailClicked = {  }
+        setDialog = { },
+        popBack = { },
+        onSendEmailClicked = { }
     )
 }

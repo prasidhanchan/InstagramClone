@@ -21,7 +21,7 @@ data class UiState(
     var isLoading: Boolean = false,
     var isUpdating: Boolean = false,
     var isUserDetailChanged: Boolean = false,
-    var error: String = "",
+    var error: String? = "",
     var textState: String = "",
     var showPostScreen: Boolean = false,
     var postIndex: Int? = null,

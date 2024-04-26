@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBlue
+import com.instagramclone.util.constants.Utils.IgButtonColor
+import com.instagramclone.util.constants.Utils.IgLinkBlue
+import com.instagramclone.util.constants.Utils.IgOffBackground
 
 @Composable
 fun ProfileCard(
@@ -56,8 +60,9 @@ fun ProfileCard(
     onEditProfileClick: () -> Unit = { },
 ) {
     val uriHandler = LocalUriHandler.current
-    var buttonColor by remember(isFollowing) {
-        mutableStateOf(if (isFollowing) Utils.IgButtonBlack else Utils.IgBlue)
+    val dynamicButtonColor = IgButtonColor
+    var buttonColor: Color by remember(isFollowing) {
+        mutableStateOf(if (isFollowing) dynamicButtonColor else IgBlue)
     }
 
     Column(
@@ -79,7 +84,7 @@ fun ProfileCard(
             Surface(
                 modifier = Modifier.size(80.dp),
                 shape = CircleShape,
-                color = Utils.IgOffBlack
+                color = IgOffBackground
             ) {
                 if (profileImage.isNotEmpty()) {
                     AsyncImage(
@@ -106,7 +111,7 @@ fun ProfileCard(
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 )
                 Text(
@@ -114,7 +119,7 @@ fun ProfileCard(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }
@@ -129,7 +134,7 @@ fun ProfileCard(
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 )
                 Text(
@@ -137,7 +142,7 @@ fun ProfileCard(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }
@@ -152,7 +157,7 @@ fun ProfileCard(
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 )
                 Text(
@@ -160,7 +165,7 @@ fun ProfileCard(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }
@@ -173,7 +178,7 @@ fun ProfileCard(
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onBackground
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -187,7 +192,7 @@ fun ProfileCard(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Start
                 ),
                 maxLines = 4,
@@ -203,7 +208,7 @@ fun ProfileCard(
                 Icon(
                     modifier = Modifier.padding(start = 15.dp),
                     painter = painterResource(id = R.drawable.link),
-                    tint = Utils.IgLinkBlue,
+                    tint = IgLinkBlue,
                     contentDescription = stringResource(R.string.link)
                 )
                 Text(
@@ -216,7 +221,7 @@ fun ProfileCard(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Utils.IgLinkBlue
+                        color = IgLinkBlue
                     ),
                     textAlign = TextAlign.Start
                 )
@@ -237,7 +242,9 @@ fun ProfileCard(
                         .height(35.dp)
                         .weight(1f),
                     fontSize = 14,
-                    color = Utils.IgButtonBlack,
+                    color = IgButtonColor,
+                    fontColorEnabled = MaterialTheme.colorScheme.onBackground,
+                    fontColorDisabled = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                     text = stringResource(R.string.edit_profile),
                     isLoading = false,
                     onClick = onEditProfileClick
@@ -250,10 +257,15 @@ fun ProfileCard(
                         .weight(1f),
                     fontSize = 14,
                     color = buttonColor,
+                    fontColorEnabled = if (isFollowing)
+                        MaterialTheme.colorScheme.onBackground else Color.White,
+                    fontColorDisabled = if (isFollowing)
+                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f) else
+                            Color.White.copy(alpha = 0.5f),
                     text = if (isFollowing) stringResource(R.string.following) else stringResource(R.string.follow),
                     isLoading = false,
                     onClick = {
-                        buttonColor = Utils.IgButtonBlack
+                        buttonColor = dynamicButtonColor
                         if (isFollowing) onUnFollowClick() else onFollowClick()
                     }
                 )
@@ -263,7 +275,9 @@ fun ProfileCard(
                         .height(35.dp)
                         .weight(1f),
                     fontSize = 14,
-                    color = Utils.IgButtonBlack,
+                    color = IgButtonColor,
+                    fontColorEnabled = MaterialTheme.colorScheme.onBackground,
+                    fontColorDisabled = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                     text = stringResource(R.string.message),
                     isLoading = false,
                     onClick = onMessageClick
@@ -275,8 +289,7 @@ fun ProfileCard(
 
 @Preview(
     apiLevel = 33,
-    showBackground = true,
-    backgroundColor = 0XFF000000
+    showBackground = true
 )
 @Composable
 private fun ProfileCardPreview() {

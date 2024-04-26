@@ -8,12 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -28,7 +28,8 @@ import com.instagramclone.ui.components.IGButton
 import com.instagramclone.ui.components.IGFacebookButton
 import com.instagramclone.ui.components.IGTextBox
 import com.instagramclone.ui.components.IGWaitDialog
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgError
 
 @Composable
 fun LoginHelpScreen(
@@ -40,15 +41,17 @@ fun LoginHelpScreen(
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Utils.IgBlack,
+        containerColor = IgBackground,
         topBar = {
-            Row(modifier = Modifier.padding(top = 40.dp, start = 20.dp, bottom = 20.dp)) {
+            Row(
+                modifier = Modifier.padding(top = 40.dp, start = 20.dp, bottom = 20.dp)
+            ) {
                 Text(
                     text = stringResource(R.string.login_help),
                     style = TextStyle(
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center
                     )
                 )
@@ -68,7 +71,7 @@ fun LoginHelpScreen(
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
             )
@@ -81,7 +84,7 @@ fun LoginHelpScreen(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                     textAlign = TextAlign.Center
                 )
             )
@@ -107,7 +110,7 @@ fun LoginHelpScreen(
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Utils.IgError
+                        color = IgError
                     ),
                     textAlign = TextAlign.Start
                 )
@@ -130,14 +133,14 @@ fun LoginHelpScreen(
                         .weight(1f)
                         .padding(end = 10.dp),
                     thickness = 0.5.dp,
-                    color = Color.White.copy(alpha = 0.2f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
                 )
                 Text(
                     text = stringResource(id = R.string.or),
                     style = TextStyle(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White.copy(alpha = 0.5f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                     )
                 )
                 HorizontalDivider(
@@ -145,7 +148,7 @@ fun LoginHelpScreen(
                         .weight(1f)
                         .padding(start = 10.dp),
                     thickness = 0.5.dp,
-                    color = Color.White.copy(alpha = 0.2f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
                 )
             }
             IGFacebookButton(
@@ -167,9 +170,9 @@ fun LoginHelpScreen(
 fun LoginHelpScreenPreview() {
     LoginHelpScreen(
         uiState = UiState(),
-        onValueChange = {  },
-        onSuccess = {  },
-        onError = {  },
-        onNextClicked = {  }
+        onValueChange = { },
+        onSuccess = { },
+        onError = { },
+        onNextClicked = { }
     )
 }

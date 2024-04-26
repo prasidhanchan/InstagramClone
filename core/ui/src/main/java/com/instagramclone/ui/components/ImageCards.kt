@@ -111,7 +111,7 @@ fun DividerCard() {
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp),
-        color = Utils.IgBlack
+        color = Utils.IgBackground
     ) {
         Row(
             modifier = Modifier
@@ -143,7 +143,7 @@ fun ImageItem(
             .width(80.dp)
             .height(100.dp)
             .padding(all = 1.dp)
-            .background(color = Utils.IgOffWhite)
+            .background(color = Utils.IgOffColor)
             .clickable(
                 onClick = {
                     onImageSelected(image)
@@ -162,7 +162,7 @@ fun ImageItem(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    color = if (image.data == selectedImage) Utils.IgOffWhite.copy(alpha = 0.8f) else Color.Transparent
+                    color = if (image.data == selectedImage) Utils.IgOffColor.copy(alpha = 0.8f) else Color.Transparent
                 )
         )
     }

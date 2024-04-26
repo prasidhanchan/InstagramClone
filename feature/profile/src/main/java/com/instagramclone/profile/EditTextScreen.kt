@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,7 +38,8 @@ import com.instagramclone.ui.R
 import com.instagramclone.ui.components.EditTextBox
 import com.instagramclone.ui.components.IGLoader
 import com.instagramclone.ui.components.IGRadioButton
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBlue
+import com.instagramclone.util.constants.Utils.IgError
 
 @Composable
 fun EditTextScreen(
@@ -84,21 +85,22 @@ fun EditTextScreen(
                     onClick = { onDoneClick() }
                 )
                 AnimatedVisibility(
-                    visible = uiState.error.isNotEmpty()
+                    visible = !uiState.error.isNullOrEmpty()
                 ) {
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp),
-                        text = uiState.error,
+                        text = uiState.error!!,
                         style = TextStyle(
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Utils.IgError
+                            color = IgError
                         ),
                         textAlign = TextAlign.Start
                     )
                 }
+
                 Text(
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 5.dp),
                     text = when (text) {
@@ -113,7 +115,7 @@ fun EditTextScreen(
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.White.copy(alpha = 0.5f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                     )
                 )
             } else {
@@ -125,7 +127,7 @@ fun EditTextScreen(
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.White.copy(alpha = 0.5f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                     )
                 )
 
@@ -141,7 +143,7 @@ fun EditTextScreen(
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     )
                     IGRadioButton(
@@ -152,6 +154,7 @@ fun EditTextScreen(
                         }
                     )
                 }
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -164,7 +167,7 @@ fun EditTextScreen(
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     )
                     IGRadioButton(
@@ -175,6 +178,7 @@ fun EditTextScreen(
                         }
                     )
                 }
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -183,11 +187,11 @@ fun EditTextScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Unknown",
+                        text = stringResource(id = R.string.unknown),
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     )
                     IGRadioButton(
@@ -233,7 +237,7 @@ fun EditTextScreenAppbar(
                         onClick = onCancelClick
                     ),
                 painter = painterResource(id = R.drawable.cross),
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.onBackground,
                 contentDescription = stringResource(id = R.string.cancel)
             )
             Text(
@@ -243,7 +247,7 @@ fun EditTextScreenAppbar(
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 textAlign = TextAlign.End
             )
@@ -258,14 +262,14 @@ fun EditTextScreenAppbar(
                             onClick = onDoneClick
                         ),
                     painter = painterResource(id = R.drawable.check),
-                    tint = if (buttonEnabled) Utils.IgBlue else Utils.IgBlue.copy(alpha = 0.5f),
+                    tint = if (buttonEnabled) IgBlue else IgBlue.copy(alpha = 0.5f),
                     contentDescription = stringResource(R.string.done)
                 )
             } else {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
                     strokeWidth = 2.dp,
-                    color = Utils.IgBlue
+                    color = IgBlue
                 )
             }
         }
@@ -274,8 +278,7 @@ fun EditTextScreenAppbar(
 
 @Preview(
     apiLevel = 33,
-    showBackground = true,
-    backgroundColor = 0XFF000000
+    showBackground = true
 )
 @Composable
 fun EditTextScreenAppBarPreview() {
@@ -289,8 +292,7 @@ fun EditTextScreenAppBarPreview() {
 
 @Preview(
     apiLevel = 33,
-    showBackground = true,
-    backgroundColor = 0XFF000000
+    showBackground = true
 )
 @Composable
 fun EditTextScreenPreview() {

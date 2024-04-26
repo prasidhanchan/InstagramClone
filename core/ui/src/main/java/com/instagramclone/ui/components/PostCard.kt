@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -55,7 +56,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgBlue
+import com.instagramclone.util.constants.Utils.IgError
+import com.instagramclone.util.constants.Utils.IgLikeRed
+import com.instagramclone.util.constants.Utils.IgOffBackground
 import com.instagramclone.util.constants.formatTimeStamp
 import com.instagramclone.util.models.Post
 
@@ -102,7 +107,7 @@ fun PostCard(
                 .fillMaxWidth()
                 .wrapContentHeight(Alignment.CenterVertically)
                 .padding(bottom = 15.dp),
-            color = Utils.IgBlack
+            color = IgBackground
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -125,7 +130,7 @@ fun PostCard(
                     Surface(
                         modifier = Modifier.size(30.dp),
                         shape = CircleShape,
-                        color = Utils.IgOffBlack
+                        color = IgOffBackground
                     ) {
                         if (post.profileImage.isNotEmpty()) {
                             AsyncImage(
@@ -148,7 +153,7 @@ fun PostCard(
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -156,7 +161,7 @@ fun PostCard(
                     if (post.isVerified) {
                         Icon(
                             painter = painterResource(id = R.drawable.verify),
-                            tint = Utils.IgBlue,
+                            tint = IgBlue,
                             contentDescription = stringResource(R.string.verified)
                         )
                     }
@@ -174,7 +179,7 @@ fun PostCard(
                                     onClick = { moreSheetState = true }
                                 ),
                             painter = painterResource(id = R.drawable.more2),
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onBackground,
                             contentDescription = stringResource(id = R.string.more)
                         )
                     }
@@ -232,7 +237,7 @@ fun PostCard(
                                             }
                                         ),
                                     painter = painterResource(id = R.drawable.heart_filled),
-                                    tint = Utils.IgLikeRed,
+                                    tint = IgLikeRed,
                                     contentDescription = stringResource(R.string.unlike)
                                 )
                             } else {
@@ -265,7 +270,7 @@ fun PostCard(
                                         onClick = { }
                                     ),
                                 painter = painterResource(id = R.drawable.comment),
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onBackground,
                                 contentDescription = stringResource(
                                     R.string.view_all_comments,
                                     post.comments.size
@@ -281,7 +286,7 @@ fun PostCard(
                                         onClick = onSendClick
                                     ),
                                 painter = painterResource(id = R.drawable.send),
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onBackground,
                                 contentDescription = stringResource(R.string.send)
                             )
                         }
@@ -296,7 +301,7 @@ fun PostCard(
                                 onClick = onSaveClick
                             ),
                         painter = painterResource(id = R.drawable.save_outlined),
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         contentDescription = stringResource(R.string.save)
                     )
                 }
@@ -311,7 +316,7 @@ fun PostCard(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Start
                     )
                 )
@@ -328,7 +333,7 @@ fun PostCard(
                             style = SpanStyle(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         ) {
                             append("${post.username} ")
@@ -338,7 +343,7 @@ fun PostCard(
                             style = SpanStyle(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Normal,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         ) {
                             append(post.caption)
@@ -367,7 +372,7 @@ fun PostCard(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.White.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                         textAlign = TextAlign.Start
                     )
                 )
@@ -387,7 +392,7 @@ fun PostCard(
                     Surface(
                         modifier = Modifier.size(30.dp),
                         shape = CircleShape,
-                        color = Utils.IgOffBlack
+                        color = IgOffBackground
                     ) {
                         if (post.profileImage.isNotEmpty()) {
                             AsyncImage(
@@ -404,6 +409,7 @@ fun PostCard(
                             )
                         }
                     }
+
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -412,7 +418,7 @@ fun PostCard(
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Color.White.copy(alpha = 0.6f),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                             textAlign = TextAlign.Start
                         )
                     )
@@ -426,7 +432,7 @@ fun PostCard(
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.White.copy(alpha = 0.5f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                         textAlign = TextAlign.Start
                     )
                 )
@@ -453,7 +459,7 @@ fun PostCard(
                     Icon(
                         modifier = Modifier.size(18.dp),
                         painter = painterResource(id = R.drawable.unfollow),
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         contentDescription = stringResource(id = R.string.unfollow)
                     )
                     Spacer(modifier = Modifier.width(10.dp))
@@ -462,7 +468,7 @@ fun PostCard(
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     )
                 }
@@ -486,7 +492,7 @@ fun PostCard(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.delete),
-                        tint = Utils.IgError,
+                        tint = IgError,
                         contentDescription = stringResource(id = R.string.delete)
                     )
                     Spacer(modifier = Modifier.width(10.dp))
@@ -495,7 +501,7 @@ fun PostCard(
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Utils.IgError
+                            color = IgError
                         )
                     )
                 }

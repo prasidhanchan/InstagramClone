@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import com.instagramclone.post.components.UploadCard
+import com.instagramclone.post.components.UploadSelectionCard
 import com.instagramclone.ui.R
 import com.instagramclone.util.models.Image
 
@@ -31,9 +31,11 @@ fun UploadContentScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
-        UploadStoryScreen()
+        UploadStoryScreen(
+            innerPadding = innerPadding
+        )
 
-        UploadPostScreen2(
+        UploadPostScreen(
             visible = selectedText == context.getString(R.string.post_caps),
             innerPadding = innerPadding,
             uiState = uiState,
@@ -42,7 +44,7 @@ fun UploadContentScreen(
             onBackClick = onBackClick
         )
 
-        UploadCard(
+        UploadSelectionCard(
             selectedText = selectedText,
             onClick = {
                 selectedText = it

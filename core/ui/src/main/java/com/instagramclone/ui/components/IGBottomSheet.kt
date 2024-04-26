@@ -32,16 +32,16 @@ fun IGBottomSheet(
             dragHandle = {
                 BottomSheetDefaults.DragHandle(
                     width = 35.dp,
-                    color = Utils.IgOffWhite
+                    color = Utils.IgOffColor
                 )
             },
             shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
-            containerColor = Utils.IgOffBlack,
+            containerColor = Utils.IgOffBackground,
             content = {
                 HorizontalDivider(
                     modifier = Modifier.padding(top = 35.dp),
                     thickness = 0.2.dp,
-                    color = Utils.IgOffWhite.copy(alpha = 0.2f)
+                    color = Utils.IgOffColor.copy(alpha = 0.2f)
                 )
                 content()
             }

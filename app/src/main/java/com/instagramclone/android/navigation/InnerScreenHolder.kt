@@ -14,14 +14,14 @@ import com.instagramclone.util.constants.Utils
 
 @Composable
 fun InnerScreenHolder(
-    viewModel: ProfileViewModel = hiltViewModel(),
+    viewModelProfile: ProfileViewModel = hiltViewModel(),
     navigateToLogin: () -> Unit
 ) {
     val navHostController = rememberNavController()
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination?.route
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModelProfile.uiState.collectAsState()
 
     val showBottomBar = when(currentDestination) {
         NavScreens.HomeScreen.route -> true
@@ -33,7 +33,7 @@ fun InnerScreenHolder(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Utils.IgBlack,
+        containerColor = Utils.IgBackground,
         bottomBar = {
             if (showBottomBar) {
                 IGBottomBar(
@@ -45,7 +45,7 @@ fun InnerScreenHolder(
         content = { innerPadding ->
             InnerScreenNavigation(
                 innerPadding = innerPadding,
-                viewModelProfile = viewModel,
+                viewModelProfile = viewModelProfile,
                 navHostController = navHostController,
                 navigateToLogin = navigateToLogin
             )
