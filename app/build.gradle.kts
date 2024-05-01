@@ -71,6 +71,10 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+    implementation(libs.coil.video.decoder)
+
+    // Palette
+    implementation(libs.palette)
 
     // Dagger - Hilt
     implementation(libs.hilt.android)
