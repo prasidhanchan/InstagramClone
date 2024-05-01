@@ -144,5 +144,9 @@
     <string name="story_caps">STORY</string>
     <string name="logo">Logo</string>
     <string name="add_profile">Add Profile</string>
+    <string name="something_went_wrong">Something went wrong!</string>
+    <string name="photos">Photos</string>
+    <string name="videos">Videos</string>
+    <string name="mute_unmute">Mute/UnMute</string>
 
 </resources>

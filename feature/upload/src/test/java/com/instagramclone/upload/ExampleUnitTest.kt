@@ -1,4 +1,4 @@
-package com.instagramclone.post
+package com.instagramclone.upload
 
 import org.junit.Test
 

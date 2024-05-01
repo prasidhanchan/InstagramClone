@@ -54,6 +54,13 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
 
+    // ExoPlayer
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+
+    // Palette
+    implementation(libs.palette)
+
     implementation(libs.material3)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.compose.bom))

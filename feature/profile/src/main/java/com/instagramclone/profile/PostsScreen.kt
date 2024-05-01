@@ -17,18 +17,26 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGLoader
 import com.instagramclone.ui.components.IGRegularAppBar
 import com.instagramclone.ui.components.Posts
 import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.models.Post
+import com.instagramclone.util.test.TestPlayer
 
+@UnstableApi
 @Composable
 fun PostsScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
     currentUserId: String,
+    exoPlayer: ExoPlayer,
+    currentPosition: Long,
+    duration: Long,
+    onWatchAgainClick: (String) -> Unit,
     isMyProfile: Boolean,
     scrollState: LazyListState,
     onFollowClick: () -> Unit,
@@ -71,6 +79,10 @@ fun PostsScreen(
             Posts(
                 posts = uiState.myPosts,
                 currentUserId = currentUserId,
+                exoPlayer = exoPlayer,
+                currentPosition = currentPosition,
+                duration = duration,
+                onWatchAgainClick = onWatchAgainClick,
                 enableHeader = false,
                 onLikeClick = onLikeClick,
                 onUnLikeClick = onUnlikeClick,
@@ -79,13 +91,17 @@ fun PostsScreen(
                 onUnfollowClick = onUnfollowClick,
                 onDeletePostClick = onDeletePostClick,
                 onUsernameClick = onUsernameClick,
-                scrollState = scrollState
+                state = scrollState
             )
             // For Other user's profile
         } else if (!isMyProfile && uiState.selectedUserPosts.isNotEmpty()) {
             Posts(
                 posts = uiState.selectedUserPosts,
                 currentUserId = currentUserId,
+                exoPlayer = exoPlayer,
+                currentPosition = currentPosition,
+                duration = duration,
+                onWatchAgainClick = onWatchAgainClick,
                 enableHeader = false,
                 onLikeClick = onLikeClick,
                 onUnLikeClick = onUnlikeClick,
@@ -94,7 +110,7 @@ fun PostsScreen(
                 onUnfollowClick = onUnfollowClick,
                 onDeletePostClick = onDeletePostClick,
                 onUsernameClick = onUsernameClick,
-                scrollState = scrollState
+                state = scrollState
             )
         } else {
             IGLoader()
@@ -102,6 +118,7 @@ fun PostsScreen(
     }
 }
 
+@UnstableApi
 @Preview(
     apiLevel = 33,
     showBackground = true,
@@ -116,15 +133,19 @@ fun PostScreenPreview() {
             myPosts = listOf(
                 Post(
                     profileImage = "a",
-                    images = listOf("a")
+                    mediaList = listOf("a")
                 ),
                 Post(
                     profileImage = "b",
-                    images = listOf("b")
+                    mediaList = listOf("b")
                 ),
             )
         ),
         currentUserId = "",
+        exoPlayer = TestPlayer(),
+        currentPosition = 1000L,
+        duration = 800L,
+        onWatchAgainClick = { },
         isMyProfile = true,
         scrollState = LazyListState(),
         onFollowClick = { },
@@ -134,7 +155,6 @@ fun PostScreenPreview() {
         onSaveClick = { },
         onUnfollowClick = { },
         onDeletePostClick = { },
-        onUsernameClick = { },
-        onBackClick = { }
-    )
+        onUsernameClick = { }
+    ) { }
 }

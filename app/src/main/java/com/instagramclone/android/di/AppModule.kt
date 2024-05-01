@@ -1,14 +1,15 @@
 package com.instagramclone.android.di
 
 import android.content.Context
-import com.google.firebase.auth.FirebaseAuth
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.instagramclone.firebase.repository.AuthRepositoryImpl
 import com.instagramclone.firebase.repository.HomeRepositoryImpl
 import com.instagramclone.firebase.repository.ProfileRepositoryImpl
 import com.instagramclone.firebase.repository.UploadContentRepositoryImpl
-import com.instagramclone.post.ContentResolver
+import com.instagramclone.upload.util.ContentResolver
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,4 +46,14 @@ object AppModule {
     @Provides
     fun provideContentResolver(@ApplicationContext context: Context) =
         ContentResolver(context = context)
+
+    @UnstableApi
+    @Singleton
+    @Provides
+    fun provideExoplayer(@ApplicationContext context: Context): ExoPlayer {
+        return ExoPlayer.Builder(context)
+            .setHandleAudioBecomingNoisy(true)
+            .setDeviceVolumeControlEnabled(true)
+            .build()
+    }
 }

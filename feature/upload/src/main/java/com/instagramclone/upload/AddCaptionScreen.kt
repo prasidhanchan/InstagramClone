@@ -1,4 +1,4 @@
-package com.instagramclone.post
+package com.instagramclone.upload
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,9 +71,9 @@ fun AddCaptionScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .fillMaxHeight(0.5f),
-                        model = uiState.selectedImage?.data,
+                        model = uiState.selectedMedia?.data,
                         contentScale = ContentScale.Crop,
-                        contentDescription = uiState.selectedImage?.name
+                        contentDescription = uiState.selectedMedia?.name
                     )
                     BasicTextField(
                         modifier = Modifier

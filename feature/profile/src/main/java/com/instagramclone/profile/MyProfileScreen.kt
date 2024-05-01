@@ -128,10 +128,10 @@ fun MyProfileScreen(
                 }
 
                 items(
-                    key = { myPost -> myPost.images },
+                    key = { myPost -> myPost.mediaList },
                     items = uiState.myPosts
                 ) { myPost ->
-                    if (myPost.images.isNotEmpty()) {
+                    if (myPost.mediaList.isNotEmpty()) {
                         Box(
                             modifier = Modifier
                                 .padding(1.dp)
@@ -148,7 +148,7 @@ fun MyProfileScreen(
                         ) {
                             AsyncImage(
                                 modifier = Modifier.fillMaxSize(),
-                                model = myPost.images.first() /* TODO integrate pager */,
+                                model = myPost.mediaList.first() /* TODO integrate pager */,
                                 contentScale = ContentScale.Crop,
                                 contentDescription = stringResource(
                                     com.instagramclone.profile.R.string.post_info,
@@ -229,11 +229,11 @@ private fun MyProfileScreenPreview() {
             myPosts = listOf(
                 Post(
                     profileImage = "a",
-                    images = listOf("a")
+                    mediaList = listOf("a")
                 ),
                 Post(
                     profileImage = "b",
-                    images = listOf("b")
+                    mediaList = listOf("b")
                 ),
             ),
             followers = listOf("", ""),

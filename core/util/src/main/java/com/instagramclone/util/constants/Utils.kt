@@ -40,6 +40,7 @@ object Utils {
         @ReadOnlyComposable
         get() = if (isSystemInDarkTheme()) Color(0xFFEED4D4) else Color(0xFF2A2B2C)
 
+    val IgBlack = Color(0XFF000000)
     val IgBlue = Color(0xFF2196F3)
     val IgError = Color(0xFFE95044)
     val IgLikeRed = Color(0xFFF55043)

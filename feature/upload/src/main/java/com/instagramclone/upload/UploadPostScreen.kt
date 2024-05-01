@@ -1,4 +1,4 @@
-package com.instagramclone.post
+package com.instagramclone.upload
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -22,19 +22,24 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGRegularAppBar
-import com.instagramclone.ui.components.ImageCards
+import com.instagramclone.upload.components.post.MediaCards
+import com.instagramclone.util.test.TestPlayer
 import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.constants.Utils.IgBackground
-import com.instagramclone.util.models.Image
+import com.instagramclone.util.models.Media
 
+@UnstableApi
 @Composable
 fun UploadPostScreen(
     visible: Boolean,
     innerPadding: PaddingValues,
     uiState: UiState,
-    onImageSelected: (Image) -> Unit,
+    exoPlayer: ExoPlayer,
+    onMediaSelected: (Media) -> Unit,
     onNextClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -68,7 +73,7 @@ fun UploadPostScreen(
                     trailingIcon = {
                         Text(
                             modifier = Modifier.clickable(
-                                enabled = uiState.selectedImage?.data != null,
+                                enabled = uiState.selectedMedia?.data != null,
                                 indication = null,
                                 interactionSource = interactionSource,
                                 onClick = onNextClick
@@ -84,16 +89,18 @@ fun UploadPostScreen(
                     onBackClick = onBackClick
                 )
 
-                ImageCards(
-                    images = uiState.images,
-                    selectedImage = uiState.selectedImage,
-                    onImageSelected = onImageSelected
+                MediaCards(
+                    mediaList = uiState.mediaList,
+                    exoPlayer = exoPlayer,
+                    selectedMedia = uiState.selectedMedia,
+                    onMediaSelected = onMediaSelected
                 )
             }
         }
     }
 }
 
+@UnstableApi
 @Preview(
     apiLevel = 33,
     showBackground = true
@@ -104,7 +111,8 @@ private fun UploadPostScreenPreview() {
         visible = true,
         innerPadding = PaddingValues(),
         uiState = UiState(),
-        onImageSelected = { },
+        exoPlayer = TestPlayer(),
+        onMediaSelected = { },
         onNextClick = { },
         onBackClick = { }
     )

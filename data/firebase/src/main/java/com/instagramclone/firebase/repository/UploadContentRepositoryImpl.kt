@@ -16,15 +16,15 @@ class UploadContentRepositoryImpl : UploadContentRepository {
         onError: (String) -> Unit
     ) {
         try {
-            storageRefPost.child("${post.userId}-${post.timeStamp}.jpg")
-                .putFile(post.images.first().toUri())
+            storageRefPost.child("${post.userId}-${post.timeStamp}.${post.mimeType.substringAfter("/")}") // image.jpeg
+                .putFile(post.mediaList.first().toUri())
                 .addOnSuccessListener { taskSnap ->
                     taskSnap.storage.downloadUrl
                         .addOnSuccessListener { downloadUrl ->
                             dbPost.child("${post.userId}-${post.timeStamp}")
                                 .setValue(
                                     post.apply {
-                                        images = listOf(downloadUrl.toString())
+                                        mediaList = listOf(downloadUrl.toString())
                                     }
                                 )
                                 .addOnSuccessListener {

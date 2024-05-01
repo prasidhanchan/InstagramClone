@@ -54,6 +54,9 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
 
+    // ExoPlayer
+    implementation(libs.androidx.media3.exoplayer)
+
     // Firebase Authentication
     implementation(libs.firebase.authentication)
 

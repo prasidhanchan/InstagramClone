@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,6 +53,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
 import com.instagramclone.util.constants.Utils.IgBackground
@@ -63,12 +64,19 @@ import com.instagramclone.util.constants.Utils.IgLikeRed
 import com.instagramclone.util.constants.Utils.IgOffBackground
 import com.instagramclone.util.constants.formatTimeStamp
 import com.instagramclone.util.models.Post
+import com.instagramclone.util.test.TestPlayer
 
 @OptIn(ExperimentalMaterial3Api::class)
+@UnstableApi
 @Composable
 fun PostCard(
     post: Post,
     currentUserId: String,
+    exoPlayer: ExoPlayer,
+    currentPosition: Long,
+    duration: Long,
+    isPlaying: Boolean,
+    onWatchAgainClick: (String) -> Unit,
     onLikeClick: (Post) -> Unit,
     onUnLikeClick: (Post) -> Unit,
     onSendClick: () -> Unit,
@@ -98,7 +106,7 @@ fun PostCard(
     var moreSheetState by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
-    if (post.images.isNotEmpty()) {
+    if (post.mediaList.isNotEmpty()) {
         Surface(
             modifier = Modifier
                 .animateContentSize(
@@ -106,7 +114,7 @@ fun PostCard(
                 )
                 .fillMaxWidth()
                 .wrapContentHeight(Alignment.CenterVertically)
-                .padding(bottom = 15.dp),
+                .padding(bottom = 20.dp),
             color = IgBackground
         ) {
             Column(
@@ -114,330 +122,66 @@ fun PostCard(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .clickable(
-                            indication = null,
-                            interactionSource = interactionSource,
-                            onClick = { onUsernameClick(post.userId) }
-                        ),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Surface(
-                        modifier = Modifier.size(30.dp),
-                        shape = CircleShape,
-                        color = IgOffBackground
-                    ) {
-                        if (post.profileImage.isNotEmpty()) {
-                            AsyncImage(
-                                modifier = Modifier.fillMaxSize(),
-                                model = post.profileImage,
-                                contentScale = ContentScale.Crop,
-                                filterQuality = FilterQuality.Low,
-                                contentDescription = post.username
-                            )
-                        } else {
-                            Image(
-                                painter = painterResource(id = R.drawable.profile),
-                                contentDescription = stringResource(id = R.string.profile_image)
-                            )
-                        }
-                    }
-                    Text(
-                        modifier = Modifier.padding(start = 10.dp, end = 5.dp),
-                        text = post.username,
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    if (post.isVerified) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.verify),
-                            tint = IgBlue,
-                            contentDescription = stringResource(R.string.verified)
-                        )
-                    }
-
-                    // More icon
-                    Box(
-                        modifier = Modifier.weight(4f),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = interactionSource,
-                                    onClick = { moreSheetState = true }
-                                ),
-                            painter = painterResource(id = R.drawable.more2),
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            contentDescription = stringResource(id = R.string.more)
-                        )
-                    }
-                }
-
                 AnimatedLike(
                     onDoubleTap = {
                         onLikeClick(post)
                         size = 1.6f
                     }
                 ) {
-                    AsyncImage(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .defaultMinSize(minHeight = 200.dp),
-                        model = post.images.first(), //TODO integrate Pager
-                        contentScale = ContentScale.Crop,
-                        filterQuality = FilterQuality.Low,
-                        contentDescription = stringResource(R.string.post, post.username)
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .fillMaxWidth()
-                        .wrapContentHeight(Alignment.CenterVertically),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(5f),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start
-                        ) {
-                            if (hasLiked) {
-                                Icon(
-                                    modifier = Modifier
-                                        .scale(scale)
-                                        .padding(horizontal = 10.dp)
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = interactionSource,
-                                            onClick = {
-                                                size = 1.6f
-                                                hasLiked = false
-                                                likeCount -= 1
-                                                onUnLikeClick(post)
-                                            }
-                                        ),
-                                    painter = painterResource(id = R.drawable.heart_filled),
-                                    tint = IgLikeRed,
-                                    contentDescription = stringResource(R.string.unlike)
-                                )
-                            } else {
-                                Icon(
-                                    modifier = Modifier
-                                        .scale(scale)
-                                        .padding(horizontal = 10.dp)
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = interactionSource,
-                                            onClick = {
-                                                size = 1.6f
-                                                hasLiked = true
-                                                likeCount += 1
-                                                onLikeClick(post)
-                                            }
-                                        ),
-                                    painter = painterResource(id = R.drawable.heart_outlined),
-                                    tint = Color.White,
-                                    contentDescription = stringResource(R.string.like)
-                                )
-                            }
-                            Icon(
-                                modifier = Modifier
-                                    .scale(1.1f)
-                                    .padding(horizontal = 10.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = interactionSource,
-                                        onClick = { }
-                                    ),
-                                painter = painterResource(id = R.drawable.comment),
-                                tint = MaterialTheme.colorScheme.onBackground,
-                                contentDescription = stringResource(
-                                    R.string.view_all_comments,
-                                    post.comments.size
-                                )
-                            )
-                            Icon(
-                                modifier = Modifier
-                                    .scale(1.2f)
-                                    .padding(horizontal = 8.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = interactionSource,
-                                        onClick = onSendClick
-                                    ),
-                                painter = painterResource(id = R.drawable.send),
-                                tint = MaterialTheme.colorScheme.onBackground,
-                                contentDescription = stringResource(R.string.send)
-                            )
-                        }
-                    }
-                    Icon(
-                        modifier = Modifier
-                            .scale(1.4f)
-                            .weight(0.6f)
-                            .clickable(
-                                indication = null,
-                                interactionSource = interactionSource,
-                                onClick = onSaveClick
-                            ),
-                        painter = painterResource(id = R.drawable.save_outlined),
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        contentDescription = stringResource(R.string.save)
-                    )
-                }
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 15.dp),
-                    text = stringResource(
-                        if (likeCount == 1) R.string.post_like else R.string.post_likes,
-                        likeCount
-                    ),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Start
-                    )
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(Alignment.CenterVertically)
-                        .padding(vertical = 5.dp),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    val annotatedString = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        ) {
-                            append("${post.username} ")
-                        }
-
-                        withStyle(
-                            style = SpanStyle(
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Normal,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        ) {
-                            append(post.caption)
-                        }
-                    }
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 15.dp, end = 5.dp),
-                        text = annotatedString,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-
-
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 15.dp)
-                        .clickable(
-                            indication = null,
+                    if (post.mimeType.contains("video")) {
+                        PostPlayer(
+                            exoPlayer = exoPlayer,
+                            post = post,
+                            currentPosition = currentPosition,
+                            duration = duration,
+                            isPlaying = isPlaying,
                             interactionSource = interactionSource,
-                            onClick = { }
-                        ),
-                    text = stringResource(R.string.view_all_comments, post.comments.size),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                        textAlign = TextAlign.Start
-                    )
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp, vertical = 8.dp)
-                        .clickable(
-                            indication = null,
-                            interactionSource = interactionSource,
-                            onClick = { moreSheetState = true }
-                        ),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Surface(
-                        modifier = Modifier.size(30.dp),
-                        shape = CircleShape,
-                        color = IgOffBackground
-                    ) {
-                        if (post.profileImage.isNotEmpty()) {
-                            AsyncImage(
-                                modifier = Modifier.fillMaxSize(),
-                                model = post.profileImage,
-                                contentScale = ContentScale.Crop,
-                                filterQuality = FilterQuality.Low,
-                                contentDescription = post.username
-                            )
-                        } else {
-                            Image(
-                                painter = painterResource(id = R.drawable.profile),
-                                contentDescription = stringResource(id = R.string.profile_image)
-                            )
-                        }
-                    }
-
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp),
-                        text = stringResource(R.string.add_a_comment),
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                            textAlign = TextAlign.Start
+                            onMoreClick = { moreSheetState = true },
+                            onUsernameClick = onUsernameClick,
+                            onWatchAgainClick = onWatchAgainClick
                         )
-                    )
+                    } else {
+                        PostImage(
+                            post = post,
+                            interactionSource = interactionSource,
+                            onMoreClick = { moreSheetState = true },
+                            onUsernameClick = onUsernameClick
+                        )
+                    }
                 }
 
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp),
-                    text = post.timeStamp.formatTimeStamp(),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                        textAlign = TextAlign.Start
-                    )
+                ActionIcons(
+                    post = post,
+                    scale = scale,
+                    hasLiked = hasLiked,
+                    interactionSource = interactionSource,
+                    onUnLikeClick = { post ->
+                        size = 1.6f
+                        hasLiked = false
+                        likeCount -= 1
+                        onUnLikeClick(post)
+                    },
+                    onLikeClick = { post ->
+                        size = 1.6f
+                        hasLiked = true
+                        likeCount += 1
+                        onLikeClick(post)
+                    },
+                    onSaveClick = onSaveClick,
+                    onSendClick = onSendClick
+                )
+
+                PostBottomComp(
+                    post = post,
+                    likeCount = likeCount,
+                    interactionSource = interactionSource,
+                    onViewCommentsClick = {
+                        // TODO: Open Comments Sheet
+                    }
                 )
             }
         }
+
         IGBottomSheet(
             showSheet = moreSheetState,
             sheetState = sheetState,
@@ -510,6 +254,296 @@ fun PostCard(
     }
 }
 
+@Composable
+fun ActionIcons(
+    post: Post,
+    hasLiked: Boolean,
+    scale: Float,
+    interactionSource: MutableInteractionSource,
+    onUnLikeClick: (Post) -> Unit,
+    onLikeClick: (Post) -> Unit,
+    onSaveClick: () -> Unit,
+    onSendClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .padding(10.dp)
+            .fillMaxWidth()
+            .wrapContentHeight(Alignment.CenterVertically),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(5f),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                if (hasLiked) {
+                    Icon(
+                        modifier = Modifier
+                            .scale(scale)
+                            .padding(horizontal = 10.dp)
+                            .clickable(
+                                indication = null,
+                                interactionSource = interactionSource,
+                                onClick = {
+                                    onUnLikeClick(post)
+                                }
+                            ),
+                        painter = painterResource(id = R.drawable.heart_filled),
+                        tint = IgLikeRed,
+                        contentDescription = stringResource(R.string.unlike)
+                    )
+                } else {
+                    Icon(
+                        modifier = Modifier
+                            .scale(scale)
+                            .padding(horizontal = 10.dp)
+                            .clickable(
+                                indication = null,
+                                interactionSource = interactionSource,
+                                onClick = {
+                                    onLikeClick(post)
+                                }
+                            ),
+                        painter = painterResource(id = R.drawable.heart_outlined),
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        contentDescription = stringResource(R.string.like)
+                    )
+                }
+
+                Icon(
+                    modifier = Modifier
+                        .scale(1.1f)
+                        .padding(horizontal = 10.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = interactionSource,
+                            onClick = { }
+                        ),
+                    painter = painterResource(id = R.drawable.comment),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    contentDescription = stringResource(
+                        R.string.view_all_comments,
+                        post.comments.size
+                    )
+                )
+                Icon(
+                    modifier = Modifier
+                        .scale(1.2f)
+                        .padding(horizontal = 8.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = interactionSource,
+                            onClick = onSendClick
+                        ),
+                    painter = painterResource(id = R.drawable.send),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    contentDescription = stringResource(R.string.send)
+                )
+            }
+        }
+
+        Icon(
+            modifier = Modifier
+                .scale(1.4f)
+                .weight(0.6f)
+                .clickable(
+                    indication = null,
+                    interactionSource = interactionSource,
+                    onClick = onSaveClick
+                ),
+            painter = painterResource(id = R.drawable.save_outlined),
+            tint = MaterialTheme.colorScheme.onBackground,
+            contentDescription = stringResource(R.string.save)
+        )
+    }
+}
+
+@Composable
+fun PostBottomComp(
+    post: Post,
+    likeCount: Int,
+    interactionSource: MutableInteractionSource,
+    onViewCommentsClick: () -> Unit
+) {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 15.dp),
+        text = stringResource(
+            if (likeCount == 1) R.string.post_like else R.string.post_likes,
+            likeCount
+        ),
+        style = TextStyle(
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Start
+        )
+    )
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(Alignment.CenterVertically)
+            .padding(vertical = 5.dp),
+        horizontalArrangement = Arrangement.Start
+    ) {
+        val annotatedString = buildAnnotatedString {
+            withStyle(
+                style = SpanStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            ) {
+                append("${post.username} ")
+            }
+
+            withStyle(
+                style = SpanStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            ) {
+                append(post.caption)
+            }
+        }
+
+        Text(
+            modifier = Modifier
+                .padding(start = 15.dp, end = 5.dp),
+            text = annotatedString,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+
+    if (post.comments.isNotEmpty()) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp)
+                .clickable(
+                    indication = null,
+                    interactionSource = interactionSource,
+                    onClick = onViewCommentsClick
+                ),
+            text = stringResource(R.string.view_all_comments, post.comments.size),
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                textAlign = TextAlign.Start
+            )
+        )
+    }
+
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp),
+        text = post.timeStamp.formatTimeStamp(),
+        style = TextStyle(
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Normal,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+            textAlign = TextAlign.Start
+        )
+    )
+}
+
+@Composable
+fun PostHeader(
+    post: Post,
+    color: Color = IgOffBackground,
+    interactionSource: MutableInteractionSource,
+    onMoreClick: () -> Unit,
+    onUsernameClick: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 10.dp)
+            .fillMaxWidth()
+            .height(50.dp)
+            .clickable(
+                indication = null,
+                interactionSource = interactionSource,
+                onClick = { onUsernameClick(post.userId) }
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        // Profile Image
+        Surface(
+            modifier = Modifier.size(30.dp),
+            shape = CircleShape,
+            color = color
+        ) {
+            if (post.profileImage.isNotEmpty()) {
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = post.profileImage,
+                    contentScale = ContentScale.Crop,
+                    filterQuality = FilterQuality.Low,
+                    contentDescription = post.username
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.profile),
+                    contentDescription = stringResource(id = R.string.profile_image)
+                )
+            }
+        }
+
+        Text(
+            modifier = Modifier.padding(start = 10.dp, end = 5.dp),
+            text = post.username,
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        if (post.isVerified) {
+            Icon(
+                painter = painterResource(id = R.drawable.verify),
+                tint = IgBlue,
+                contentDescription = stringResource(R.string.verified)
+            )
+        }
+
+        // More icon
+        Box(
+            modifier = Modifier.weight(4f),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Icon(
+                modifier = Modifier
+                    .clickable(
+                        indication = null,
+                        interactionSource = interactionSource,
+                        onClick = onMoreClick
+                    ),
+                painter = painterResource(id = R.drawable.more2),
+                tint = MaterialTheme.colorScheme.onBackground,
+                contentDescription = stringResource(id = R.string.more)
+            )
+        }
+    }
+}
+
+@UnstableApi
 @Preview(
     apiLevel = 33,
     showBackground = true,
@@ -523,10 +557,16 @@ fun PostCardPreview() {
             likes = listOf("1234", "4321"),
             caption = "Who you picking?",
             timeStamp = 5,
-            images = listOf(""),
-            isVerified = true
+            mediaList = listOf(""),
+            isVerified = true,
+            mimeType = "video/mp4"
         ),
         currentUserId = "12345",
+        exoPlayer = TestPlayer(),
+        currentPosition = 1000L,
+        duration = 800L,
+        isPlaying = false,
+        onWatchAgainClick = { },
         onLikeClick = { },
         onUnLikeClick = { },
         onSendClick = { },

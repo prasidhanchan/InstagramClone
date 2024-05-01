@@ -1,4 +1,4 @@
-package com.instagramclone.post.components
+package com.instagramclone.upload.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.instagramclone.ui.R
-import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgBlack
 
 /**
  * Upload card composable for displaying Text in a row ex: POST, STORY.
@@ -42,7 +42,7 @@ internal fun UploadSelectionCard(
             .wrapContentSize(Alignment.Center)
             .padding(bottom = 25.dp),
         shape = RoundedCornerShape(25.dp),
-        color = IgBackground.copy(alpha = 0.75f)
+        color = IgBlack.copy(alpha = 0.75f)
     ) {
         Row(
             modifier = Modifier.wrapContentSize(Alignment.Center),

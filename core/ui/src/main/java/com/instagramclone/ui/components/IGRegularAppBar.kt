@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +38,7 @@ fun IGRegularAppBar(
     fonSize: Int = 20,
     onBackClick: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(horizontal = 20.dp),
+    textAlign: TextAlign = TextAlign.Start,
     trailingIcon: @Composable () -> Unit = {  }
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -66,11 +68,12 @@ fun IGRegularAppBar(
             )
             Spacer(modifier = Modifier.width(30.dp))
             Text(
-                modifier = Modifier.weight(2f),
+                modifier = Modifier.weight(4f),
                 text = text,
                 style = TextStyle(
                     fontSize = fonSize.sp,
                     fontWeight = FontWeight.Bold,
+                    textAlign = textAlign,
                     color = MaterialTheme.colorScheme.onBackground
                 )
             )

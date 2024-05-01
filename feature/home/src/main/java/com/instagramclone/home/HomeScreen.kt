@@ -19,17 +19,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
+import com.instagramclone.home.components.IGHomeAppBar
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGDialog
-import com.instagramclone.home.components.IGHomeAppBar
 import com.instagramclone.ui.components.IGLoader
 import com.instagramclone.ui.components.Posts
 import com.instagramclone.ui.components.Stories
-import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgError
 import com.instagramclone.util.models.Post
 import com.instagramclone.util.models.Story
+import com.instagramclone.util.test.TestPlayer
 
+@UnstableApi
 @Composable
 fun HomeScreen(
     innerPadding: PaddingValues,
@@ -38,6 +42,10 @@ fun HomeScreen(
     username: String,
     selectedPost: Post,
     currentUserId: String,
+    exoPlayer: ExoPlayer,
+    currentPosition: Long,
+    duration: Long,
+    onWatchAgainClick: (String) -> Unit,
     onLikeClick: (Post) -> Unit,
     onUnLikeClick: (Post) -> Unit,
     onSendClick: () -> Unit,
@@ -72,74 +80,83 @@ fun HomeScreen(
     )
 
     var showDeleteDialog by remember { mutableStateOf(false) }
-    val scrollState = rememberLazyListState()
+    val state = rememberLazyListState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = IgBackground
     ) {
         if (!uiState.isLoading) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Posts(
-                    innerPadding = innerPadding,
-                    posts = uiState.posts,
-                    currentUserId = currentUserId,
-                    onLikeClick = onLikeClick,
-                    onUnLikeClick = onUnLikeClick,
-                    onSendClick = onSendClick,
-                    onSaveClick = onSaveClick,
-                    onUnfollowClick = onUnfollowClick,
-                    onDeletePostClick = { post ->
-                        showDeleteDialog = true
-                        setSelectedPost(post)
-                    },
-                    onUsernameClick = onUsernameClick,
-                    scrollState = scrollState
+            if (uiState.posts.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    IGHomeAppBar()
+                    Posts(
+                        innerPadding = innerPadding,
+                        posts = uiState.posts,
+                        currentUserId = currentUserId,
+                        exoPlayer = exoPlayer,
+                        currentPosition = currentPosition,
+                        duration = duration,
+                        onWatchAgainClick = onWatchAgainClick,
+                        onLikeClick = onLikeClick,
+                        onUnLikeClick = onUnLikeClick,
+                        onSendClick = onSendClick,
+                        onSaveClick = onSaveClick,
+                        onUnfollowClick = onUnfollowClick,
+                        onDeletePostClick = { post ->
+                            showDeleteDialog = true
+                            setSelectedPost(post)
+                        },
+                        onUsernameClick = onUsernameClick,
+                        state = state
+                    ) {
+                        IGHomeAppBar()
 
-                    Stories(
-                        profileImage = profileImage,
-                        onAddStoryClick = { /* TODO */ },
-                        onStoryClick = { /* TODO */ },
-                        stories = stories
-                    )
-                    HorizontalDivider(
-                        modifier = Modifier.padding(top = 8.dp),
-                        thickness = 0.5.dp,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
-                    )
+                        Stories(
+                            profileImage = profileImage,
+                            onAddStoryClick = { /* TODO */ },
+                            onStoryClick = { /* TODO */ },
+                            stories = stories
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(top = 8.dp),
+                            thickness = 0.5.dp,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
+                        )
+                    }
                 }
+
+                IGDialog(
+                    title = stringResource(R.string.delete_this_post),
+                    subTitle = stringResource(R.string.delete_post_permanently),
+                    showDialog = showDeleteDialog,
+                    showBlueOrRedButton = true,
+                    blueOrRedButton = IgError,
+                    button1Text = stringResource(id = R.string.cancel),
+                    button2Text = stringResource(id = R.string.delete),
+                    onBlueOrRedClick = {
+                        showDeleteDialog = false
+                        onDeletePostClick(selectedPost)
+                    },
+                    onWhiteClick = {
+                        showDeleteDialog = false
+                        setSelectedPost(Post()) // Clearing selected post on cancel click
+                    }
+                )
+            } else {
+                IGLoader() // TODO: Add follow anyone screen
             }
-
-            IGDialog(
-                title = stringResource(R.string.delete_this_post),
-                subTitle = stringResource(R.string.delete_post_permanently),
-                showDialog = showDeleteDialog,
-                showBlueOrRedButton = true,
-                blueOrRedButton = Utils.IgError,
-                button1Text = stringResource(id = R.string.cancel),
-                button2Text = stringResource(id = R.string.delete),
-                onBlueOrRedClick = {
-                    showDeleteDialog = false
-                    onDeletePostClick(selectedPost)
-                },
-                onWhiteClick = {
-                    showDeleteDialog = false
-                    setSelectedPost(Post()) // Clearing selected post on cancel click
-                }
-            )
         } else {
             IGLoader()
         }
     }
 }
 
+@UnstableApi
 @Preview(
     apiLevel = 33,
     showBackground = true,
@@ -170,7 +187,7 @@ fun HomeScreenPreview() {
             stories = stories,
             posts = listOf(
                 Post(
-                    images = listOf(""),
+                    mediaList = listOf(""),
                     username = "kawaki",
                     isVerified = true
                 )
@@ -180,13 +197,16 @@ fun HomeScreenPreview() {
         username = "pra_sidh_22",
         selectedPost = Post(),
         currentUserId = "12345",
+        exoPlayer = TestPlayer(),
+        currentPosition = 1000L,
+        duration = 800L,
+        onWatchAgainClick = { },
         onLikeClick = { },
         onUnLikeClick = { },
         onSendClick = { },
         onSaveClick = { },
         onUnfollowClick = { },
         onDeletePostClick = { },
-        setSelectedPost = { },
-        onUsernameClick = { }
-    )
+        setSelectedPost = { }
+    ) { }
 }

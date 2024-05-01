@@ -21,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -29,9 +30,7 @@ import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
 import com.instagramclone.home.HomeScreen
 import com.instagramclone.home.HomeViewModel
-import com.instagramclone.post.UploadContentScreen
-import com.instagramclone.post.UploadContentViewModel
-import com.instagramclone.post.AddCaptionScreen
+import com.instagramclone.home.VideoPlayerViewModel
 import com.instagramclone.profile.EditProfileScreen
 import com.instagramclone.profile.EditTextScreen
 import com.instagramclone.profile.MyProfileScreen
@@ -40,10 +39,14 @@ import com.instagramclone.profile.ProfileViewModel
 import com.instagramclone.profile.SettingsAndPrivacyScreen
 import com.instagramclone.profile.UserProfileScreen
 import com.instagramclone.ui.R
+import com.instagramclone.upload.AddCaptionScreen
+import com.instagramclone.upload.UploadContentScreen
+import com.instagramclone.upload.UploadContentViewModel
 import com.instagramclone.util.models.Post
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@UnstableApi
 @Composable
 fun InnerScreenNavigation(
     innerPadding: PaddingValues,
@@ -76,6 +79,10 @@ fun InnerScreenNavigation(
             val uiState by viewModelHome.uiState.collectAsState()
             val uiStateProfile by viewModelProfile.uiState.collectAsState()
 
+            val viewModelPlayer: VideoPlayerViewModel = hiltViewModel()
+            val currentPosition by viewModelPlayer.currentPosition.collectAsState()
+            val duration by viewModelPlayer.duration.collectAsState()
+
             HomeScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
@@ -83,6 +90,12 @@ fun InnerScreenNavigation(
                 username = uiStateProfile.username,
                 selectedPost = uiStateProfile.selectedPost,
                 currentUserId = currentUser?.uid ?: "",
+                exoPlayer = viewModelPlayer.exoPlayer,
+                currentPosition = currentPosition,
+                duration = duration,
+                onWatchAgainClick = { url ->
+                    viewModelPlayer.startPlayer(url = url)
+                },
                 onLikeClick = { post ->
                     viewModelProfile.like(
                         userId = post.userId,
@@ -269,7 +282,12 @@ fun InnerScreenNavigation(
             }
         ) { backStack ->
             val uiState by viewModelProfile.uiState.collectAsState()
+            val viewModelPlayer: VideoPlayerViewModel = hiltViewModel()
+            val currentPosition by viewModelPlayer.currentPosition.collectAsState()
+            val duration by viewModelPlayer.duration.collectAsState()
+
             val scrollState = rememberLazyListState()
+
 
             val userId = backStack.arguments?.getString("userId")
             val postIndex = backStack.arguments?.getInt("postIndex")
@@ -284,6 +302,12 @@ fun InnerScreenNavigation(
                 innerPadding = innerPadding,
                 uiState = uiState,
                 currentUserId = currentUser?.uid ?: "",
+                exoPlayer = viewModelPlayer.exoPlayer,
+                currentPosition = currentPosition,
+                duration = duration,
+                onWatchAgainClick = { url ->
+                    viewModelPlayer.startPlayer(url = url)
+                },
                 isMyProfile = currentUser?.uid == userId,
                 scrollState = scrollState,
                 onFollowClick = {
@@ -294,18 +318,10 @@ fun InnerScreenNavigation(
                         }
                     )
                 },
-                onUnfollowClick = {
-                    viewModelProfile.unFollow(
-                        userId = userId!!,
-                        onSuccess = {
-                            viewModelProfile.setIsUserDetailChanged(value = true)
-                        }
-                    )
-                },
-                onLikeClick = {
+                onLikeClick = { post ->
                     viewModelProfile.like(
-                        userId = it.userId,
-                        timeStamp = it.timeStamp,
+                        userId = post.userId,
+                        timeStamp = post.timeStamp,
                         onSuccess = {
                             if (currentUser?.uid == userId) {
                                 viewModelProfile.setIsUserDetailChanged(value = true)
@@ -326,6 +342,14 @@ fun InnerScreenNavigation(
                 },
                 onSendClick = { },
                 onSaveClick = { },
+                onUnfollowClick = {
+                    viewModelProfile.unFollow(
+                        userId = userId!!,
+                        onSuccess = {
+                            viewModelProfile.setIsUserDetailChanged(value = true)
+                        }
+                    )
+                },
                 onDeletePostClick = {
                     viewModelProfile.deletePost(
                         post = it,
@@ -336,11 +360,10 @@ fun InnerScreenNavigation(
                 },
                 onUsernameClick = { id ->
                     navHostController.navigate(NavScreens.UserProfileScreen.route + "/$id")
-                },
-                onBackClick = {
-                    navHostController.popBackStack()
                 }
-            )
+            ) {
+                navHostController.popBackStack()
+            }
         }
         composable(
             route = NavScreens.EditProfileScreen.route,
@@ -653,10 +676,21 @@ fun InnerScreenNavigation(
             }
         ) {
             val uiState by viewModelUpload.uiState.collectAsState()
+            val viewModelPlayer: VideoPlayerViewModel = hiltViewModel()
 
             val permissionLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.RequestPermission()
-            ) { }
+                contract = ActivityResultContracts.RequestMultiplePermissions()
+            ) { isAllowed ->
+                if (isAllowed.all { it.value }) {
+                    viewModelUpload.getMedia()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Please access to photos and videos",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
 
             LaunchedEffect(key1 = Unit) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -664,17 +698,32 @@ fun InnerScreenNavigation(
                         ContextCompat.checkSelfPermission(
                             context,
                             Manifest.permission.READ_MEDIA_IMAGES
+                        ) == PackageManager.PERMISSION_DENIED ||
+                        ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.READ_MEDIA_VIDEO
                         ) == PackageManager.PERMISSION_DENIED
                     ) {
-                        permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+                        permissionLauncher.launch(
+                            arrayOf(
+                                Manifest.permission.READ_MEDIA_IMAGES,
+                                Manifest.permission.READ_MEDIA_VIDEO
+                            )
+                        )
+                    } else {
+                        viewModelPlayer.exoPlayer.clearMediaItems() // Clear Previous MediaItems from HomeScreen
+                        viewModelUpload.getMedia()
                     }
                 } else {
                     if (ContextCompat.checkSelfPermission(
                             context,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            Manifest.permission.READ_EXTERNAL_STORAGE
                         ) == PackageManager.PERMISSION_DENIED
                     ) {
-                        permissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        permissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+                    } else {
+                        viewModelPlayer.exoPlayer.clearMediaItems() // Clear Previous MediaItems from HomeScreen
+                        viewModelUpload.getMedia()
                     }
                 }
             }
@@ -682,15 +731,29 @@ fun InnerScreenNavigation(
             UploadContentScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
-                onImageSelected = { viewModelUpload.setImage(image = it) },
-                onNextClick = { navHostController.navigate(NavScreens.UploadPostScreen.route) }
-            ) {
-                navHostController.popBackStack()
-                viewModelUpload.setImage(uiState.images.firstOrNull())
-            }
+                exoPlayer = viewModelPlayer.exoPlayer,
+                onMediaSelected = { media ->
+                    if (media.duration != null) viewModelPlayer.startPlayer(url = media.data.toString())
+                    viewModelUpload.setMedia(media = media)
+                },
+                onPhotosClick = {
+                    viewModelUpload.getImages()
+                },
+                onVideosClick = {
+                    viewModelUpload.getVideos()
+                },
+                onNextClick = {
+                    navHostController.navigate(NavScreens.AddCaptionScreen.route)
+                },
+                onBackClick = {
+                    navHostController.popBackStack()
+                    viewModelUpload.setMedia(uiState.mediaList.firstOrNull())
+                }
+            )
         }
+
         composable(
-            route = NavScreens.UploadPostScreen.route,
+            route = NavScreens.AddCaptionScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween()
@@ -707,7 +770,6 @@ fun InnerScreenNavigation(
 
             val timeStamp = System.currentTimeMillis()
 
-            // TODO: Rename screen to AddCaptionScreen
             AddCaptionScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
@@ -721,8 +783,9 @@ fun InnerScreenNavigation(
                             username = uiStateProfile.username,
                             timeStamp = timeStamp,
                             isVerified = true, // TODO change
-                            images = listOf(uiState.selectedImage?.data.toString()),
-                            caption = uiState.caption
+                            mediaList = listOf(uiState.selectedMedia?.data.toString()),
+                            caption = uiState.caption,
+                            mimeType = uiState.selectedMedia?.mimeType ?: ""
                         ),
                         onSuccess = {
                             navHostController.navigate(NavScreens.HomeScreen.route) {

@@ -1,9 +1,10 @@
-package com.instagramclone.post
+package com.instagramclone.upload
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.instagramclone.firebase.repository.UploadContentRepositoryImpl
-import com.instagramclone.util.models.Image
+import com.instagramclone.upload.util.ContentResolver
+import com.instagramclone.util.models.Media
 import com.instagramclone.util.models.Post
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,17 +23,37 @@ class UploadContentViewModel @Inject constructor(
     var uiState = MutableStateFlow(UiState())
         private set
 
-    init {
-        getImages()
+    fun getMedia() {
+        viewModelScope.launch(Dispatchers.IO) {
+            contentResolver.getMedia().distinctUntilChanged().collectLatest { mediaList ->
+                uiState.update {
+                    it.copy(
+                        mediaList = mediaList,
+                        selectedMedia = mediaList.firstOrNull() // Default image
+                    )
+                }
+            }
+        }
     }
 
-    private fun getImages() {
+    fun getImages() {
         viewModelScope.launch(Dispatchers.IO) {
             contentResolver.getImages().distinctUntilChanged().collectLatest { imageList ->
                 uiState.update {
                     it.copy(
-                        images = imageList,
-                        selectedImage = imageList.firstOrNull() // Default image
+                        mediaList = imageList
+                    )
+                }
+            }
+        }
+    }
+
+    fun getVideos() {
+        viewModelScope.launch(Dispatchers.IO) {
+            contentResolver.getVideos().distinctUntilChanged().collectLatest { videoList ->
+                uiState.update {
+                    it.copy(
+                        mediaList = videoList
                     )
                 }
             }
@@ -63,8 +84,8 @@ class UploadContentViewModel @Inject constructor(
         }
     }
 
-    fun setImage(image: Image?) {
-        uiState.update { it.copy(selectedImage = image) }
+    fun setMedia(media: Media?) {
+        uiState.update { it.copy(selectedMedia = media) }
     }
 
     fun setCaption(caption: String) {

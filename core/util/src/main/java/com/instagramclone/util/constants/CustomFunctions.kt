@@ -1,6 +1,7 @@
 package com.instagramclone.util.constants
 
 import android.content.Context
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import com.facebook.CallbackManager
@@ -11,11 +12,15 @@ import com.facebook.login.LoginResult
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.instagramclone.util.R
+import com.instagramclone.util.models.Post
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.Locale
+import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 /**
  * Function to login using facebook
@@ -36,7 +41,7 @@ fun FacebookLogin(
     DisposableEffect(key1 = Unit) {
         loginManager.registerCallback(
             callBack,
-            object: FacebookCallback<LoginResult> {
+            object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult) {
                     CoroutineScope(Dispatchers.IO).launch {
                         val token = result.accessToken.token
@@ -45,19 +50,19 @@ fun FacebookLogin(
                             .signInWithCredential(credential)
                             .await()
 
-                            if (signInResult != null) {
-                                withContext(Dispatchers.Main) {
-                                    onSuccess()
-                                }
-                            } else {
-                                withContext(Dispatchers.Main) {
+                        if (signInResult != null) {
+                            withContext(Dispatchers.Main) {
+                                onSuccess()
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
                                 onError(Exception(context.getString(R.string.internal_error)))
                             }
                         }
                     }
                 }
 
-                override fun onCancel() {  }
+                override fun onCancel() {}
 
                 override fun onError(error: FacebookException) {
                     onError(error)
@@ -89,3 +94,42 @@ fun Long.formatTimeStamp(): String {
     }
 }
 
+/**
+ * Function to format Long video duration to minutes and seconds ex: 10:05
+ * @return Returns the formatted timestamp as a String
+ */
+fun Long.formatMinSec(): String {
+    return if (this == 0L) {
+        "00:00"
+    } else {
+        String.format(
+            Locale.getDefault(),
+            "%02d:%02d",
+            TimeUnit.MILLISECONDS.toMinutes(this),
+            TimeUnit.MILLISECONDS.toSeconds(this) -
+                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(this))
+        )
+    }
+}
+
+/**
+ * Function to get video [Post] to play in the view
+ * Retrieves a single video from the list which is nearest to the midpoint
+ * @param state Requires [LazyListState]
+ * @param posts Requires a List of [Post]
+ * @return Returns a [Post] if the it contains a video else null
+ */
+fun getCurrentlyPlayingPost(
+    state: LazyListState,
+    posts: List<Post>
+): Post? {
+    val layoutInfo = state.layoutInfo
+
+    val midpoint = (layoutInfo.viewportSize.height) / 2
+    val centerItems = layoutInfo.visibleItemsInfo
+        .sortedBy { abs((it.offset + it.size) / 2 - midpoint) }
+
+    val result = centerItems.map { posts[(it.index - 1).coerceAtLeast(0)] }.firstOrNull()
+
+    return if (result?.mimeType?.contains("video") == true) result else null
+}

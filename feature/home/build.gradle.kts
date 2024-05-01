@@ -51,6 +51,9 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     ksp(libs.androidx.hilt.compiler)
 
+    // ExoPlayer
+    implementation(libs.androidx.media3.exoplayer)
+
     // Firebase Auth
     implementation(libs.firebase.authentication)
 
