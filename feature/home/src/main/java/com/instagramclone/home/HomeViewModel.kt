@@ -27,7 +27,6 @@ class HomeViewModel @Inject constructor(
 
     init {
         getUserData()
-        getAllPosts()
     }
 
     /**
@@ -63,12 +62,16 @@ class HomeViewModel @Inject constructor(
     }
 
     /**
-     * Function to get all the Posts
+     * Function to get all the Posts from the followings.
+     * @param following List of user Ids of the followings.
      */
-    fun getAllPosts() {
+    fun getPosts(following: List<String>) {
         uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
-            val mResult = homeRepository.getAllPost()
+            val mResult = homeRepository.getPosts(
+                following = following,
+                currentUserId = currentUser?.uid!!
+            )
 
             delay(1000L)
             mResult.distinctUntilChanged().collectLatest { result ->
@@ -86,6 +89,34 @@ class HomeViewModel @Inject constructor(
                                 error = result.e.toString(),
                                 isLoading = false
                             )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Function to get all the Stories from the followings.
+     * @param following List of user Ids of the followings.
+     */
+    fun getStories(following: List<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val mResult = homeRepository.getStories(
+                following = following,
+                currentUserId = currentUser?.uid!!
+            )
+
+            delay(1000L)
+            mResult.distinctUntilChanged().collectLatest { result ->
+                withContext(Dispatchers.Main) {
+                    if (result.e == null && !result.isLoading!!) {
+                        uiState.update {
+                            it.copy(stories = result.data!!)
+                        }
+                    } else {
+                        uiState.update {
+                            it.copy(error = result.e?.message.toString())
                         }
                     }
                 }

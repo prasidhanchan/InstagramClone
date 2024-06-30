@@ -11,10 +11,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,11 +32,14 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGRegularAppBar
-import com.instagramclone.upload.components.post.MediaCards
-import com.instagramclone.util.test.TestPlayer
+import com.instagramclone.upload.components.post.DividerCard
+import com.instagramclone.upload.components.post.MediaCardItem
+import com.instagramclone.upload.components.post.SelectedMediaCard
 import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.constants.Utils.IgBackground
 import com.instagramclone.util.models.Media
+import com.instagramclone.util.test.TestPlayer
+import kotlinx.coroutines.launch
 
 @UnstableApi
 @Composable
@@ -43,6 +52,8 @@ fun UploadPostScreen(
     onNextClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
+    val state = rememberLazyStaggeredGridState()
+    val scope = rememberCoroutineScope()
     val interactionSource = remember { MutableInteractionSource() }
 
     AnimatedVisibility(
@@ -89,12 +100,45 @@ fun UploadPostScreen(
                     onBackClick = onBackClick
                 )
 
-                MediaCards(
-                    mediaList = uiState.mediaList,
-                    exoPlayer = exoPlayer,
-                    selectedMedia = uiState.selectedMedia,
-                    onMediaSelected = onMediaSelected
-                )
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier.fillMaxSize(),
+                    state = state,
+                    columns = StaggeredGridCells.Fixed(4)
+                ) {
+                    item(
+                        key = "selectedImage",
+                        span = StaggeredGridItemSpan.FullLine
+                    ) {
+                        SelectedMediaCard(
+                            media = uiState.selectedMedia,
+                            exoPlayer = exoPlayer,
+                            description = uiState.selectedMedia?.name
+                        )
+                    }
+
+                    item(
+                        key = "imagesDivider",
+                        span = StaggeredGridItemSpan.FullLine,
+                        content = { DividerCard() }
+                    )
+
+                    items(
+                        items = uiState.mediaList,
+                        key = { it.id!! }
+                    ) { image ->
+                        MediaCardItem(
+                            media = image,
+                            selectedImage = uiState.selectedMedia?.data,
+                            onImageSelected = { media ->
+                                scope.launch {
+                                    if (media.duration == null) exoPlayer.pause()
+                                    onMediaSelected(media)
+                                    state.animateScrollToItem(0)
+                                }
+                            }
+                        )
+                    }
+                }
             }
         }
     }

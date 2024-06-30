@@ -6,6 +6,7 @@ import com.instagramclone.remote.repository.UploadContentRepositoryImpl
 import com.instagramclone.upload.util.ContentResolver
 import com.instagramclone.util.models.Media
 import com.instagramclone.util.models.Post
+import com.instagramclone.util.models.Story
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,6 +69,30 @@ class UploadContentViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             shareContentRepository.uploadPost(
                 post = post,
+                onSuccess = {
+                    onSuccess()
+                    uiState.update { it.copy(isUploading = false) }
+                },
+                onError = { error ->
+                    uiState.update {
+                        it.copy(
+                            error = error,
+                            isUploading = false
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    fun uploadStory(
+        story: Story,
+        onSuccess: () -> Unit
+    ) {
+        uiState.update { it.copy(isUploading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
+            shareContentRepository.uploadStory(
+                story = story,
                 onSuccess = {
                     onSuccess()
                     uiState.update { it.copy(isUploading = false) }

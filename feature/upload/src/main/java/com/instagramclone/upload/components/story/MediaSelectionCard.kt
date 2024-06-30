@@ -32,6 +32,13 @@ import androidx.compose.ui.unit.sp
 import com.instagramclone.ui.R
 import com.instagramclone.util.constants.Utils.IgOffBackground
 
+/**
+ * Media card composable to display the media to be displayed, i.e photos or videos.
+ * @param modifier The Modifier to be applied on the Card.
+ * @param text The text to be displayed on the Card.
+ * @param icon The icon to be displayed on the Card.
+ * @param onClick The callback to be invoked when the Card is clicked.
+ */
 @Composable
 fun MediaSelectionCard(
     modifier: Modifier = Modifier,

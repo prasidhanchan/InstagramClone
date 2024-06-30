@@ -52,11 +52,12 @@ fun StoryCard(
     val interactionSource = remember { MutableInteractionSource() }
     var size by remember { mutableFloatStateOf(1f) }
     val scale by animateFloatAsState(
-        animationSpec = tween(100),
         targetValue = size,
+        animationSpec = tween(100),
         finishedListener = { size = 1f },
-        label = ""
+        label = "storyCardAnimation"
     )
+    
     Box(
         modifier = Modifier
             .padding(horizontal = 10.dp)
@@ -113,7 +114,10 @@ fun StoryCard(
                         model = story.profileImage,
                         contentScale = ContentScale.Crop,
                         filterQuality = FilterQuality.None,
-                        contentDescription = stringResource(R.string.story_placeholder, story.username)
+                        contentDescription = stringResource(
+                            R.string.story_placeholder,
+                            story.username
+                        )
                     )
                 } else {
                     Image(
@@ -122,6 +126,7 @@ fun StoryCard(
                     )
                 }
             }
+
             Text(
                 modifier = Modifier.padding(vertical = 2.dp),
                 text = story.username,
@@ -143,6 +148,6 @@ fun StoryCardPreview() {
             username = "pra_sidh_22",
             isViewed = true
         ),
-        onClick = {  }
+        onClick = { }
     )
 }

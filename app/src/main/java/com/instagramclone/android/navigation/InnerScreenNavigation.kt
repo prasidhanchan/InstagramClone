@@ -6,6 +6,8 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -40,9 +42,11 @@ import com.instagramclone.profile.SettingsAndPrivacyScreen
 import com.instagramclone.profile.UserProfileScreen
 import com.instagramclone.ui.R
 import com.instagramclone.upload.AddCaptionScreen
+import com.instagramclone.upload.AddToStoryScreen
 import com.instagramclone.upload.UploadContentScreen
 import com.instagramclone.upload.UploadContentViewModel
 import com.instagramclone.util.models.Post
+import com.instagramclone.util.models.Story
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -83,11 +87,18 @@ fun InnerScreenNavigation(
             val currentPosition by viewModelPlayer.currentPosition.collectAsState()
             val duration by viewModelPlayer.duration.collectAsState()
 
+            LaunchedEffect(key1 = Unit) {
+                viewModelProfile.getMyData()
+                delay(2000L)
+                viewModelHome.getPosts(following = uiStateProfile.following)
+                viewModelHome.getStories(following = uiStateProfile.following)
+            }
+
             HomeScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
                 profileImage = uiStateProfile.profileImage,
-                username = uiStateProfile.username,
+                userDataLoading = uiStateProfile.isLoading,
                 selectedPost = uiStateProfile.selectedPost,
                 currentUserId = currentUser?.uid ?: "",
                 exoPlayer = viewModelPlayer.exoPlayer,
@@ -166,7 +177,7 @@ fun InnerScreenNavigation(
                         post = post,
                         onSuccess = {
                             viewModelProfile.getMyData()
-                            viewModelHome.getAllPosts()
+                            viewModelHome.getPosts(following = uiState.following)
                             viewModelProfile.getMyPosts()
                         }
                     )
@@ -728,6 +739,14 @@ fun InnerScreenNavigation(
                 }
             }
 
+            // Play the first media on launch if it is a video
+            LaunchedEffect(key1 = Unit) {
+                delay(1000L)
+                if (uiState.mediaList.isNotEmpty() && uiState.mediaList.first().duration != null) {
+                    viewModelPlayer.startPlayer(url = uiState.mediaList.first().data.toString())
+                }
+            }
+
             UploadContentScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
@@ -735,6 +754,10 @@ fun InnerScreenNavigation(
                 onMediaSelected = { media ->
                     if (media.duration != null) viewModelPlayer.startPlayer(url = media.data.toString())
                     viewModelUpload.setMedia(media = media)
+                },
+                onStorySelected = { selectedMedia ->
+                    viewModelUpload.setMedia(media = selectedMedia)
+                    navHostController.navigate(NavScreens.AddToStoryScreen.route)
                 },
                 onPhotosClick = {
                     viewModelUpload.getImages()
@@ -795,6 +818,50 @@ fun InnerScreenNavigation(
                         }
                     )
                 }
+            )
+        }
+
+        composable(
+            route = NavScreens.AddToStoryScreen.route,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }
+        ) {
+            val uiState by viewModelUpload.uiState.collectAsState()
+            val uiStateProfile by viewModelProfile.uiState.collectAsState()
+            val viewModelPlayer: VideoPlayerViewModel = hiltViewModel()
+
+            val timeStamp = System.currentTimeMillis()
+
+            LaunchedEffect(key1 = Unit) {
+                if (uiState.selectedMedia?.duration != null) {
+                    viewModelPlayer.startPlayer(url = uiState.selectedMedia?.data.toString())
+                }
+            }
+
+            AddToStoryScreen(
+                innerPadding = innerPadding,
+                profileImage = uiStateProfile.profileImage,
+                uiState = uiState,
+                exoPlayer = viewModelPlayer.exoPlayer,
+                onAddStoryClick = {
+                    viewModelUpload.uploadStory(
+                        story = Story(
+                            username = uiStateProfile.username,
+                            profileImage = uiStateProfile.profileImage,
+                            userId = currentUser?.uid!!,
+                            timeStamp = timeStamp,
+                            image = uiState.selectedMedia?.data.toString(),
+                            isVerified = true, // TODO: Change
+                            mimeType = uiState.selectedMedia?.mimeType!!
+                        ),
+                        onSuccess = {
+                            navHostController.navigate(NavScreens.HomeScreen.route) {
+                                popUpTo(navHostController.graph.startDestinationId)
+                            }
+                        }
+                    )
+                },
+                onBackClick = { navHostController.popBackStack() }
             )
         }
     }

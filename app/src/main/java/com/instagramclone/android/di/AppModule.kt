@@ -27,7 +27,8 @@ object AppModule {
     @Singleton
     @Provides
     fun provideHomeRepository() = HomeRepositoryImpl(
-        dbPosts = FirebaseDatabase.getInstance().getReference("Posts")
+        dbPosts = FirebaseDatabase.getInstance().getReference("Posts"),
+        dbStories = FirebaseDatabase.getInstance().getReference("Stories")
     )
 
     @Singleton

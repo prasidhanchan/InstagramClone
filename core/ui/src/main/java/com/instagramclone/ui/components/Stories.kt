@@ -9,8 +9,9 @@ import com.instagramclone.util.models.Story
 @Composable
 fun Stories(
     profileImage: String,
-    onAddStoryClick : () -> Unit,
-    onStoryClick : () -> Unit,
+    currentUserId: String,
+    onAddStoryClick: () -> Unit,
+    onStoryClick: () -> Unit,
     stories: List<Story>
 ) {
     LazyRow(
@@ -18,15 +19,23 @@ fun Stories(
             item(
                 key = "addStory"
             ) {
-                AddStoryCard(
-                    profileImage = profileImage,
-                    onClick = onAddStoryClick
-                )
+                if (!stories.any { story -> story.userId == currentUserId }) {
+                    AddStoryCard(
+                        profileImage = profileImage,
+                        onClick = onAddStoryClick
+                    )
+                } else {
+                    StoryCard(
+                        story = stories.first { story -> story.userId == currentUserId },
+                        onClick = onAddStoryClick
+                    )
+                }
             }
+
             items(
-                items = stories,
+                items = stories.filter { story -> story.userId != currentUserId }, // Filter out the current user stories
                 key = { story -> story.username }
-            ) {story ->
+            ) { story ->
                 StoryCard(
                     story = story,
                     onClick = onStoryClick
@@ -41,8 +50,9 @@ fun Stories(
 fun StoriesPreview() {
     Stories(
         profileImage = "",
-        onAddStoryClick = {  },
-        onStoryClick = {  },
+        currentUserId = "",
+        onAddStoryClick = { },
+        onStoryClick = { },
         stories = listOf(
             Story(
                 username = "pra_sidh_22"

@@ -11,16 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,72 +33,10 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGPlayer
-import com.instagramclone.util.test.TestPlayer
 import com.instagramclone.util.constants.Utils.IgBackground
 import com.instagramclone.util.constants.Utils.IgOffColor
 import com.instagramclone.util.constants.formatMinSec
 import com.instagramclone.util.models.Media
-import kotlinx.coroutines.launch
-
-/**
- * MediaCards composable for Posts to display selected image or video
- * @param modifier Requires [Modifier]
- * @param mediaList Requires List of [Media], i.e Images and Videos
- * @param selectedMedia Media currently selected
- * @param onMediaSelected on Image selected lambda triggered when an image is selected
- */
-@UnstableApi
-@Composable
-fun MediaCards(
-    modifier: Modifier = Modifier,
-    mediaList: List<Media>,
-    exoPlayer: ExoPlayer,
-    selectedMedia: Media?,
-    onMediaSelected: (Media) -> Unit
-) {
-    val state = rememberLazyStaggeredGridState()
-    val scope = rememberCoroutineScope()
-
-    LazyVerticalStaggeredGrid(
-        modifier = modifier.fillMaxSize(),
-        state = state,
-        columns = StaggeredGridCells.Fixed(4)
-    ) {
-        item(
-            key = "selectedImage",
-            span = StaggeredGridItemSpan.FullLine
-        ) {
-            SelectedMediaCard(
-                media = selectedMedia,
-                exoPlayer = exoPlayer,
-                description = selectedMedia?.name
-            )
-        }
-
-        item(
-            key = "imagesDivider",
-            span = StaggeredGridItemSpan.FullLine,
-            content = { DividerCard() }
-        )
-
-        items(
-            items = mediaList,
-            key = { it.id!! }
-        ) { image ->
-            MediaCardItem(
-                media = image,
-                selectedImage = selectedMedia?.data,
-                onImageSelected = { media ->
-                    scope.launch {
-                        if (media.duration == null) exoPlayer.pause()
-                        onMediaSelected(media)
-                        state.animateScrollToItem(0)
-                    }
-                }
-            )
-        }
-    }
-}
 
 @UnstableApi
 @Composable
@@ -219,26 +151,8 @@ fun MediaCardItem(
 @Preview
 @Composable
 private fun MediaCardsPreview() {
-    MediaCards(
-        mediaList = listOf(
-            Media(
-                id = "1",
-                name = "",
-                data = null,
-                duration = null,
-                timeStamp = null,
-                mimeType = null
-            ),
-            Media(
-                id = "2",
-                name = "",
-                data = null,
-                duration = null,
-                timeStamp = null,
-                mimeType = null
-            )
-        ),
-        selectedMedia = Media(
+    MediaCardItem(
+        media = Media(
             id = "1",
             name = "",
             data = null,
@@ -246,7 +160,7 @@ private fun MediaCardsPreview() {
             timeStamp = null,
             mimeType = null
         ),
-        exoPlayer = TestPlayer(),
-        onMediaSelected = { }
+        selectedImage = Uri.EMPTY,
+        onImageSelected = { }
     )
 }

@@ -10,6 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.instagramclone.remote.models.IGUser
 import com.instagramclone.util.models.DataOrException
 import com.instagramclone.util.models.Post
+import com.instagramclone.util.models.Story
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +20,7 @@ import javax.inject.Inject
 
 class HomeRepositoryImpl @Inject constructor(
     private val dbPosts: Query,
+    private val dbStories: Query,
 ) : HomeRepository {
 
     private val dbUser = FirebaseFirestore.getInstance().collection("Users")
@@ -40,7 +42,10 @@ class HomeRepositoryImpl @Inject constructor(
         return dataOrException
     }
 
-    override suspend fun getAllPost(): Flow<DataOrException<List<Post>, Boolean, Exception>> {
+    override suspend fun getPosts(
+        following: List<String>,
+        currentUserId: String,
+    ): Flow<DataOrException<List<Post>, Boolean, Exception>> {
         val dataOrException: MutableStateFlow<DataOrException<List<Post>, Boolean, Exception>> =
             MutableStateFlow(DataOrException(isLoading = true))
 
@@ -52,9 +57,11 @@ class HomeRepositoryImpl @Inject constructor(
                             data = snapshot.children.map { dataSnap ->
                                 dataSnap.getValue<Post>()!!
                             }
+                                .filter { post -> following.contains(post.userId) || post.userId == currentUserId }
                                 .sortedByDescending { post -> post.timeStamp }
                         )
                     }
+
                     dataOrException.update { it.copy(isLoading = false) }
                 }
 
@@ -62,6 +69,7 @@ class HomeRepositoryImpl @Inject constructor(
                     throw error.toException()
                 }
             }
+
             dbPosts.addValueEventListener(valueEventListener)
         } catch (e: Exception) {
             dataOrException.update {
@@ -71,6 +79,48 @@ class HomeRepositoryImpl @Inject constructor(
                 )
             }
         }
+
         return dataOrException.asStateFlow()
+    }
+
+    override suspend fun getStories(
+        following: List<String>,
+        currentUserId: String
+    ): Flow<DataOrException<List<Story>, Boolean, Exception>> {
+        val dataOrException: MutableStateFlow<DataOrException<List<Story>, Boolean, Exception>> =
+            MutableStateFlow(DataOrException(isLoading = true))
+
+        try {
+            val valueEventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    dataOrException.update {
+                        it.copy(
+                            data = snapshot.children.map { dataSnap ->
+                                dataSnap.getValue<Story>()!!
+                            }
+                                .filter { story -> following.contains(story.userId) || story.userId == currentUserId }
+                                .sortedByDescending { story -> story.timeStamp }
+                        )
+                    }
+
+                    dataOrException.update { it.copy(isLoading = false) }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    throw error.toException()
+                }
+            }
+
+            dbStories.addValueEventListener(valueEventListener)
+        } catch (e: Exception) {
+            dataOrException.update {
+                it.copy(
+                    e = e,
+                    isLoading = false
+                )
+            }
+        }
+
+        return dataOrException
     }
 }

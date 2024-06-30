@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,10 +15,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import com.instagramclone.upload.components.UploadSelectionCard
 import com.instagramclone.ui.R
-import com.instagramclone.util.test.TestPlayer
+import com.instagramclone.upload.components.UploadSelectionCard
 import com.instagramclone.util.models.Media
+import com.instagramclone.util.test.TestPlayer
 
 @UnstableApi
 @Composable
@@ -27,13 +27,14 @@ fun UploadContentScreen(
     uiState: UiState,
     exoPlayer: ExoPlayer,
     onMediaSelected: (Media) -> Unit,
+    onStorySelected: (Media) -> Unit,
     onPhotosClick: () -> Unit,
     onVideosClick: () -> Unit,
     onNextClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
-    var selectedText by remember { mutableStateOf(context.getString(R.string.post_caps)) }
+    var selectedText by rememberSaveable { mutableStateOf(context.getString(R.string.post_caps)) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -44,6 +45,7 @@ fun UploadContentScreen(
             mediaList = uiState.mediaList,
             onPhotosClick = onPhotosClick,
             onVideosClick = onVideosClick,
+            onStorySelected = onStorySelected,
             onBackClick = onBackClick
         )
 
@@ -60,7 +62,7 @@ fun UploadContentScreen(
         UploadSelectionCard(
             selectedText = selectedText,
             onClick = { selected ->
-                exoPlayer.stop()
+                exoPlayer.pause()
                 selectedText = selected
             }
         )
@@ -81,6 +83,7 @@ private fun ShareContentScreenPreview() {
         uiState = UiState(),
         exoPlayer = TestPlayer(),
         onMediaSelected = { },
+        onStorySelected = { },
         onPhotosClick = { },
         onVideosClick = { },
         onNextClick = { },

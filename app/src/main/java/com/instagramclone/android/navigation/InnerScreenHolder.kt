@@ -7,11 +7,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.instagramclone.profile.ProfileViewModel
 import com.instagramclone.util.constants.Utils
 
+@UnstableApi
 @Composable
 fun InnerScreenHolder(
     viewModelProfile: ProfileViewModel = hiltViewModel(),

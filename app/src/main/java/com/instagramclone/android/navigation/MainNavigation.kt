@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -39,6 +40,7 @@ import com.instagramclone.util.constants.toIGUsername
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@UnstableApi
 @Composable
 fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
     val navController = rememberNavController()

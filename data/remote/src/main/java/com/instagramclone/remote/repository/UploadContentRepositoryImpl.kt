@@ -4,11 +4,14 @@ import androidx.core.net.toUri
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.instagramclone.util.models.Post
+import com.instagramclone.util.models.Story
 import kotlinx.coroutines.tasks.await
 
 class UploadContentRepositoryImpl : UploadContentRepository {
     private val dbPost = FirebaseDatabase.getInstance().getReference("Posts")
     private val storageRefPost = FirebaseStorage.getInstance().reference.child("Posts")
+    private val dbStory = FirebaseDatabase.getInstance().getReference("Stories")
+    private val storageRefStory = FirebaseStorage.getInstance().reference.child("Stories")
 
     override suspend fun uploadPost(
         post: Post,
@@ -31,12 +34,52 @@ class UploadContentRepositoryImpl : UploadContentRepository {
                                     onSuccess()
                                 }
                                 .addOnFailureListener { error ->
-                                    onError(error.message.toString())
+                                   throw  error
                                 }
                         }
                         .addOnFailureListener { error ->
-                            onError(error.message.toString())
+                            throw error
                         }
+                }
+                .addOnFailureListener { error ->
+                    throw error
+                }
+                .await()
+        } catch (e: Exception) {
+            onError(e.message.toString())
+        }
+    }
+
+    override suspend fun uploadStory(
+        story: Story,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        try {
+            storageRefStory.child("${story.userId}-${story.timeStamp}.${story.mimeType.substringAfter("/")}")
+                .putFile(story.image.toUri())
+                .addOnSuccessListener { taskSnap ->
+                    taskSnap.storage.downloadUrl
+                        .addOnSuccessListener { downloadUrl  ->
+                            dbStory.child("${story.userId}-${story.timeStamp}")
+                                .setValue(
+                                    story.apply {
+                                        image = downloadUrl.toString()
+                                    }
+                                )
+                                .addOnSuccessListener {
+                                    onSuccess()
+                                }
+                                .addOnFailureListener { error ->
+                                    throw error
+                                }
+                        }
+                        .addOnFailureListener { error ->
+                            throw error
+                        }
+                }
+                .addOnFailureListener { error ->
+                    throw error
                 }
                 .await()
         } catch (e: Exception) {
