@@ -1,7 +1,7 @@
 package com.instagramclone.profile
 
 import android.net.Uri
-import com.instagramclone.firebase.models.IGUser
+import com.instagramclone.remote.models.IGUser
 import com.instagramclone.util.models.Post
 
 data class UiState(

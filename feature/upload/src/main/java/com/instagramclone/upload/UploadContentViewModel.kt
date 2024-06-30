@@ -2,7 +2,7 @@ package com.instagramclone.upload
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.instagramclone.firebase.repository.UploadContentRepositoryImpl
+import com.instagramclone.remote.repository.UploadContentRepositoryImpl
 import com.instagramclone.upload.util.ContentResolver
 import com.instagramclone.util.models.Media
 import com.instagramclone.util.models.Post

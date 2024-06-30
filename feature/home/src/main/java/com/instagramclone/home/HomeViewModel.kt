@@ -3,7 +3,7 @@ package com.instagramclone.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.instagramclone.firebase.repository.HomeRepositoryImpl
+import com.instagramclone.remote.repository.HomeRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

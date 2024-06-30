@@ -1,4 +1,4 @@
-package com.instagramclone.firebase.repository
+package com.instagramclone.remote.repository
 
 import com.instagramclone.util.models.Post
 

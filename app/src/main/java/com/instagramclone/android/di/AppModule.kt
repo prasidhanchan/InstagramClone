@@ -5,10 +5,10 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
-import com.instagramclone.firebase.repository.AuthRepositoryImpl
-import com.instagramclone.firebase.repository.HomeRepositoryImpl
-import com.instagramclone.firebase.repository.ProfileRepositoryImpl
-import com.instagramclone.firebase.repository.UploadContentRepositoryImpl
+import com.instagramclone.remote.repository.AuthRepositoryImpl
+import com.instagramclone.remote.repository.HomeRepositoryImpl
+import com.instagramclone.remote.repository.ProfileRepositoryImpl
+import com.instagramclone.remote.repository.UploadContentRepositoryImpl
 import com.instagramclone.upload.util.ContentResolver
 import dagger.Module
 import dagger.Provides

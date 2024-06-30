@@ -128,7 +128,7 @@ dependencies {
 
     implementation(project(":core:ui"))
     implementation(project(":core:util"))
-    implementation(project(":data:firebase"))
+    implementation(project(":data:remote"))
     implementation(project(":feature:auth"))
     implementation(project(":feature:home"))
     implementation(project(":feature:profile"))

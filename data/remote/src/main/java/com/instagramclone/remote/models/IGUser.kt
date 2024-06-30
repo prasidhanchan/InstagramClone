@@ -1,4 +1,4 @@
-package com.instagramclone.firebase.models
+package com.instagramclone.remote.models
 
 data class IGUser(
     var userId: String = "",

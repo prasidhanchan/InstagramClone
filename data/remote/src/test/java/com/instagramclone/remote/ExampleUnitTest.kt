@@ -1,4 +1,4 @@
-package com.instagramclone.firebase
+package com.instagramclone.remote
 
 import org.junit.Test
 

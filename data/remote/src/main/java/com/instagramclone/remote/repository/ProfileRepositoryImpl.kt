@@ -1,4 +1,4 @@
-package com.instagramclone.firebase.repository
+package com.instagramclone.remote.repository
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
@@ -14,7 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
-import com.instagramclone.firebase.models.IGUser
+import com.instagramclone.remote.models.IGUser
 import com.instagramclone.util.models.DataOrException
 import com.instagramclone.util.models.Post
 import kotlinx.coroutines.flow.Flow

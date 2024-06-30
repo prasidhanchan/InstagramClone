@@ -1,4 +1,4 @@
-package com.instagramclone.firebase.repository
+package com.instagramclone.remote.repository
 
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -7,7 +7,7 @@ import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.instagramclone.firebase.models.IGUser
+import com.instagramclone.remote.models.IGUser
 import com.instagramclone.util.models.DataOrException
 import com.instagramclone.util.models.Post
 import kotlinx.coroutines.flow.Flow

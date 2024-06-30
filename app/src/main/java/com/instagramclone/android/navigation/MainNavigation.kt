@@ -32,7 +32,7 @@ import com.instagramclone.auth.signup.ChooseUsernameScreen
 import com.instagramclone.auth.signup.CreatePasswordScreen
 import com.instagramclone.auth.signup.ProfileAddedScreen
 import com.instagramclone.auth.signup.WelcomeScreen
-import com.instagramclone.firebase.models.IGUser
+import com.instagramclone.remote.models.IGUser
 import com.instagramclone.ui.R
 import com.instagramclone.util.constants.FacebookLogin
 import com.instagramclone.util.constants.toIGUsername

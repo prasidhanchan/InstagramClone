@@ -6,8 +6,8 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.instagramclone.firebase.models.IGUser
-import com.instagramclone.firebase.repository.AuthRepositoryImpl
+import com.instagramclone.remote.models.IGUser
+import com.instagramclone.remote.repository.AuthRepositoryImpl
 import com.instagramclone.ui.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

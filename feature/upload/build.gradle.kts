@@ -73,5 +73,5 @@ dependencies {
 
     implementation(project(":core:util"))
     implementation(project(":core:ui"))
-    implementation(project(":data:firebase"))
+    implementation(project(":data:remote"))
 }

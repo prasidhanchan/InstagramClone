@@ -1,4 +1,4 @@
-package com.instagramclone.firebase.repository
+package com.instagramclone.remote.repository
 
 import androidx.core.net.toUri
 import com.google.firebase.database.FirebaseDatabase

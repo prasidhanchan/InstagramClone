@@ -5,8 +5,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.instagramclone.firebase.models.IGUser
-import com.instagramclone.firebase.repository.ProfileRepositoryImpl
+import com.instagramclone.remote.models.IGUser
+import com.instagramclone.remote.repository.ProfileRepositoryImpl
 import com.instagramclone.ui.R
 import com.instagramclone.util.models.Post
 import dagger.hilt.android.lifecycle.HiltViewModel
