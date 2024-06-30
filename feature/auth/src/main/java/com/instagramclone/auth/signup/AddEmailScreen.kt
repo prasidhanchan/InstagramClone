@@ -176,7 +176,7 @@ fun AddEmailScreen(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 private fun AddEmailScreenPreview() {
     AddEmailScreen(

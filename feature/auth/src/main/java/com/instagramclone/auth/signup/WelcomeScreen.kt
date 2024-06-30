@@ -78,7 +78,7 @@ fun WelcomeScreen(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 fun WelcomeScreenPreview() {
     WelcomeScreen(

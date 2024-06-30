@@ -165,7 +165,7 @@ fun LoginHelpScreen(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 fun LoginHelpScreenPreview() {
     LoginHelpScreen(

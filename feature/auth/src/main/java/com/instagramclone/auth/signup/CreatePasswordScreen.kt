@@ -116,7 +116,7 @@ fun CreatePasswordScreen(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 fun CreatePasswordPreview() {
     CreatePasswordScreen(

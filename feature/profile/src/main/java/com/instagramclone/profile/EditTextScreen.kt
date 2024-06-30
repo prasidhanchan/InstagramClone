@@ -276,10 +276,7 @@ fun EditTextScreenAppbar(
     }
 }
 
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 fun EditTextScreenAppBarPreview() {
     EditTextScreenAppbar(
@@ -290,10 +287,7 @@ fun EditTextScreenAppBarPreview() {
     )
 }
 
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 fun EditTextScreenPreview() {
     EditTextScreen(

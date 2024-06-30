@@ -148,7 +148,7 @@ fun IGDialog(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 fun IGDialogPreview() {
     IGDialog(

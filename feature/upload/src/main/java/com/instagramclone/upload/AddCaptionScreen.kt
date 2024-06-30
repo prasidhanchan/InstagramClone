@@ -116,10 +116,7 @@ fun AddCaptionScreen(
     }
 }
 
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 private fun AddCaptionScreenPreview() {
     AddCaptionScreen(

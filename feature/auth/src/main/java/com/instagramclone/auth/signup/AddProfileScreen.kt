@@ -125,7 +125,7 @@ fun AddProfileScreen(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 fun AddProfileScreenPreview() {
     AddProfileScreen(

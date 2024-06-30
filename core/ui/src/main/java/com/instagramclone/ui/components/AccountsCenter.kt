@@ -566,10 +566,7 @@ fun AccountCenterCard(
     }
 }
 
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 fun AccountCenterCardPreview() {
     AccountCenterCard(
@@ -579,10 +576,7 @@ fun AccountCenterCardPreview() {
     )
 }
 
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 fun AccountCenterPreview() {
     AccountsCenter(
@@ -602,10 +596,7 @@ fun AccountCenterPreview() {
     )
 }
 
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 fun ChangePasswordPreview() {
     ChangePasswordContent(

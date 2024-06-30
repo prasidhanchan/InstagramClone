@@ -143,10 +143,7 @@ fun IGBottomSheetProfile(
     }
 }
 
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 private fun IGBottomSheetProfilePreview() {
     IGBottomSheetProfile(

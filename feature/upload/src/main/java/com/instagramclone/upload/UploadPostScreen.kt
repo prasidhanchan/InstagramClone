@@ -101,10 +101,7 @@ fun UploadPostScreen(
 }
 
 @UnstableApi
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 private fun UploadPostScreenPreview() {
     UploadPostScreen(

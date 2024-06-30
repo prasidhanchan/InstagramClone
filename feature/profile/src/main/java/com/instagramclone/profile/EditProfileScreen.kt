@@ -244,10 +244,7 @@ fun EditProfileScreen(
     }
 }
 
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 fun EditProfileScreenPreview() {
     EditProfileScreen(

@@ -142,7 +142,7 @@ fun AccessAccountScreen(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 fun AccessAccountScreenPreview() {
     AccessAccountScreen(

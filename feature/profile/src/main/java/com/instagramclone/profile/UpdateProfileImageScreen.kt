@@ -68,7 +68,6 @@ fun UpdateProfileImageScreen(
 }
 
 @Preview(
-    apiLevel = 33,
     showBackground = true,
     backgroundColor = 0XFF000000
 )

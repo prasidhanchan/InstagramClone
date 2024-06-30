@@ -287,10 +287,7 @@ fun ProfileCard(
     }
 }
 
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 private fun ProfileCardPreview() {
     ProfileCard(

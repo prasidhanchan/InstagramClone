@@ -81,7 +81,7 @@ fun IGWaitDialog(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 fun IGWaitDialogPreview() {
     IGWaitDialog(

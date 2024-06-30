@@ -145,7 +145,7 @@ fun IGBottomBarItem(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 fun IGBottomBarPreview() {
     IGBottomBar(

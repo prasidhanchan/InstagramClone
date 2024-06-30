@@ -158,7 +158,6 @@ fun HomeScreen(
 
 @UnstableApi
 @Preview(
-    apiLevel = 33,
     showBackground = true,
     backgroundColor = 0XFF000000
 )

@@ -177,10 +177,7 @@ fun SettingsAndPrivacyScreen(
     )
 }
 
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 fun SettingsAndPrivacyScreenPreview() {
     SettingsAndPrivacyScreen(

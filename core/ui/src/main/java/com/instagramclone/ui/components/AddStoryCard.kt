@@ -112,7 +112,7 @@ internal fun AddStoryCard(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 fun AddStoryCardPreview() {
     AddStoryCard(

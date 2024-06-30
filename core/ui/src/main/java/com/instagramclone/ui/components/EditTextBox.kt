@@ -89,10 +89,7 @@ fun EditTextBox(
     }
 }
 
-@Preview(
-    apiLevel = 33,
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 fun EditTextBoxPreview() {
     EditTextBox(

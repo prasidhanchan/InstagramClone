@@ -75,7 +75,7 @@ fun IGButton(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 private fun IGButtonPreview() {
     IGButton(

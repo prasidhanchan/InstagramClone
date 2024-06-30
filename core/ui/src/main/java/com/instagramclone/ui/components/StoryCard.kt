@@ -135,7 +135,7 @@ fun StoryCard(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview
 @Composable
 fun StoryCardPreview() {
     StoryCard(
