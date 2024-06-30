@@ -25,48 +25,11 @@ class HomeViewModel @Inject constructor(
 
     private val currentUser = FirebaseAuth.getInstance().currentUser
 
-    init {
-        getUserData()
-    }
-
-    /**
-     * Function to get Current user data
-     */
-    fun getUserData() {
-        uiState.update { it.copy(isLoading = true) }
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = homeRepository.getUserData(currentUser = currentUser)
-
-            delay(1000L)
-            if (result.e == null && !result.isLoading!!) {
-                withContext(Dispatchers.Main) {
-                    uiState.update { uiState ->
-                        uiState.copy(
-                            username = result.data?.username!!,
-                            profileImage = result.data?.profileImage!!,
-                            isLoading = false
-                        )
-                    }
-                }
-            } else {
-                withContext(Dispatchers.Main) {
-                    uiState.update {
-                        it.copy(
-                            error = result.e?.message.toString(),
-                            isLoading = false
-                        )
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Function to get all the Posts from the followings.
      * @param following List of user Ids of the followings.
      */
     fun getPosts(following: List<String>) {
-        uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
             val mResult = homeRepository.getPosts(
                 following = following,

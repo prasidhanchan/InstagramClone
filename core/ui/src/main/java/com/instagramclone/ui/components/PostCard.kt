@@ -167,6 +167,9 @@ fun PostCard(
                         likeCount += 1
                         onLikeClick(post)
                     },
+                    onViewCommentsClick = {
+                        // TODO: Open Comments Sheet
+                    },
                     onSaveClick = onSaveClick,
                     onSendClick = onSendClick
                 )
@@ -206,7 +209,9 @@ fun PostCard(
                         tint = MaterialTheme.colorScheme.onBackground,
                         contentDescription = stringResource(id = R.string.unfollow)
                     )
+
                     Spacer(modifier = Modifier.width(10.dp))
+
                     Text(
                         text = stringResource(id = R.string.unfollow),
                         style = TextStyle(
@@ -239,7 +244,9 @@ fun PostCard(
                         tint = IgError,
                         contentDescription = stringResource(id = R.string.delete)
                     )
+
                     Spacer(modifier = Modifier.width(10.dp))
+
                     Text(
                         text = stringResource(id = R.string.delete),
                         style = TextStyle(
@@ -262,6 +269,7 @@ fun ActionIcons(
     interactionSource: MutableInteractionSource,
     onUnLikeClick: (Post) -> Unit,
     onLikeClick: (Post) -> Unit,
+    onViewCommentsClick: () -> Unit,
     onSaveClick: () -> Unit,
     onSendClick: () -> Unit
 ) {
@@ -325,7 +333,7 @@ fun ActionIcons(
                         .clickable(
                             indication = null,
                             interactionSource = interactionSource,
-                            onClick = { }
+                            onClick = onViewCommentsClick
                         ),
                     painter = painterResource(id = R.drawable.comment),
                     tint = MaterialTheme.colorScheme.onBackground,
@@ -334,6 +342,7 @@ fun ActionIcons(
                         post.comments.size
                     )
                 )
+                
                 Icon(
                     modifier = Modifier
                         .scale(1.2f)

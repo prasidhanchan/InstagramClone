@@ -1,6 +1,7 @@
 package com.instagramclone.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,8 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.instagramclone.home.components.IGHomeAppBar
@@ -38,8 +43,8 @@ import com.instagramclone.util.test.TestPlayer
 fun HomeScreen(
     innerPadding: PaddingValues,
     uiState: UiState,
+    following: List<String>,
     profileImage: String,
-    userDataLoading: Boolean,
     selectedPost: Post,
     currentUserId: String,
     exoPlayer: ExoPlayer,
@@ -62,8 +67,8 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize(),
         color = IgBackground
     ) {
-        if (!uiState.isLoading && !userDataLoading) {
-            if (uiState.posts.isNotEmpty()) {
+        if (!uiState.isLoading) {
+            if (following.isNotEmpty()) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize(),
@@ -107,27 +112,39 @@ fun HomeScreen(
                         )
                     }
                 }
-
-                IGDialog(
-                    title = stringResource(R.string.delete_this_post),
-                    subTitle = stringResource(R.string.delete_post_permanently),
-                    showDialog = showDeleteDialog,
-                    showBlueOrRedButton = true,
-                    blueOrRedButton = IgError,
-                    button1Text = stringResource(id = R.string.cancel),
-                    button2Text = stringResource(id = R.string.delete),
-                    onBlueOrRedClick = {
-                        showDeleteDialog = false
-                        onDeletePostClick(selectedPost)
-                    },
-                    onWhiteClick = {
-                        showDeleteDialog = false
-                        setSelectedPost(Post()) // Clearing selected post on cancel click
-                    }
-                )
             } else {
-                IGLoader() // TODO: Add follow anyone screen
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.follow_someone),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    )
+                }
             }
+
+            IGDialog(
+                title = stringResource(R.string.delete_this_post),
+                subTitle = stringResource(R.string.delete_post_permanently),
+                showDialog = showDeleteDialog,
+                showBlueOrRedButton = true,
+                blueOrRedButton = IgError,
+                button1Text = stringResource(id = R.string.cancel),
+                button2Text = stringResource(id = R.string.delete),
+                onBlueOrRedClick = {
+                    showDeleteDialog = false
+                    onDeletePostClick(selectedPost)
+                },
+                onWhiteClick = {
+                    showDeleteDialog = false
+                    setSelectedPost(Post()) // Clearing selected post on cancel click
+                }
+            )
         } else {
             IGLoader()
         }
@@ -164,6 +181,7 @@ fun HomeScreenPreview() {
             isViewed = true
         )
     )
+
     HomeScreen(
         innerPadding = PaddingValues(),
         uiState = UiState(
@@ -176,8 +194,8 @@ fun HomeScreenPreview() {
                 )
             )
         ),
+        following = listOf("1"),
         profileImage = "",
-        userDataLoading = false,
         selectedPost = Post(),
         currentUserId = "12345",
         exoPlayer = TestPlayer(),

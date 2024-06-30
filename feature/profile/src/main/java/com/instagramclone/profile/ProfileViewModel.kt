@@ -48,29 +48,31 @@ class ProfileViewModel @Inject constructor(
             val result = profileRepository.getUserData(currentUser = currentUser)
 
             delay(1500L)
-            if (result.data != null && result.e == null && !result.isLoading!!) {
-                uiState.update { uiState ->
-                    uiState.copy(
-                        profileImage = result.data?.profileImage!!,
-                        username = result.data?.username!!,
-                        name = result.data?.name!!,
-                        email = result.data?.email!!,
-                        phone = result.data?.phone!!,
-                        password = result.data?.password!!,
-                        bio = result.data?.bio!!,
-                        links = result.data?.links!!,
-                        gender = result.data?.gender!!,
-                        followers = result.data?.followersList!!,
-                        following = result.data?.followingList!!,
-                        isLoading = false
-                    )
-                }
-            } else {
-                uiState.update {
-                    it.copy(
-                        error = result.e?.message,
-                        isLoading = false
-                    )
+            withContext(Dispatchers.Main) {
+                if (result.data != null && result.e == null && !result.isLoading!!) {
+                    uiState.update { uiState ->
+                        uiState.copy(
+                            profileImage = result.data?.profileImage!!,
+                            username = result.data?.username!!,
+                            name = result.data?.name!!,
+                            email = result.data?.email!!,
+                            phone = result.data?.phone!!,
+                            password = result.data?.password!!,
+                            bio = result.data?.bio!!,
+                            links = result.data?.links!!,
+                            gender = result.data?.gender!!,
+                            followers = result.data?.followersList!!,
+                            following = result.data?.followingList!!,
+                            isLoading = false
+                        )
+                    }
+                } else {
+                    uiState.update {
+                        it.copy(
+                            error = result.e?.message,
+                            isLoading = false
+                        )
+                    }
                 }
             }
         }

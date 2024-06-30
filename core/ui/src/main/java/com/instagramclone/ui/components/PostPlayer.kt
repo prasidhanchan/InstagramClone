@@ -75,8 +75,7 @@ fun PostPlayer(
             if (isPlaying && exoPlayer.isPlaying) {
                 IGPlayer(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(600.dp),
+                        .fillMaxWidth(),
                     exoPlayer = exoPlayer,
                     enableTouchResponse = false
                 )
@@ -100,6 +99,7 @@ fun PostPlayer(
                     onWatchAgainClick(post.mediaList.first())
                 }
             )
+
             PostHeader(
                 post = post,
                 color = Color.Transparent,

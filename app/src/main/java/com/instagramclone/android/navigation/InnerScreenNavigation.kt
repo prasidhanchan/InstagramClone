@@ -19,7 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -86,19 +89,25 @@ fun InnerScreenNavigation(
             val viewModelPlayer: VideoPlayerViewModel = hiltViewModel()
             val currentPosition by viewModelPlayer.currentPosition.collectAsState()
             val duration by viewModelPlayer.duration.collectAsState()
+            var isLaunched by rememberSaveable { mutableStateOf(false) }
 
-            LaunchedEffect(key1 = Unit) {
-                viewModelProfile.getMyData()
-                delay(2000L)
-                viewModelHome.getPosts(following = uiStateProfile.following)
-                viewModelHome.getStories(following = uiStateProfile.following)
+            LaunchedEffect(key1 = Unit, key2 = uiStateProfile.isUserDetailChanged) {
+                if (!isLaunched || uiStateProfile.isUserDetailChanged) {
+                    viewModelProfile.getMyData()
+                    delay(3000L)
+                    if (uiStateProfile.following.isNotEmpty()) {
+                        viewModelHome.getPosts(following = uiStateProfile.following)
+                        viewModelHome.getStories(following = uiStateProfile.following)
+                        isLaunched = true
+                    }
+                }
             }
 
             HomeScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
+                following = uiStateProfile.following,
                 profileImage = uiStateProfile.profileImage,
-                userDataLoading = uiStateProfile.isLoading,
                 selectedPost = uiStateProfile.selectedPost,
                 currentUserId = currentUser?.uid ?: "",
                 exoPlayer = viewModelPlayer.exoPlayer,
@@ -376,6 +385,7 @@ fun InnerScreenNavigation(
                 navHostController.popBackStack()
             }
         }
+
         composable(
             route = NavScreens.EditProfileScreen.route,
             enterTransition = {
@@ -410,7 +420,7 @@ fun InnerScreenNavigation(
                         context = context,
                         onSuccess = {
                             viewModelProfile.setIsUserDetailChanged(true)
-                            viewModelHome.getUserData()
+//                            viewModelHome.getUserData()
                         }
                     )
                 },
@@ -427,9 +437,10 @@ fun InnerScreenNavigation(
                                 context = context,
                                 onSuccess = {
                                     viewModelProfile.setIsUserDetailChanged(true)
-                                    viewModelHome.getUserData()
+//                                    viewModelHome.getUserData()
                                 }
                             )
+
                             viewModelProfile.setNewImage(null)
                         }
                     )
@@ -488,6 +499,7 @@ fun InnerScreenNavigation(
                 }
             )
         }
+
         composable(
             route = "${NavScreens.EditTextScreen.route}/{text}",
             arguments = listOf(
@@ -616,6 +628,7 @@ fun InnerScreenNavigation(
                 }
             )
         }
+
         composable(
             route = NavScreens.SettingsAndPrivacyScreen.route,
             enterTransition = {
@@ -671,6 +684,7 @@ fun InnerScreenNavigation(
                 }
             )
         }
+
         composable(
             route = NavScreens.UploadContentScreen.route,
             enterTransition = {

@@ -148,5 +148,7 @@
     <string name="photos">Photos</string>
     <string name="videos">Videos</string>
     <string name="mute_unmute">Mute/UnMute</string>
+    <string name="no_posts">No Posts!</string>
+    <string name="follow_someone">Follow someone to see their posts</string>
 
 </resources>

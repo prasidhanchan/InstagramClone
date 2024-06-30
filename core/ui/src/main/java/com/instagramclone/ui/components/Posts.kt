@@ -55,7 +55,8 @@ fun Posts(
     state: LazyListState,
     topContent: @Composable () -> Unit = { }
 ) {
-    val currentlyPlayingPost = getCurrentlyPlayingPost(state = state, posts = posts)
+    val currentlyPlayingPost =
+        if (posts.isNotEmpty()) getCurrentlyPlayingPost(state = state, posts = posts) else null
 
     LazyColumn(
         contentPadding = innerPadding,
@@ -69,29 +70,29 @@ fun Posts(
                 }
             }
 
-            items(
-                items = posts,
-                key = { post -> "${post.userId}${post.timeStamp}" }
-            ) { post ->
-                PostCard(
-                    post = post,
-                    currentUserId = currentUserId,
-                    exoPlayer = exoPlayer,
-                    currentPosition = currentPosition,
-                    duration = duration,
-                    isPlaying = MediaItem.fromUri(post.mediaList.first()) ==
-                            MediaItem.fromUri(
-                                currentlyPlayingPost?.mediaList?.first() ?: ""
-                            ),
-                    onWatchAgainClick = onWatchAgainClick,
-                    onLikeClick = onLikeClick,
-                    onUnLikeClick = onUnLikeClick,
-                    onSendClick = onSendClick,
-                    onSaveClick = onSaveClick,
-                    onUnfollowClick = onUnfollowClick,
-                    onDeletePostClick = onDeletePostClick,
-                    onUsernameClick = onUsernameClick
-                )
+            if (posts.isNotEmpty()) {
+                items(
+                    items = posts,
+                    key = { post -> "${post.userId}${post.timeStamp}" }
+                ) { post ->
+                    PostCard(
+                        post = post,
+                        currentUserId = currentUserId,
+                        exoPlayer = exoPlayer,
+                        currentPosition = currentPosition,
+                        duration = duration,
+                        isPlaying = MediaItem.fromUri(post.mediaList.first()) ==
+                                MediaItem.fromUri(currentlyPlayingPost?.mediaList?.first() ?: ""),
+                        onWatchAgainClick = onWatchAgainClick,
+                        onLikeClick = onLikeClick,
+                        onUnLikeClick = onUnLikeClick,
+                        onSendClick = onSendClick,
+                        onSaveClick = onSaveClick,
+                        onUnfollowClick = onUnfollowClick,
+                        onDeletePostClick = onDeletePostClick,
+                        onUsernameClick = onUsernameClick
+                    )
+                }
             }
         }
     )
