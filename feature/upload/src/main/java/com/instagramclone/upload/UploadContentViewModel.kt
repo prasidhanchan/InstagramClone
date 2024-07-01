@@ -6,7 +6,7 @@ import com.instagramclone.remote.repository.UploadContentRepositoryImpl
 import com.instagramclone.upload.util.ContentResolver
 import com.instagramclone.util.models.Media
 import com.instagramclone.util.models.Post
-import com.instagramclone.util.models.Story
+import com.instagramclone.util.models.UserStory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +23,7 @@ class UploadContentViewModel @Inject constructor(
 ) : ViewModel() {
     var uiState = MutableStateFlow(UiState())
         private set
+
 
     fun getMedia() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -86,13 +87,15 @@ class UploadContentViewModel @Inject constructor(
     }
 
     fun uploadStory(
-        story: Story,
+        userStory: UserStory,
+        currentUserId: String,
         onSuccess: () -> Unit
     ) {
         uiState.update { it.copy(isUploading = true) }
         viewModelScope.launch(Dispatchers.IO) {
             shareContentRepository.uploadStory(
-                story = story,
+                userStory = userStory,
+                currentUserId = currentUserId,
                 onSuccess = {
                     onSuccess()
                     uiState.update { it.copy(isUploading = false) }

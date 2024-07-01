@@ -75,7 +75,7 @@ class HomeViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     if (result.e == null && !result.isLoading!!) {
                         uiState.update {
-                            it.copy(stories = result.data!!)
+                            it.copy(userStories = result.data!!)
                         }
                     } else {
                         uiState.update {

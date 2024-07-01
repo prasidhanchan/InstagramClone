@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.instagramclone.util.models.Story
+import com.instagramclone.util.models.UserStory
 
 @Composable
 fun Stories(
@@ -12,34 +13,38 @@ fun Stories(
     currentUserId: String,
     onAddStoryClick: () -> Unit,
     onStoryClick: () -> Unit,
-    stories: List<Story>
+    userStories: List<UserStory>
 ) {
     LazyRow(
         content = {
             item(
                 key = "addStory"
             ) {
-                if (!stories.any { story -> story.userId == currentUserId }) {
+                if (!userStories.any { story -> story.userId == currentUserId }) {
                     AddStoryCard(
                         profileImage = profileImage,
                         onClick = onAddStoryClick
                     )
                 } else {
                     StoryCard(
-                        story = stories.first { story -> story.userId == currentUserId },
+                        userStory = userStories.first { story -> story.userId == currentUserId },
+                        currentUserId = currentUserId,
                         onClick = onAddStoryClick
                     )
                 }
             }
 
-            items(
-                items = stories.filter { story -> story.userId != currentUserId }, // Filter out the current user stories
-                key = { story -> story.username }
-            ) { story ->
-                StoryCard(
-                    story = story,
-                    onClick = onStoryClick
-                )
+            if (userStories.isNotEmpty()) {
+                items(
+                    items = userStories.filter { story -> story.userId != currentUserId }, // Filter out the current user stories
+                    key = { userStory -> userStory.userId }
+                ) { story ->
+                    StoryCard(
+                        userStory = story,
+                        currentUserId = currentUserId,
+                        onClick = onStoryClick
+                    )
+                }
             }
         }
     )
@@ -53,21 +58,25 @@ fun StoriesPreview() {
         currentUserId = "",
         onAddStoryClick = { },
         onStoryClick = { },
-        stories = listOf(
-            Story(
-                username = "pra_sidh_22"
-            ),
-            Story(
-                username = "youtubeindia"
-            ),
-            Story(
-                username = "virat.kohli"
-            ),
-            Story(
-                username = "mustang"
-            ),
-            Story(
-                username = "googlefordevs"
+        userStories = listOf(
+            UserStory(
+                stories = listOf(
+                    Story(
+                        userId = "pra_sidh_22"
+                    ),
+                    Story(
+                        userId = "youtubeindia"
+                    ),
+                    Story(
+                        userId = "virat.kohli"
+                    ),
+                    Story(
+                        userId = "mustang"
+                    ),
+                    Story(
+                        userId = "googlefordevs"
+                    )
+                )
             )
         )
     )

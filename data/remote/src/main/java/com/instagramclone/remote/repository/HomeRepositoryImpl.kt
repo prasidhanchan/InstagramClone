@@ -10,7 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.instagramclone.remote.models.IGUser
 import com.instagramclone.util.models.DataOrException
 import com.instagramclone.util.models.Post
-import com.instagramclone.util.models.Story
+import com.instagramclone.util.models.UserStory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -86,8 +86,8 @@ class HomeRepositoryImpl @Inject constructor(
     override suspend fun getStories(
         following: List<String>,
         currentUserId: String
-    ): Flow<DataOrException<List<Story>, Boolean, Exception>> {
-        val dataOrException: MutableStateFlow<DataOrException<List<Story>, Boolean, Exception>> =
+    ): Flow<DataOrException<List<UserStory>, Boolean, Exception>> {
+        val dataOrException: MutableStateFlow<DataOrException<List<UserStory>, Boolean, Exception>> =
             MutableStateFlow(DataOrException(isLoading = true))
 
         try {
@@ -96,10 +96,14 @@ class HomeRepositoryImpl @Inject constructor(
                     dataOrException.update {
                         it.copy(
                             data = snapshot.children.map { dataSnap ->
-                                dataSnap.getValue<Story>()!!
+                                dataSnap.getValue<UserStory>()!!
                             }
                                 .filter { story -> following.contains(story.userId) || story.userId == currentUserId }
-                                .sortedByDescending { story -> story.timeStamp }
+                                .sortedByDescending { userStory ->
+                                    userStory.stories.minByOrNull { story ->
+                                        story.timeStamp // Arranging stories in ascending, i.e old stories first
+                                    }?.timeStamp // Arranging single user stories
+                                }
                         )
                     }
 

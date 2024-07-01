@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,10 +44,12 @@ import com.instagramclone.ui.R
 import com.instagramclone.util.constants.Utils.IgBackground
 import com.instagramclone.util.constants.Utils.IgOffBackground
 import com.instagramclone.util.models.Story
+import com.instagramclone.util.models.UserStory
 
 @Composable
 fun StoryCard(
-    story: Story,
+    userStory: UserStory,
+    currentUserId: String,
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -57,6 +60,10 @@ fun StoryCard(
         finishedListener = { size = 1f },
         label = "storyCardAnimation"
     )
+
+    val isAllStoryViewed by remember {
+        mutableStateOf(userStory.stories.last().views.contains(currentUserId))
+    }
     
     Box(
         modifier = Modifier
@@ -87,7 +94,7 @@ fun StoryCard(
                         brush = Brush.linearGradient(
                             start = Offset(x = 0.0f, y = 50.0f),
                             end = Offset(x = 200.0f, y = 250.0f),
-                            colors = if (story.isViewed) {
+                            colors = if (isAllStoryViewed) {
                                 listOf(
                                     Color.DarkGray,
                                     Color.DarkGray
@@ -103,33 +110,33 @@ fun StoryCard(
                             }
                         ),
                         shape = CircleShape,
-                        width = if (story.isViewed) 1.dp else 2.dp
+                        width = if (isAllStoryViewed) 1.dp else 2.dp
                     )
                     .border(width = 5.dp, color = IgBackground, shape = CircleShape),
                 color = IgOffBackground
             ) {
-                if (story.profileImage.isNotEmpty()) {
+                if (userStory.profileImage.isNotEmpty()) {
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
-                        model = story.profileImage,
+                        model = userStory.profileImage,
                         contentScale = ContentScale.Crop,
                         filterQuality = FilterQuality.None,
                         contentDescription = stringResource(
                             R.string.story_placeholder,
-                            story.username
+                            userStory.username
                         )
                     )
                 } else {
                     Image(
                         painter = painterResource(id = R.drawable.profile),
-                        contentDescription = story.username
+                        contentDescription = userStory.username
                     )
                 }
             }
 
             Text(
                 modifier = Modifier.padding(vertical = 2.dp),
-                text = story.username,
+                text = userStory.username,
                 style = TextStyle(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -144,10 +151,15 @@ fun StoryCard(
 @Composable
 fun StoryCardPreview() {
     StoryCard(
-        story = Story(
-            username = "pra_sidh_22",
-            isViewed = true
+        userStory = UserStory(
+            stories = listOf(
+                Story(
+                    userId = "pra_sidh_22",
+                    views = listOf("1")
+                )
+            )
         ),
+        currentUserId = "1",
         onClick = { }
     )
 }

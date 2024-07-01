@@ -50,6 +50,7 @@ import com.instagramclone.upload.UploadContentScreen
 import com.instagramclone.upload.UploadContentViewModel
 import com.instagramclone.util.models.Post
 import com.instagramclone.util.models.Story
+import com.instagramclone.util.models.UserStory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -846,6 +847,7 @@ fun InnerScreenNavigation(
 
             val timeStamp = System.currentTimeMillis()
 
+
             LaunchedEffect(key1 = Unit) {
                 if (uiState.selectedMedia?.duration != null) {
                     viewModelPlayer.startPlayer(url = uiState.selectedMedia?.data.toString())
@@ -859,15 +861,21 @@ fun InnerScreenNavigation(
                 exoPlayer = viewModelPlayer.exoPlayer,
                 onAddStoryClick = {
                     viewModelUpload.uploadStory(
-                        story = Story(
+                        userStory = UserStory(
+                            userId = currentUser?.uid!!,
                             username = uiStateProfile.username,
                             profileImage = uiStateProfile.profileImage,
-                            userId = currentUser?.uid!!,
-                            timeStamp = timeStamp,
-                            image = uiState.selectedMedia?.data.toString(),
-                            isVerified = true, // TODO: Change
-                            mimeType = uiState.selectedMedia?.mimeType!!
+                            stories = listOf(
+                                Story(
+                                    userId = currentUser.uid,
+                                    timeStamp = timeStamp,
+                                    image = uiState.selectedMedia?.data.toString(),
+                                    isVerified = true, // TODO: Change
+                                    mimeType = uiState.selectedMedia?.mimeType!!
+                                )
+                            )
                         ),
+                        currentUserId = currentUser.uid,
                         onSuccess = {
                             navHostController.navigate(NavScreens.HomeScreen.route) {
                                 popUpTo(navHostController.graph.startDestinationId)
