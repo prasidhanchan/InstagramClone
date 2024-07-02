@@ -43,6 +43,7 @@ import com.instagramclone.profile.PostsScreen
 import com.instagramclone.profile.ProfileViewModel
 import com.instagramclone.profile.SettingsAndPrivacyScreen
 import com.instagramclone.profile.UserProfileScreen
+import com.instagramclone.story.StoryScreen
 import com.instagramclone.ui.R
 import com.instagramclone.upload.AddCaptionScreen
 import com.instagramclone.upload.AddToStoryScreen
@@ -69,10 +70,10 @@ fun InnerScreenNavigation(
 
     NavHost(
         navController = navHostController,
-        startDestination = NavScreens.HomeScreen.route
+        startDestination = Routes.HomeScreen.route
     ) {
         composable(
-            route = NavScreens.HomeScreen.route,
+            route = Routes.HomeScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -148,13 +149,13 @@ fun InnerScreenNavigation(
                 },
                 setSelectedPost = { viewModelProfile.setSelectedPost(it) },
                 onUsernameClick = { userId ->
-                    navHostController.navigate(NavScreens.UserProfileScreen.route + "/$userId")
+                    navHostController.navigate(Routes.UserProfileScreen.route + "/$userId")
                 }
             )
         }
 
         composable(
-            route = NavScreens.MyProfileScreen.route,
+            route = Routes.MyProfileScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -192,22 +193,22 @@ fun InnerScreenNavigation(
                         }
                     )
                 },
-                onEditProfileClick = { navHostController.navigate(NavScreens.EditProfileScreen.route) },
+                onEditProfileClick = { navHostController.navigate(Routes.EditProfileScreen.route) },
                 navigateToPostsWithPostIndex = {
                     navHostController.navigate(
-                        NavScreens.PostsScreen.route +
+                        Routes.PostsScreen.route +
                                 "/${it.substringBefore("-")}/${it.substringAfter("-")}"
                     ) // userId-1
                 },
                 setSelectedPost = { viewModelProfile.setSelectedPost(it) },
                 onSettingsAndPrivacyClicked = {
-                    navHostController.navigate(NavScreens.SettingsAndPrivacyScreen.route)
+                    navHostController.navigate(Routes.SettingsAndPrivacyScreen.route)
                 }
             )
         }
 
         composable(
-            route = "${NavScreens.UserProfileScreen.route}/{userId}",
+            route = "${Routes.UserProfileScreen.route}/{userId}",
             arguments = listOf(
                 navArgument("userId") {
                     type = NavType.StringType
@@ -261,12 +262,12 @@ fun InnerScreenNavigation(
                 },
                 navigateToPostsWithPostIndex = {
                     navHostController.navigate(
-                        NavScreens.PostsScreen.route +
+                        Routes.PostsScreen.route +
                                 "/${it.substringBefore("-")}/${it.substringAfter("-")}"
                     ) // userId-1
                 },
                 onEditProfileClick = {
-                    navHostController.navigate(NavScreens.EditProfileScreen.route)
+                    navHostController.navigate(Routes.EditProfileScreen.route)
                 },
                 setIsFollowing = {
                     viewModelProfile.setIsFollowing(it)
@@ -279,7 +280,7 @@ fun InnerScreenNavigation(
         }
 
         composable(
-            route = "${NavScreens.PostsScreen.route}/{userId}/{postIndex}",
+            route = "${Routes.PostsScreen.route}/{userId}/{postIndex}",
             arguments = listOf(
                 navArgument("userId") {
                     type = NavType.StringType
@@ -380,7 +381,7 @@ fun InnerScreenNavigation(
                     )
                 },
                 onUsernameClick = { id ->
-                    navHostController.navigate(NavScreens.UserProfileScreen.route + "/$id")
+                    navHostController.navigate(Routes.UserProfileScreen.route + "/$id")
                 }
             ) {
                 navHostController.popBackStack()
@@ -388,7 +389,7 @@ fun InnerScreenNavigation(
         }
 
         composable(
-            route = NavScreens.EditProfileScreen.route,
+            route = Routes.EditProfileScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -413,7 +414,7 @@ fun InnerScreenNavigation(
             EditProfileScreen(
                 innerPadding = innerPadding,
                 uiState = uiState,
-                onClickEditText = { text -> navHostController.navigate(NavScreens.EditTextScreen.route + "/$text") },
+                onClickEditText = { text -> navHostController.navigate(Routes.EditTextScreen.route + "/$text") },
                 onDeleteProfileClick = {
                     viewModelProfile.updateUserDetails(
                         text = context.getString(R.string.profileimage),
@@ -502,7 +503,7 @@ fun InnerScreenNavigation(
         }
 
         composable(
-            route = "${NavScreens.EditTextScreen.route}/{text}",
+            route = "${Routes.EditTextScreen.route}/{text}",
             arguments = listOf(
                 navArgument("text") {
                     type = NavType.StringType
@@ -631,7 +632,7 @@ fun InnerScreenNavigation(
         }
 
         composable(
-            route = NavScreens.SettingsAndPrivacyScreen.route,
+            route = Routes.SettingsAndPrivacyScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -687,7 +688,7 @@ fun InnerScreenNavigation(
         }
 
         composable(
-            route = NavScreens.UploadContentScreen.route,
+            route = Routes.UploadContentScreen.route,
             enterTransition = {
                 slideInHorizontally(
                     animationSpec = tween(),
@@ -772,7 +773,7 @@ fun InnerScreenNavigation(
                 },
                 onStorySelected = { selectedMedia ->
                     viewModelUpload.setMedia(media = selectedMedia)
-                    navHostController.navigate(NavScreens.AddToStoryScreen.route)
+                    navHostController.navigate(Routes.AddToStoryScreen.route)
                 },
                 onPhotosClick = {
                     viewModelUpload.getImages()
@@ -781,7 +782,7 @@ fun InnerScreenNavigation(
                     viewModelUpload.getVideos()
                 },
                 onNextClick = {
-                    navHostController.navigate(NavScreens.AddCaptionScreen.route)
+                    navHostController.navigate(Routes.AddCaptionScreen.route)
                 },
                 onBackClick = {
                     navHostController.popBackStack()
@@ -791,7 +792,7 @@ fun InnerScreenNavigation(
         }
 
         composable(
-            route = NavScreens.AddCaptionScreen.route,
+            route = Routes.AddCaptionScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween()
@@ -826,7 +827,7 @@ fun InnerScreenNavigation(
                             mimeType = uiState.selectedMedia?.mimeType ?: ""
                         ),
                         onSuccess = {
-                            navHostController.navigate(NavScreens.HomeScreen.route) {
+                            navHostController.navigate(Routes.HomeScreen.route) {
                                 popUpTo(navHostController.graph.startDestinationId)
                             }
                             viewModelUpload.setCaption(caption = "")
@@ -837,7 +838,7 @@ fun InnerScreenNavigation(
         }
 
         composable(
-            route = NavScreens.AddToStoryScreen.route,
+            route = Routes.AddToStoryScreen.route,
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
         ) {
@@ -877,13 +878,32 @@ fun InnerScreenNavigation(
                         ),
                         currentUserId = currentUser.uid,
                         onSuccess = {
-                            navHostController.navigate(NavScreens.HomeScreen.route) {
+                            navHostController.navigate(Routes.HomeScreen.route) {
                                 popUpTo(navHostController.graph.startDestinationId)
                             }
                         }
                     )
                 },
                 onBackClick = { navHostController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Routes.StoryScreen.route
+        ) {
+            val uiState by viewModelHome.uiState.collectAsState()
+            val uiStateProfile by viewModelProfile.uiState.collectAsState()
+
+            LaunchedEffect(Unit) {
+                viewModelHome.getStories(following = uiStateProfile.following)
+            }
+
+            StoryScreen(
+                userStories = uiState.userStories,
+                innerPadding = innerPadding,
+                onDismiss = {
+                    // TODO: Dismiss the StoryScreen
+                }
             )
         }
     }

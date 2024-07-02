@@ -26,10 +26,10 @@ fun InnerScreenHolder(
     val uiState by viewModelProfile.uiState.collectAsState()
 
     val showBottomBar = when(currentDestination) {
-        NavScreens.HomeScreen.route -> true
-        NavScreens.SearchScreen.route -> true
-        NavScreens.ReelsScreen.route -> true
-        NavScreens.MyProfileScreen.route -> true
+        Routes.HomeScreen.route -> true
+        Routes.SearchScreen.route -> true
+        Routes.ReelsScreen.route -> true
+        Routes.MyProfileScreen.route -> true
         else -> false
     }
 

@@ -62,9 +62,13 @@ fun StoryCard(
     )
 
     val isAllStoryViewed by remember {
-        mutableStateOf(userStory.stories.last().views.contains(currentUserId))
+        mutableStateOf(
+            if (userStory.stories.isNotEmpty())
+                userStory.stories.last().views.contains(currentUserId)
+            else false
+        )
     }
-    
+
     Box(
         modifier = Modifier
             .padding(horizontal = 10.dp)

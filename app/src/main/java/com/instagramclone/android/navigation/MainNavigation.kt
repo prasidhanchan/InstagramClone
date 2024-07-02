@@ -45,14 +45,14 @@ import kotlinx.coroutines.launch
 fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
     val navController = rememberNavController()
     val context = LocalContext.current
-    var startDestination by rememberSaveable { mutableStateOf(NavScreens.SplashScreen.route) }
+    var startDestination by rememberSaveable { mutableStateOf(Routes.SplashScreen.route) }
 
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
         composable(
-            route = NavScreens.SplashScreen.route,
+            route = Routes.SplashScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -68,22 +68,22 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
 
             LaunchedEffect(key1 = Unit) {
                 if (currentUser != null) {
-                    startDestination = NavScreens.InnerScreenHolder.route
+                    startDestination = Routes.InnerScreenHolder.route
                     delay(1000L)
                     navController.popBackStack()
-                    navController.navigate(NavScreens.InnerScreenHolder.route)
+                    navController.navigate(Routes.InnerScreenHolder.route)
                 } else {
-                    startDestination = NavScreens.LoginScreen.route
+                    startDestination = Routes.LoginScreen.route
                     delay(1000L)
                     navController.popBackStack()
-                    navController.navigate(NavScreens.LoginScreen.route)
+                    navController.navigate(Routes.LoginScreen.route)
                 }
             }
             SplashScreen()
         }
 
         composable(
-            route = NavScreens.LoginScreen.route,
+            route = Routes.LoginScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -116,7 +116,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
 
                     if (emailList?.contains(currentUser?.email) == true) {
                         navController.popBackStack()
-                        navController.navigate(NavScreens.InnerScreenHolder.route) {
+                        navController.navigate(Routes.InnerScreenHolder.route) {
                             navController.graph.startDestinationRoute?.let { route ->
                                 popUpTo(route)
                             }
@@ -131,7 +131,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                             ),
                             onSuccess = {
                                 navController.popBackStack()
-                                navController.navigate(NavScreens.InnerScreenHolder.route) {
+                                navController.navigate(Routes.InnerScreenHolder.route) {
                                     navController.graph.startDestinationRoute?.let { route ->
                                         popUpTo(route)
                                     }
@@ -147,19 +147,19 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             )
 
             LaunchedEffect(key1 = Unit) {
-                startDestination = NavScreens.LoginScreen.route
+                startDestination = Routes.LoginScreen.route
             }
 
             LoginScreen(
                 uiState = uiState,
-                navigateToSignUp = { navController.navigate(NavScreens.AddEmailScreen.route) },
-                onForgotPasswordClicked = { navController.navigate(NavScreens.LoginHelpScreen.route) },
+                navigateToSignUp = { navController.navigate(Routes.AddEmailScreen.route) },
+                onForgotPasswordClicked = { navController.navigate(Routes.LoginHelpScreen.route) },
                 onFaceBookClicked = { launcher.launch(listOf("email", "public_profile")) },
                 onEmailOrUserNameChange = { viewModel.setEmailOrUsername(emailOrUsername = it) },
                 onPasswordChange = { viewModel.setPassword(password = it) },
                 onConfirm = {
                     viewModel.setDialog(value = false)
-                    navController.navigate(NavScreens.AddEmailScreen.route)
+                    navController.navigate(Routes.AddEmailScreen.route)
                 },
                 onDismiss = { viewModel.setDialog(value = false) },
                 onLogin = {
@@ -170,7 +170,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                             context = context,
                             onSuccess = {
                                 navController.popBackStack()
-                                navController.navigate(NavScreens.InnerScreenHolder.route) {
+                                navController.navigate(Routes.InnerScreenHolder.route) {
                                     navController.graph.startDestinationRoute?.let { route ->
                                         popUpTo(route)
                                     }
@@ -185,7 +185,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                             context = context,
                             onSuccess = {
                                 navController.popBackStack()
-                                navController.navigate(NavScreens.InnerScreenHolder.route) {
+                                navController.navigate(Routes.InnerScreenHolder.route) {
                                     navController.graph.startDestinationRoute?.let { route ->
                                         popUpTo(route)
                                     }
@@ -199,7 +199,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         }
 
         composable(
-            route = NavScreens.AddEmailScreen.route,
+            route = Routes.AddEmailScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -251,7 +251,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                         }
                     }
                 },
-                navigateToLogin = { navController.navigate(NavScreens.LoginScreen.route) },
+                navigateToLogin = { navController.navigate(Routes.LoginScreen.route) },
                 onNextClicked = {
                     if (uiState.email.matches(Regex(pattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$"))) {
                         viewModel.setErrorOrSuccessEmail(errorOrSuccessEmail = context.getString(R.string.available))
@@ -262,7 +262,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                                 )
                             )
                         } else {
-                            navController.navigate(NavScreens.ChooseUsernameScreen.route)
+                            navController.navigate(Routes.ChooseUsernameScreen.route)
                         }
                     } else {
                         viewModel.setErrorOrSuccessEmail(errorOrSuccessEmail = context.getString(R.string.please_enter_a_valid_email))
@@ -272,7 +272,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         }
 
         composable(
-            route = NavScreens.ChooseUsernameScreen.route,
+            route = Routes.ChooseUsernameScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -341,7 +341,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                                     R.string.available
                                 )
                             )
-                            navController.navigate(NavScreens.CreatePasswordScreen.route)
+                            navController.navigate(Routes.CreatePasswordScreen.route)
                         }
                     } else {
                         viewModel.setErrorOrSuccessUsername(
@@ -353,7 +353,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         }
 
         composable(
-            route = NavScreens.CreatePasswordScreen.route,
+            route = Routes.CreatePasswordScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -374,14 +374,14 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                     if (uiState.errorOrSuccess != "") viewModel.clearErrorOrSuccess()
                 },
                 onNextClicked = {
-                    navController.navigate(NavScreens.WelcomeScreen.route)
+                    navController.navigate(Routes.WelcomeScreen.route)
                     viewModel.clearErrorOrSuccess()
                 }
             )
         }
 
         composable(
-            route = NavScreens.WelcomeScreen.route,
+            route = Routes.WelcomeScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -409,7 +409,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                                     password = uiState.password.trim()
                                 ),
                                 onSuccess = {
-                                    navController.navigate(NavScreens.AddProfileScreen.route)
+                                    navController.navigate(Routes.AddProfileScreen.route)
                                 }
                             )
                         }
@@ -419,7 +419,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         }
 
         composable(
-            route = NavScreens.AddProfileScreen.route,
+            route = Routes.AddProfileScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -442,11 +442,11 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                     scope.launch {
                         viewModel.setDialog(value = false)
                         delay(1000)
-                        navController.navigate(NavScreens.ProfileAddedScreen.route)
+                        navController.navigate(Routes.ProfileAddedScreen.route)
                     }
                 },
                 onSkipClicked = {
-                    navController.navigate(NavScreens.InnerScreenHolder.route) {
+                    navController.navigate(Routes.InnerScreenHolder.route) {
                         navController.graph.startDestinationRoute?.let { route -> popUpTo(route) }
                     }
                     viewModel.clearUiState()
@@ -455,7 +455,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         }
 
         composable(
-            route = NavScreens.ProfileAddedScreen.route,
+            route = Routes.ProfileAddedScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -477,7 +477,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                         onSuccess = {
                             viewModel.updateProfileImage(
                                 onSuccess = {
-                                    navController.navigate(NavScreens.InnerScreenHolder.route) {
+                                    navController.navigate(Routes.InnerScreenHolder.route) {
                                         popUpTo(navController.graph.startDestinationId)
                                     }
                                     viewModel.clearUiState()
@@ -494,7 +494,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         }
 
         composable(
-            route = NavScreens.LoginHelpScreen.route,
+            route = Routes.LoginHelpScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -522,7 +522,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
 
                     if (emailList?.contains(currentUser?.email) == true) {
                         navController.popBackStack()
-                        navController.navigate(NavScreens.InnerScreenHolder.route)
+                        navController.navigate(Routes.InnerScreenHolder.route)
                         viewModel.clearUiState()
                     } else {
                         viewModel.addUserToDB(
@@ -532,7 +532,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                                 username = displayName!!
                             ),
                             onSuccess = {
-                                navController.navigate(NavScreens.InnerScreenHolder.route) {
+                                navController.navigate(Routes.InnerScreenHolder.route) {
                                     navController.graph.startDestinationRoute?.let { route ->
                                         popUpTo(route)
                                     }
@@ -548,7 +548,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                 onNextClicked = {
                     viewModel.filterUser(
                         onSuccess = {
-                            navController.navigate(NavScreens.AccessAccountScreen.route)
+                            navController.navigate(Routes.AccessAccountScreen.route)
                             viewModel.clearErrorOrSuccess()
                         },
                         onError = { viewModel.setErrorOrSuccess(errorOrSuccess = context.getString(R.string.no_user_found)) }
@@ -558,7 +558,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         }
 
         composable(
-            route = NavScreens.AccessAccountScreen.route,
+            route = Routes.AccessAccountScreen.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -581,7 +581,7 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
         }
 
         composable(
-            route = NavScreens.InnerScreenHolder.route,
+            route = Routes.InnerScreenHolder.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(350)
@@ -594,14 +594,14 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
             }
         ) {
             LaunchedEffect(key1 = Unit) {
-                startDestination = NavScreens.InnerScreenHolder.route
+                startDestination = Routes.InnerScreenHolder.route
             }
 
             InnerScreenHolder(
                 navigateToLogin = {
                     navController.popBackStack()
-                    navController.clearBackStack(NavScreens.InnerScreenHolder.route)
-                    navController.navigate(NavScreens.LoginScreen.route)
+                    navController.clearBackStack(Routes.InnerScreenHolder.route)
+                    navController.navigate(Routes.LoginScreen.route)
                 }
             )
         }

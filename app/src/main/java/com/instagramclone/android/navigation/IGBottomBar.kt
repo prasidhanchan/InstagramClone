@@ -41,7 +41,7 @@ fun IGBottomBar(
     profileImage: String?,
     navHostController: NavHostController
 ) {
-    val items = NavScreens.Items.list
+    val items = Routes.Items.list
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentScreen = navBackStackEntry?.destination
 
@@ -61,12 +61,12 @@ fun IGBottomBar(
             items.forEach { item ->
                 IGBottomBarItem(
                     isSelected = currentScreen?.hierarchy?.any { it.route == item.route } == true,
-                    isProfile = item.route == NavScreens.MyProfileScreen.route,
+                    isProfile = item.route == Routes.MyProfileScreen.route,
                     profileImage = profileImage,
                     item = item,
                     onClick = {
                         navHostController.navigate(item.route) {
-                            popUpTo(NavScreens.HomeScreen.route)
+                            popUpTo(Routes.HomeScreen.route)
                             launchSingleTop = true
                         }
                     }
@@ -79,10 +79,10 @@ fun IGBottomBar(
 @Composable
 fun IGBottomBarItem(
     isSelected: Boolean,
-    item: NavScreens,
+    item: Routes,
     isProfile: Boolean = false,
     profileImage: String? = null,
-    onClick: (NavScreens) -> Unit
+    onClick: (Routes) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 

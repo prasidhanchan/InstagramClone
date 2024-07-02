@@ -98,13 +98,15 @@ fun HomeScreen(
                     ) {
                         IGHomeAppBar()
 
-                        Stories(
-                            profileImage = profileImage,
-                            currentUserId = currentUserId,
-                            onAddStoryClick = { /* TODO */ },
-                            onStoryClick = { /* TODO */ },
-                            userStories = uiState.userStories
-                        )
+                        if (uiState.userStories.isNotEmpty()) {
+                            Stories(
+                                profileImage = profileImage,
+                                currentUserId = currentUserId,
+                                onAddStoryClick = { /* TODO */ },
+                                onStoryClick = { /* TODO */ },
+                                userStories = uiState.userStories
+                            )
+                        }
 
                         HorizontalDivider(
                             modifier = Modifier.padding(top = 8.dp),

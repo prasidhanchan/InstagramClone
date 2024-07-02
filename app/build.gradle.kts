@@ -133,4 +133,5 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":feature:profile"))
     implementation(project(":feature:upload"))
+    implementation(project(":feature:story"))
 }

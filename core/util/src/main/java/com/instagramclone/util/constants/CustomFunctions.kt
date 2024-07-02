@@ -82,15 +82,28 @@ fun FacebookLogin(
 fun String?.toIGUsername(): String? = this?.lowercase()?.replace(oldValue = " ", newValue = "_")
 
 /** Function to format TimeStamp for posts
- * @return Returns a string with the formatted timeStamp for comments i.e "1 second ago, "1 hour ago, etc"
+ * @return Returns a string with the formatted timeStamp for comments, posts i.e "1 second ago, "1 hour ago, etc"
  * */
 fun Long.formatTimeStamp(): String {
     val timeDiff = System.currentTimeMillis() - this
     return when {
-        timeDiff <= 60_000 -> "${timeDiff / 10_000}${if ((timeDiff / 10_000) <= 1L) "second ago" else "seconds ago"}"
+        timeDiff <= 60_000 -> "${timeDiff / 10_000}${if ((timeDiff / 10_000) <= 1L) " second ago" else " seconds ago"}"
         timeDiff <= 3_600_000 -> "${timeDiff / 60_000}${if ((timeDiff / 60_000) <= 1L) " minute ago" else " minutes ago"}"
         timeDiff <= 86_400_000 -> "${timeDiff / 3_600_000}${if ((timeDiff / 3_600_000) <= 1L) " hour ago" else " hours ago"}"
         else -> "${timeDiff / 86_400_000}${if ((timeDiff / 86_400_000) <= 1L) " day ago" else " days ago"}"
+    }
+}
+
+/** Function to format TimeStamp for stories
+ * @return Returns a string with the formatted timeStamp for uploaded stories i.e "1m, "1h, etc"
+ * */
+fun Long.formatToStoryTimeStamp(): String {
+    val timeDiff = System.currentTimeMillis() - this
+    return when {
+        timeDiff <= 60_000 -> "${timeDiff / 10_000}s"
+        timeDiff <= 3_600_000 -> "${timeDiff / 60_000}m"
+        timeDiff <= 86_400_000 -> "${timeDiff / 3_600_000}h"
+        else -> "${timeDiff / 86_400_000}d"
     }
 }
 
