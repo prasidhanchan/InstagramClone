@@ -895,6 +895,8 @@ fun InnerScreenNavigation(
             val uiStateProfile by viewModelProfile.uiState.collectAsState()
 
             LaunchedEffect(Unit) {
+                viewModelProfile.getMyData()
+                delay(3000L)
                 viewModelHome.getStories(following = uiStateProfile.following)
             }
 

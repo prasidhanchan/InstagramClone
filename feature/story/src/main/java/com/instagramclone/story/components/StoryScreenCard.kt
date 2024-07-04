@@ -1,5 +1,7 @@
 package com.instagramclone.story.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
@@ -39,6 +42,8 @@ import com.instagramclone.util.models.UserStory
  * @param userStory User's story to be displayed.
  * @param currentStoryIndex Index of the current story be viewed.
  * @param modifier Modifier to be applied to the Card.
+ * @param inFocus Whether the story is in focus or not.
+ * @param isLongPressed Whether the story is long pressed or not.
  * @param onFinish Callback invoked when the current story is finished, i.e when the progress is complete.
  */
 @Composable
@@ -46,9 +51,16 @@ fun StoryScreenCard(
     userStory: UserStory,
     currentStoryIndex: Int,
     modifier: Modifier = Modifier,
+    inFocus: Boolean,
+    isLongPressed: Boolean,
     onFinish: () -> Unit = { }
 ) {
     var imageLoaded by remember { mutableStateOf(false) }
+    val animatedAlpha by animateFloatAsState(
+        targetValue = if (isLongPressed) 0f else 1f,
+        animationSpec = tween(durationMillis = 600),
+        label = "animatedAlpha"
+    )
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -70,7 +82,8 @@ fun StoryScreenCard(
 
         Column(
             modifier = modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .alpha(animatedAlpha),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
@@ -85,7 +98,8 @@ fun StoryScreenCard(
                 userStory.stories.forEach { story ->
                     val isFirstStory = currentStoryIndex == 0
                     StoryProgressBar(
-                        inFocus = currentStoryIndex == userStory.stories.indexOf(story) && imageLoaded,
+                        inFocus = inFocus && currentStoryIndex == userStory.stories.indexOf(story) && imageLoaded,
+                        isLongPressed = isLongPressed,
                         isFirstStory = isFirstStory,
                         modifier = Modifier.weight(1f),
                         onFinish = onFinish
@@ -170,6 +184,8 @@ private fun StoryScreenCardPreview() {
                 )
             )
         ),
-        currentStoryIndex = 0
+        currentStoryIndex = 0,
+        inFocus = true,
+        isLongPressed = false
     )
 }
