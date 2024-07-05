@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.instagramclone.home.components.IGHomeAppBar
+import com.instagramclone.story.StoryScreen
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGDialog
 import com.instagramclone.ui.components.IGLoader
@@ -59,10 +61,15 @@ fun HomeScreen(
     onUnfollowClick: () -> Unit,
     onDeletePostClick: (Post) -> Unit,
     setSelectedPost: (Post) -> Unit,
-    onUsernameClick: (String) -> Unit
+    onUsernameClick: (String) -> Unit,
+    onAddStoryClick: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val state = rememberLazyListState()
+
+    var showStoryScreen by remember { mutableStateOf(false) }
+    var userStoryIndex by remember { mutableIntStateOf(0) }
+    var userStories = remember { mutableListOf<UserStory>() }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -98,15 +105,30 @@ fun HomeScreen(
                     ) {
                         IGHomeAppBar()
 
-                        if (uiState.userStories.isNotEmpty()) {
-                            Stories(
-                                profileImage = profileImage,
-                                currentUserId = currentUserId,
-                                onAddStoryClick = { /* TODO */ },
-                                onStoryClick = { /* TODO */ },
-                                userStories = uiState.userStories
-                            )
-                        }
+                        Stories(
+                            profileImage = profileImage,
+                            currentUserId = currentUserId,
+                            onAddStoryClick = onAddStoryClick,
+                            onViewMyStoryClick = {
+                                userStoryIndex = 0
+                                showStoryScreen = true
+                                if (uiState.userStories.isNotEmpty()) {
+                                    userStories = uiState.userStories
+                                        .filter { userStory -> userStory.userId == currentUserId }
+                                        .toMutableList()
+                                }
+                            },
+                            onStoryClick = { storyIndex ->
+                                userStoryIndex = storyIndex
+                                showStoryScreen = true
+                                if (uiState.userStories.isNotEmpty()) {
+                                    userStories = uiState.userStories
+                                        .filter { userStory -> userStory.userId != currentUserId }
+                                        .toMutableList()
+                                }
+                            },
+                            userStories = uiState.userStories
+                        )
 
                         HorizontalDivider(
                             modifier = Modifier.padding(top = 8.dp),
@@ -147,6 +169,14 @@ fun HomeScreen(
                     showDeleteDialog = false
                     setSelectedPost(Post()) // Clearing selected post on cancel click
                 }
+            )
+
+            StoryScreen(
+                storyIndex = userStoryIndex,
+                visible = showStoryScreen,
+                userStories = { userStories },
+                innerPadding = innerPadding,
+                onDismiss = { showStoryScreen = false }
             )
         } else {
             IGLoader()
@@ -227,6 +257,7 @@ fun HomeScreenPreview() {
         onUnfollowClick = { },
         onDeletePostClick = { },
         setSelectedPost = { },
-        onUsernameClick = { }
+        onUsernameClick = { },
+        onAddStoryClick = { }
     )
 }

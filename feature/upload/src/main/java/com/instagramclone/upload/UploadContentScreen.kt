@@ -23,6 +23,7 @@ import com.instagramclone.util.test.TestPlayer
 @UnstableApi
 @Composable
 fun UploadContentScreen(
+    text: String,
     innerPadding: PaddingValues,
     uiState: UiState,
     exoPlayer: ExoPlayer,
@@ -34,7 +35,7 @@ fun UploadContentScreen(
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
-    var selectedText by rememberSaveable { mutableStateOf(context.getString(R.string.post_caps)) }
+    var selectedText by rememberSaveable { mutableStateOf(text) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -79,6 +80,7 @@ fun UploadContentScreen(
 @Composable
 private fun ShareContentScreenPreview() {
     UploadContentScreen(
+        text = "POST",
         innerPadding = PaddingValues(),
         uiState = UiState(),
         exoPlayer = TestPlayer(),

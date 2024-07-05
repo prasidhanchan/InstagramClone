@@ -79,6 +79,7 @@ fun MediaCardItem(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(media.data)
                     .crossfade(true)
+                    .allowHardware(false)
                     .listener(
                         onSuccess = { _, result ->
                             Palette.Builder(result.drawable.toBitmap()).generate { palette ->

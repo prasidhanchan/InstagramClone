@@ -48,6 +48,9 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
 
+    // Palette
+    implementation(libs.palette)
+
     implementation(libs.compose.preview)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)

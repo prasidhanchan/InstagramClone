@@ -12,23 +12,30 @@ fun Stories(
     profileImage: String,
     currentUserId: String,
     onAddStoryClick: () -> Unit,
-    onStoryClick: () -> Unit,
+    onViewMyStoryClick: () -> Unit,
+    onStoryClick: (storyIndex: Int) -> Unit,
     userStories: List<UserStory>
 ) {
+    val userStoriesFiltered =
+        if (userStories.isNotEmpty()) userStories.filter { story -> story.userId != currentUserId } // Filter out the current user stories
+        else emptyList()
+    val myStory =
+        if (userStories.any { userStory -> userStory.userId == currentUserId })
+            userStories.first { story -> story.userId == currentUserId } // Filtering my stories
+        else UserStory()
+
     LazyRow(
         content = {
-            item(
-                key = "addStory"
-            ) {
-                if (!userStories.any { story -> story.userId == currentUserId }) {
-                    AddStoryCard(
-                        profileImage = profileImage,
-                        onClick = onAddStoryClick
+            item(key = "addStory") {
+                if (userStories.any { story -> story.userId == currentUserId }) {
+                    StoryCard(
+                        userStory = myStory,
+                        currentUserId = currentUserId,
+                        onClick = onViewMyStoryClick
                     )
                 } else {
-                    StoryCard(
-                        userStory = userStories.first { story -> story.userId == currentUserId },
-                        currentUserId = currentUserId,
+                    AddStoryCard(
+                        profileImage = profileImage,
                         onClick = onAddStoryClick
                     )
                 }
@@ -36,13 +43,13 @@ fun Stories(
 
             if (userStories.isNotEmpty()) {
                 items(
-                    items = userStories.filter { story -> story.userId != currentUserId }, // Filter out the current user stories
+                    items = userStoriesFiltered,
                     key = { userStory -> userStory.userId }
                 ) { story ->
                     StoryCard(
                         userStory = story,
                         currentUserId = currentUserId,
-                        onClick = onStoryClick
+                        onClick = { onStoryClick(userStoriesFiltered.indexOf(story)) }
                     )
                 }
             }
@@ -57,6 +64,7 @@ fun StoriesPreview() {
         profileImage = "",
         currentUserId = "",
         onAddStoryClick = { },
+        onViewMyStoryClick = { },
         onStoryClick = { },
         userStories = listOf(
             UserStory(

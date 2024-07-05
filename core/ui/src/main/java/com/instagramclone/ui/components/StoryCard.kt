@@ -4,8 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +30,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,12 +52,10 @@ fun StoryCard(
     currentUserId: String,
     onClick: () -> Unit
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    var size by remember { mutableFloatStateOf(1f) }
-    val scale by animateFloatAsState(
-        targetValue = size,
-        animationSpec = tween(100),
-        finishedListener = { size = 1f },
+    var scale by remember { mutableFloatStateOf(1f) }
+    val animatedScale by animateFloatAsState(
+        targetValue = scale,
+        animationSpec = tween(200),
         label = "storyCardAnimation"
     )
 
@@ -84,15 +82,18 @@ fun StoryCard(
             Surface(
                 shape = CircleShape,
                 modifier = Modifier
-                    .scale(scale)
-                    .clickable(
-                        indication = null,
-                        interactionSource = interactionSource,
-                        onClick = {
-                            size = 0.9f
-                            onClick()
-                        }
-                    )
+                    .scale(animatedScale)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onPress = {
+                                scale = 0.9f
+                                awaitRelease()
+                                onClick()
+                                scale = 1f
+                            },
+                            onLongPress = { scale = 0.9f }
+                        )
+                    }
                     .size(80.dp)
                     .border(
                         brush = Brush.linearGradient(
@@ -140,7 +141,8 @@ fun StoryCard(
 
             Text(
                 modifier = Modifier.padding(vertical = 2.dp),
-                text = userStory.username,
+                text = if (userStory.userId != currentUserId) userStory.username
+                else stringResource(id = R.string.your_story),
                 style = TextStyle(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,

@@ -43,7 +43,6 @@ import com.instagramclone.profile.PostsScreen
 import com.instagramclone.profile.ProfileViewModel
 import com.instagramclone.profile.SettingsAndPrivacyScreen
 import com.instagramclone.profile.UserProfileScreen
-import com.instagramclone.story.StoryScreen
 import com.instagramclone.ui.R
 import com.instagramclone.upload.AddCaptionScreen
 import com.instagramclone.upload.AddToStoryScreen
@@ -75,14 +74,10 @@ fun InnerScreenNavigation(
         composable(
             route = Routes.HomeScreen.route,
             enterTransition = {
-                fadeIn(
-                    animationSpec = tween(350)
-                )
+                fadeIn(animationSpec = tween(350))
             },
             exitTransition = {
-                fadeOut(
-                    animationSpec = tween(350)
-                )
+                fadeOut(animationSpec = tween(350))
             }
         ) {
             val uiState by viewModelHome.uiState.collectAsState()
@@ -147,9 +142,12 @@ fun InnerScreenNavigation(
                         }
                     )
                 },
-                setSelectedPost = { viewModelProfile.setSelectedPost(it) },
+                setSelectedPost = { post -> viewModelProfile.setSelectedPost(post) },
                 onUsernameClick = { userId ->
                     navHostController.navigate(Routes.UserProfileScreen.route + "/$userId")
+                },
+                onAddStoryClick = {
+                    navHostController.navigate("${Routes.UploadContentScreen.route}/STORY")
                 }
             )
         }
@@ -157,14 +155,10 @@ fun InnerScreenNavigation(
         composable(
             route = Routes.MyProfileScreen.route,
             enterTransition = {
-                fadeIn(
-                    animationSpec = tween(350)
-                )
+                fadeIn(animationSpec = tween(350))
             },
             exitTransition = {
-                fadeOut(
-                    animationSpec = tween(350)
-                )
+                fadeOut(animationSpec = tween(350))
             }
         ) {
             val uiState by viewModelProfile.uiState.collectAsState()
@@ -200,7 +194,7 @@ fun InnerScreenNavigation(
                                 "/${it.substringBefore("-")}/${it.substringAfter("-")}"
                     ) // userId-1
                 },
-                setSelectedPost = { viewModelProfile.setSelectedPost(it) },
+                setSelectedPost = { post -> viewModelProfile.setSelectedPost(post) },
                 onSettingsAndPrivacyClicked = {
                     navHostController.navigate(Routes.SettingsAndPrivacyScreen.route)
                 }
@@ -391,14 +385,10 @@ fun InnerScreenNavigation(
         composable(
             route = Routes.EditProfileScreen.route,
             enterTransition = {
-                fadeIn(
-                    animationSpec = tween(350)
-                )
+                fadeIn(animationSpec = tween(350))
             },
             exitTransition = {
-                fadeOut(
-                    animationSpec = tween(350)
-                )
+                fadeOut(animationSpec = tween(350))
             }
         ) {
             val uiState by viewModelProfile.uiState.collectAsState()
@@ -422,7 +412,6 @@ fun InnerScreenNavigation(
                         context = context,
                         onSuccess = {
                             viewModelProfile.setIsUserDetailChanged(true)
-//                            viewModelHome.getUserData()
                         }
                     )
                 },
@@ -439,7 +428,6 @@ fun InnerScreenNavigation(
                                 context = context,
                                 onSuccess = {
                                     viewModelProfile.setIsUserDetailChanged(true)
-//                                    viewModelHome.getUserData()
                                 }
                             )
 
@@ -634,14 +622,10 @@ fun InnerScreenNavigation(
         composable(
             route = Routes.SettingsAndPrivacyScreen.route,
             enterTransition = {
-                fadeIn(
-                    animationSpec = tween(350)
-                )
+                fadeIn(animationSpec = tween(350))
             },
             exitTransition = {
-                fadeOut(
-                    animationSpec = tween(350)
-                )
+                fadeOut(animationSpec = tween(350))
             }
         ) {
             val uiState by viewModelProfile.uiState.collectAsState()
@@ -688,7 +672,12 @@ fun InnerScreenNavigation(
         }
 
         composable(
-            route = Routes.UploadContentScreen.route,
+            route = "${Routes.UploadContentScreen.route}/{text}",
+            arguments = listOf(
+                navArgument("text") {
+                    type = NavType.StringType
+                }
+            ),
             enterTransition = {
                 slideInHorizontally(
                     animationSpec = tween(),
@@ -701,7 +690,9 @@ fun InnerScreenNavigation(
                     targetOffsetX = { -it }
                 )
             }
-        ) {
+        ) { backStack ->
+            val text = backStack.arguments?.getString("text")
+
             val uiState by viewModelUpload.uiState.collectAsState()
             val viewModelPlayer: VideoPlayerViewModel = hiltViewModel()
 
@@ -713,7 +704,7 @@ fun InnerScreenNavigation(
                 } else {
                     Toast.makeText(
                         context,
-                        "Please access to photos and videos",
+                        "Please give access to photos and videos",
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -764,6 +755,7 @@ fun InnerScreenNavigation(
             }
 
             UploadContentScreen(
+                text = text!!,
                 innerPadding = innerPadding,
                 uiState = uiState,
                 exoPlayer = viewModelPlayer.exoPlayer,
@@ -794,14 +786,10 @@ fun InnerScreenNavigation(
         composable(
             route = Routes.AddCaptionScreen.route,
             enterTransition = {
-                fadeIn(
-                    animationSpec = tween()
-                )
+                fadeIn(animationSpec = tween())
             },
             exitTransition = {
-                fadeOut(
-                    animationSpec = tween()
-                )
+                fadeOut(animationSpec = tween())
             }
         ) {
             val uiState by viewModelUpload.uiState.collectAsState()
@@ -828,7 +816,11 @@ fun InnerScreenNavigation(
                         ),
                         onSuccess = {
                             navHostController.navigate(Routes.HomeScreen.route) {
-                                popUpTo(navHostController.graph.startDestinationId)
+                                popUpTo(navHostController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+
+                                launchSingleTop = true
                             }
                             viewModelUpload.setCaption(caption = "")
                         }
@@ -879,33 +871,16 @@ fun InnerScreenNavigation(
                         currentUserId = currentUser.uid,
                         onSuccess = {
                             navHostController.navigate(Routes.HomeScreen.route) {
-                                popUpTo(navHostController.graph.startDestinationId)
+                                popUpTo(navHostController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+
+                                launchSingleTop = true
                             }
                         }
                     )
                 },
                 onBackClick = { navHostController.popBackStack() }
-            )
-        }
-
-        composable(
-            route = Routes.StoryScreen.route
-        ) {
-            val uiState by viewModelHome.uiState.collectAsState()
-            val uiStateProfile by viewModelProfile.uiState.collectAsState()
-
-            LaunchedEffect(Unit) {
-                viewModelProfile.getMyData()
-                delay(3000L)
-                viewModelHome.getStories(following = uiStateProfile.following)
-            }
-
-            StoryScreen(
-                userStories = uiState.userStories,
-                innerPadding = innerPadding,
-                onDismiss = {
-                    // TODO: Dismiss the StoryScreen
-                }
             )
         }
     }

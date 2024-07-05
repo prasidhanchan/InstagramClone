@@ -71,7 +71,7 @@ fun StoryProgressBar(
                         animateProgress.animateTo(
                             targetValue = 1f,
                             animationSpec = tween(
-                                durationMillis = (4500 - remainingTime.toInt()).coerceAtLeast(500),
+                                durationMillis = (4500 - remainingTime.toInt()).coerceAtLeast(600),
                                 easing = LinearEasing
                             ),
                             block = { if (value >= 1f) onFinish() } // On progress complete

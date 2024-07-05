@@ -1,5 +1,6 @@
 package com.instagramclone.story.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,20 +28,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.drawable.toBitmap
+import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
+import coil.request.ImageRequest
+import com.instagramclone.ui.R
 import com.instagramclone.util.constants.formatToStoryTimeStamp
 import com.instagramclone.util.models.Story
 import com.instagramclone.util.models.UserStory
 
 /**
- * Story screen card with progress bar and header to display the user's story.
+ * Story screen card with progress bar, header and loader to display the user's story.
  * @param userStory User's story to be displayed.
  * @param currentStoryIndex Index of the current story be viewed.
  * @param modifier Modifier to be applied to the Card.
@@ -62,56 +72,91 @@ fun StoryScreenCard(
         label = "animatedAlpha"
     )
 
+    val igBackground = Color.Black
+    var color by remember { mutableStateOf(igBackground) }
+    val animateColor by animateColorAsState(
+        targetValue = color,
+        animationSpec = tween(durationMillis = 500),
+        label = "animatedColor"
+    )
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        if (userStory.stories.isNotEmpty()) {
-            AsyncImage(
-                model = userStory.stories[currentStoryIndex].image,
-                onState = { state ->
-                    imageLoaded = when (state) {
-                        is AsyncImagePainter.State.Success -> true
-                        else -> false
-                    }
-                },
-                contentScale = ContentScale.Crop,
-                contentDescription = "${userStory.username}'s story"
-            )
-        }
-
-        Column(
-            modifier = modifier
+        Surface(
+            modifier = Modifier
+                .padding(vertical = 30.dp)
                 .fillMaxSize()
-                .alpha(animatedAlpha),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
+                .then(modifier),
+            shape = RoundedCornerShape(12.dp),
+            color = animateColor
         ) {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 5.dp)
-                    .fillMaxWidth()
-                    .height(25.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                userStory.stories.forEach { story ->
-                    val isFirstStory = currentStoryIndex == 0
-                    StoryProgressBar(
-                        inFocus = inFocus && currentStoryIndex == userStory.stories.indexOf(story) && imageLoaded,
-                        isLongPressed = isLongPressed,
-                        isFirstStory = isFirstStory,
-                        modifier = Modifier.weight(1f),
-                        onFinish = onFinish
+                if (userStory.stories.isNotEmpty()) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(userStory.stories[currentStoryIndex].image)
+                            .crossfade(true)
+                            .allowHardware(false)
+                            .listener(
+                                onStart = { imageLoaded = false },
+                                onSuccess = { _, result ->
+                                    imageLoaded = true
+
+                                    Palette.Builder(result.drawable.toBitmap()).generate { palette ->
+                                        palette.let { mPalette ->
+                                            color = Color(mPalette?.getDominantColor(igBackground.toArgb()) ?: 1)
+                                        }
+                                    }
+                                }
+                            )
+                            .build(),
+                        contentScale = ContentScale.Crop,
+                        contentDescription = stringResource(id = R.string.user_story, userStory.username)
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .alpha(animatedAlpha),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 5.dp)
+                            .fillMaxWidth()
+                            .height(15.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        userStory.stories.forEach { story ->
+                            val isFirstStory = currentStoryIndex == 0
+
+                            StoryProgressBar(
+                                inFocus = inFocus && currentStoryIndex == userStory.stories.indexOf(story) && imageLoaded,
+                                isLongPressed = isLongPressed,
+                                isFirstStory = isFirstStory,
+                                modifier = Modifier.weight(1f),
+                                onFinish = onFinish
+                            )
+                        }
+                    }
+
+                    StoryScreenHeader(
+                        userStory = userStory,
+                        currentStoryIndex = currentStoryIndex
                     )
                 }
             }
-
-            StoryScreenHeader(
-                userStory = userStory,
-                currentStoryIndex = currentStoryIndex
-            )
         }
+
+        StoryLoader(loading = !imageLoaded)
     }
 }
 
@@ -167,9 +212,7 @@ fun StoryScreenHeader(
     }
 }
 
-@Preview(
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
 private fun StoryScreenCardPreview() {
     StoryScreenCard(

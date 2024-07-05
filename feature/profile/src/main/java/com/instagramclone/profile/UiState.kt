@@ -15,6 +15,7 @@ data class UiState(
     var bio: String = "",
     var links: String = "",
     var gender: String = "Unknown",
+    var isVerified: Boolean = false,
     var myPosts: List<Post> = emptyList(),
     var followers: List<String> = emptyList(),
     var following: List<String> = emptyList(),

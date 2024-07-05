@@ -65,7 +65,9 @@ fun IGBottomBar(
                     profileImage = profileImage,
                     item = item,
                     onClick = {
-                        navHostController.navigate(item.route) {
+                        val route =
+                            if (item.route == Routes.UploadContentScreen.route) "${item.route}/POST" else item.route
+                        navHostController.navigate(route) {
                             popUpTo(Routes.HomeScreen.route)
                             launchSingleTop = true
                         }
@@ -126,7 +128,8 @@ fun IGBottomBarItem(
                 } else {
                     Color.Transparent
                 },
-                width = 1.5.dp)
+                width = 1.5.dp
+            )
         ) {
             if (profileImage?.isNotEmpty() == true) {
                 AsyncImage(

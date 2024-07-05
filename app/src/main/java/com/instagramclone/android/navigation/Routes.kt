@@ -31,7 +31,6 @@ sealed class Routes(
     data object SettingsAndPrivacyScreen: Routes(name = "SettingsAndPrivacy", route = "SettingsAndPrivacyScreen")
     data object AddCaptionScreen: Routes(name = "AddCaption", route = "AddCaptionScreen")
     data object AddToStoryScreen: Routes(name = "AddToStory", route = "AddToStoryScreen")
-    data object StoryScreen: Routes(name = "StoryScreen", route = "StoryScreen")
 
     data object Items {
         val list = listOf(
