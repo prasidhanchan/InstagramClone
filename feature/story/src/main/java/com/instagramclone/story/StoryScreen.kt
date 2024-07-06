@@ -33,11 +33,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import com.instagramclone.story.components.IGStoryPager
 import com.instagramclone.story.components.StoryScreenCard
+import com.instagramclone.ui.R
+import com.instagramclone.ui.components.IGDialog
 import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgLikeRed
 import com.instagramclone.util.constants.getAlphaForBackground
 import com.instagramclone.util.models.Story
 import com.instagramclone.util.models.UserStory
@@ -45,13 +49,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+enum class Stories {
+    MY_STORY,
+    USER_STORY
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StoryScreen(
     storyIndex: Int,
     visible: Boolean,
     userStories: () -> List<UserStory>,
+    currentUserId: String,
     innerPadding: PaddingValues,
+    onDeleteStoryClick: (Story) -> Unit,
+    updateViews: (Story) -> Unit,
     onDismiss: () -> Unit
 ) {
     AnimatedVisibility(
@@ -70,14 +82,15 @@ fun StoryScreen(
             pageCount = { userStories().size }
         )
 
+        var currentStoryIndex by remember { mutableIntStateOf(0) }
+        var userStoryIndex by remember { mutableIntStateOf(0) }
+
         LaunchedEffect(key1 = storyIndex) {
             state.scrollToPage(page = storyIndex)
+            updateViews(userStories()[storyIndex].stories[currentStoryIndex])
         }
 
         val scope = rememberCoroutineScope()
-
-        var currentStoryIndex by remember { mutableIntStateOf(0) }
-        var userStoryIndex by remember { mutableIntStateOf(0) }
 
         var offsetY by remember { mutableFloatStateOf(0f) }
         val animateOffsetY by animateFloatAsState(
@@ -103,6 +116,9 @@ fun StoryScreen(
         var isLongPressed by remember { mutableStateOf(false) }
 
         val screenWidth = LocalConfiguration.current.screenWidthDp
+
+        var showDeleteDialog by remember { mutableStateOf(false) }
+        var selectedStory by remember { mutableStateOf(Story()) }
 
         if (userStories().isNotEmpty()) {
             IGStoryPager(
@@ -176,15 +192,17 @@ fun StoryScreen(
                     },
                 userScrollEnabled = offsetY == 0f && userStories().size != 1,
             ) { page ->
-                userStoryIndex = page // update UserStoryIndex on page change
+                userStoryIndex = page // Update UserStoryIndex on page change
 
-                if (state.isScrollInProgress) currentStoryIndex = 0 // Switching index back to 0 on user story change
+                // Switching index back to 0 on user story change
+                if (state.isScrollInProgress) currentStoryIndex = 0
 
                 // Check if the current page is fully visible or is dragged
                 val inFocus = state.currentPageOffsetFraction == 0f
 
                 StoryScreenCard(
                     userStory = userStories()[page],
+                    currentUserId = currentUserId,
                     currentStoryIndex = currentStoryIndex,
                     modifier = Modifier
                         .offset {
@@ -193,6 +211,11 @@ fun StoryScreen(
                         .scale(animateScale),
                     inFocus = inFocus,
                     isLongPressed = isLongPressed,
+                    stopProgress = showDeleteDialog,
+                    onDeleteStoryClick = { story ->
+                        selectedStory = story
+                        showDeleteDialog = true
+                    },
                     onFinish = {
                         // If the current story is not the last story then switch to next story
                         if (currentStoryIndex < userStories()[page].stories.lastIndex) {
@@ -214,6 +237,21 @@ fun StoryScreen(
                 )
             }
         }
+
+        IGDialog(
+            title = stringResource(R.string.delete_story),
+            subTitle = stringResource(R.string.delete_this_story_permanently),
+            showDialog = showDeleteDialog,
+            showBlueOrRedButton = true,
+            blueOrRedButton = IgLikeRed,
+            button1Text = stringResource(id = R.string.cancel),
+            button2Text = stringResource(id = R.string.delete),
+            onBlueOrRedClick = {
+                showDeleteDialog = false
+                onDeleteStoryClick(selectedStory)
+            },
+            onWhiteClick = { showDeleteDialog = false }
+        )
 
         BackHandler(onBack = onDismiss)
     }
@@ -244,7 +282,10 @@ private fun StoryScreenPreview() {
                 )
             )
         },
+        currentUserId = "",
         innerPadding = PaddingValues(),
+        onDeleteStoryClick = { },
+        updateViews = { },
         onDismiss = { }
     )
 }

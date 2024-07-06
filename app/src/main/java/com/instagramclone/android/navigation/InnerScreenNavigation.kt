@@ -142,13 +142,24 @@ fun InnerScreenNavigation(
                         }
                     )
                 },
+                onDeleteStoryClick = { story ->
+                    viewModelHome.deleteStory(
+                        story = story,
+                        onSuccess = {
+                            viewModelHome.setShowStoryScreen(false)
+                            Toast.makeText(context, "Story Deleted", Toast.LENGTH_LONG).show()
+                        }
+                    )
+                },
                 setSelectedPost = { post -> viewModelProfile.setSelectedPost(post) },
                 onUsernameClick = { userId ->
                     navHostController.navigate(Routes.UserProfileScreen.route + "/$userId")
                 },
                 onAddStoryClick = {
                     navHostController.navigate("${Routes.UploadContentScreen.route}/STORY")
-                }
+                },
+                updateViews = viewModelHome::updateStoryViews,
+                setShowStoryScreen = viewModelHome::setShowStoryScreen
             )
         }
 

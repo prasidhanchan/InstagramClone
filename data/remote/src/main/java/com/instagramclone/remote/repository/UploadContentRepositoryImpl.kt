@@ -19,37 +19,33 @@ class UploadContentRepositoryImpl : UploadContentRepository {
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        try {
-            storageRefPost
-                .child("${post.userId}-${post.timeStamp}.${post.mimeType.substringAfter("/")}") // image.jpeg
-                .putFile(post.mediaList.first().toUri())
-                .addOnSuccessListener { taskSnap ->
-                    taskSnap.storage.downloadUrl
-                        .addOnSuccessListener { downloadUrl ->
-                            dbPost.child("${post.userId}-${post.timeStamp}")
-                                .setValue(
-                                    post.apply {
-                                        mediaList = listOf(downloadUrl.toString())
-                                    }
-                                )
-                                .addOnSuccessListener {
-                                    onSuccess()
+        storageRefPost
+            .child("${post.userId}-${post.timeStamp}.${post.mimeType.substringAfter("/")}") // image.jpeg
+            .putFile(post.mediaList.first().toUri())
+            .addOnSuccessListener { taskSnap ->
+                taskSnap.storage.downloadUrl
+                    .addOnSuccessListener { downloadUrl ->
+                        dbPost.child("${post.userId}-${post.timeStamp}")
+                            .setValue(
+                                post.apply {
+                                    mediaList = listOf(downloadUrl.toString())
                                 }
-                                .addOnFailureListener { error ->
-                                    throw error
-                                }
-                        }
-                        .addOnFailureListener { error ->
-                            throw error
-                        }
-                }
-                .addOnFailureListener { error ->
-                    throw error
-                }
-                .await()
-        } catch (e: Exception) {
-            onError(e.message.toString())
-        }
+                            )
+                            .addOnSuccessListener {
+                                onSuccess()
+                            }
+                            .addOnFailureListener { error ->
+                                onError(error.message.toString())
+                            }
+                    }
+                    .addOnFailureListener { error ->
+                        onError(error.message.toString())
+                    }
+            }
+            .addOnFailureListener { error ->
+                onError(error.message.toString())
+            }
+            .await()
     }
 
     override suspend fun uploadStory(
@@ -58,63 +54,59 @@ class UploadContentRepositoryImpl : UploadContentRepository {
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        try {
-            dbStory.child(currentUserId).get()
-                .addOnSuccessListener { dataSnap ->
-                    val myStories = dataSnap.getValue<UserStory>() // Current user stories
+        dbStory.child(currentUserId).get()
+            .addOnSuccessListener { dataSnap ->
+                val myStories = dataSnap.getValue<UserStory>() // Current user stories
 
-                    storageRefStory
-                        .child(
-                            "${userStory.userId}-${userStory.stories.first().timeStamp}" + // userId-timeStamp.jpeg
-                                    ".${userStory.stories.first().mimeType.substringAfter("/")}" // mimeType = "/jpeg" or "/mp4"
-                        )
-                        .putFile(userStory.stories.first().image.toUri())
-                        .addOnSuccessListener { taskSnap ->
-                            taskSnap.storage.downloadUrl
-                                .addOnSuccessListener { downloadUrl ->
-                                    dbStory.child(userStory.userId)
-                                        .updateChildren(
-                                            if (myStories != null) {
-                                                userStory.apply {
-                                                    stories =
-                                                        myStories.stories.plus( // Previous stories
-                                                            userStory.stories.first() // New story
-                                                                .apply {
-                                                                    image = downloadUrl.toString()
-                                                                }
-                                                        )
-                                                }
-                                                    .convertToMap()
-                                            } else {
-                                                userStory.apply {
-                                                    stories.first().apply {
-                                                        image = downloadUrl.toString()
-                                                    } // no previous story so add the new one
-                                                }
-                                                    .convertToMap()
+                storageRefStory
+                    .child(
+                        "${userStory.userId}-${userStory.stories.first().timeStamp}" + // userId-timeStamp.jpeg
+                                ".${userStory.stories.first().mimeType.substringAfter("/")}" // mimeType = "/jpeg" or "/mp4"
+                    )
+                    .putFile(userStory.stories.first().image.toUri())
+                    .addOnSuccessListener { taskSnap ->
+                        taskSnap.storage.downloadUrl
+                            .addOnSuccessListener { downloadUrl ->
+                                dbStory.child(userStory.userId)
+                                    .updateChildren(
+                                        if (myStories != null) {
+                                            userStory.apply {
+                                                stories =
+                                                    myStories.stories.plus( // Previous stories
+                                                        userStory.stories.first() // New story
+                                                            .apply {
+                                                                image = downloadUrl.toString()
+                                                            }
+                                                    )
                                             }
-                                        )
-                                        .addOnSuccessListener {
-                                            onSuccess()
+                                                .convertToMap()
+                                        } else {
+                                            userStory.apply {
+                                                stories.first().apply {
+                                                    image = downloadUrl.toString()
+                                                } // no previous story so add the new one
+                                            }
+                                                .convertToMap()
                                         }
-                                        .addOnFailureListener { error ->
-                                            throw error
-                                        }
-                                }
-                                .addOnFailureListener { error ->
-                                    throw error
-                                }
-                        }
-                        .addOnFailureListener { error ->
-                            throw error
-                        }
-                }
-                .addOnFailureListener { error ->
-                    throw error
-                }
-                .await()
-        } catch (e: Exception) {
-            onError(e.message.toString())
-        }
+                                    )
+                                    .addOnSuccessListener {
+                                        onSuccess()
+                                    }
+                                    .addOnFailureListener { error ->
+                                        onError(error.message.toString())
+                                    }
+                            }
+                            .addOnFailureListener { error ->
+                                onError(error.message.toString())
+                            }
+                    }
+                    .addOnFailureListener { error ->
+                        onError(error.message.toString())
+                    }
+            }
+            .addOnFailureListener { error ->
+                onError(error.message.toString())
+            }
+            .await()
     }
 }

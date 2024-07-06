@@ -14,22 +14,15 @@ fun Stories(
     onAddStoryClick: () -> Unit,
     onViewMyStoryClick: () -> Unit,
     onStoryClick: (storyIndex: Int) -> Unit,
-    userStories: List<UserStory>
+    userStories: List<UserStory>,
+    myStories: List<UserStory>
 ) {
-    val userStoriesFiltered =
-        if (userStories.isNotEmpty()) userStories.filter { story -> story.userId != currentUserId } // Filter out the current user stories
-        else emptyList()
-    val myStory =
-        if (userStories.any { userStory -> userStory.userId == currentUserId })
-            userStories.first { story -> story.userId == currentUserId } // Filtering my stories
-        else UserStory()
-
     LazyRow(
         content = {
             item(key = "addStory") {
-                if (userStories.any { story -> story.userId == currentUserId }) {
+                if (myStories.isNotEmpty() && myStories.first().stories.isNotEmpty()) {
                     StoryCard(
-                        userStory = myStory,
+                        userStory = myStories.first(),
                         currentUserId = currentUserId,
                         onClick = onViewMyStoryClick
                     )
@@ -43,13 +36,13 @@ fun Stories(
 
             if (userStories.isNotEmpty()) {
                 items(
-                    items = userStoriesFiltered,
+                    items = userStories,
                     key = { userStory -> userStory.userId }
                 ) { story ->
                     StoryCard(
                         userStory = story,
                         currentUserId = currentUserId,
-                        onClick = { onStoryClick(userStoriesFiltered.indexOf(story)) }
+                        onClick = { onStoryClick(userStories.indexOf(story)) }
                     )
                 }
             }
@@ -83,6 +76,18 @@ fun StoriesPreview() {
                     ),
                     Story(
                         userId = "googlefordevs"
+                    )
+                )
+            )
+        ),
+        myStories = listOf(
+            UserStory(
+                stories = listOf(
+                    Story(
+                        userId = "pra_sidh_22"
+                    ),
+                    Story(
+                        userId = "youtubeindia"
                     )
                 )
             )

@@ -30,15 +30,18 @@ class HomeRepositoryImpl @Inject constructor(
 
         if (currentUser != null) {
             dataOrException.isLoading = true
-            dbUser.document(currentUser.uid).get().addOnSuccessListener { docSnap ->
-                dataOrException.data = docSnap.toObject(IGUser::class.java)
-                dataOrException.isLoading = false
-            }
-                .addOnFailureListener {
-                    dataOrException.e = it
+            dbUser.document(currentUser.uid).get()
+                .addOnSuccessListener { docSnap ->
+                    dataOrException.data = docSnap.toObject(IGUser::class.java)
                     dataOrException.isLoading = false
-                }.await()
+                }
+                .addOnFailureListener { error ->
+                    dataOrException.e = error
+                    dataOrException.isLoading = false
+                }
+                .await()
         }
+
         return dataOrException
     }
 
@@ -49,36 +52,32 @@ class HomeRepositoryImpl @Inject constructor(
         val dataOrException: MutableStateFlow<DataOrException<List<Post>, Boolean, Exception>> =
             MutableStateFlow(DataOrException(isLoading = true))
 
-        try {
-            val valueEventListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    dataOrException.update {
-                        it.copy(
-                            data = snapshot.children.map { dataSnap ->
-                                dataSnap.getValue<Post>()!!
-                            }
-                                .filter { post -> following.contains(post.userId) || post.userId == currentUserId }
-                                .sortedByDescending { post -> post.timeStamp }
-                        )
-                    }
-
-                    dataOrException.update { it.copy(isLoading = false) }
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                dataOrException.update {
+                    it.copy(
+                        data = snapshot.children.map { dataSnap ->
+                            dataSnap.getValue<Post>()!!
+                        }
+                            .filter { post -> following.contains(post.userId) || post.userId == currentUserId }
+                            .sortedByDescending { post -> post.timeStamp }
+                    )
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                    throw error.toException()
-                }
+                dataOrException.update { it.copy(isLoading = false) }
             }
 
-            dbPosts.addValueEventListener(valueEventListener)
-        } catch (e: Exception) {
-            dataOrException.update {
-                it.copy(
-                    e = e,
-                    isLoading = false
-                )
+            override fun onCancelled(error: DatabaseError) {
+                dataOrException.update {
+                    it.copy(
+                        e = error.toException(),
+                        isLoading = false
+                    )
+                }
             }
         }
+
+        dbPosts.addValueEventListener(valueEventListener)
 
         return dataOrException.asStateFlow()
     }
@@ -90,40 +89,36 @@ class HomeRepositoryImpl @Inject constructor(
         val dataOrException: MutableStateFlow<DataOrException<List<UserStory>, Boolean, Exception>> =
             MutableStateFlow(DataOrException(isLoading = true))
 
-        try {
-            val valueEventListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    dataOrException.update {
-                        it.copy(
-                            data = snapshot.children.map { dataSnap ->
-                                dataSnap.getValue<UserStory>()!!
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                dataOrException.update {
+                    it.copy(
+                        data = snapshot.children.mapNotNull { dataSnap ->
+                            dataSnap.getValue<UserStory>()
+                        }
+                            .filter { story -> following.contains(story.userId) || story.userId == currentUserId }
+                            .sortedByDescending { userStory ->
+                                userStory.stories.minByOrNull { story ->
+                                    story.timeStamp // Arranging stories in ascending, i.e old stories first
+                                }?.timeStamp // Arranging single user stories
                             }
-                                .filter { story -> following.contains(story.userId) || story.userId == currentUserId }
-                                .sortedByDescending { userStory ->
-                                    userStory.stories.minByOrNull { story ->
-                                        story.timeStamp // Arranging stories in ascending, i.e old stories first
-                                    }?.timeStamp // Arranging single user stories
-                                }
-                        )
-                    }
-
-                    dataOrException.update { it.copy(isLoading = false) }
+                    )
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                    throw error.toException()
-                }
+                dataOrException.update { it.copy(isLoading = false) }
             }
 
-            dbStories.addValueEventListener(valueEventListener)
-        } catch (e: Exception) {
-            dataOrException.update {
-                it.copy(
-                    e = e,
-                    isLoading = false
-                )
+            override fun onCancelled(error: DatabaseError) {
+                dataOrException.update {
+                    it.copy(
+                        e = error.toException(),
+                        isLoading = false
+                    )
+                }
             }
         }
+
+        dbStories.addValueEventListener(valueEventListener)
 
         return dataOrException
     }

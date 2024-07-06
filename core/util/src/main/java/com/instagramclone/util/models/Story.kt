@@ -6,6 +6,6 @@ data class Story(
     var image: String = "",
     var isVerified: Boolean = false,
     var views: List<String> = emptyList(),
-    var likes: Boolean= false,
+    var liked: Boolean = false,
     var mimeType : String = ""
 )

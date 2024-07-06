@@ -28,8 +28,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.instagramclone.util.constants.Utils
 import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgBlue
 import com.instagramclone.util.constants.Utils.IgOffBackground
 import com.instagramclone.util.constants.Utils.IgOffColor
 
@@ -41,7 +41,7 @@ fun IGDialog(
     showDialog: Boolean,
     showBlueOrRedButton: Boolean,
     showWhiteButton: Boolean = true,
-    blueOrRedButton: Color = Utils.IgBlue,
+    blueOrRedButton: Color = IgBlue,
     button1Text: String,
     button2Text: String = "",
     onBlueOrRedClick: () -> Unit,
@@ -99,6 +99,7 @@ fun IGDialog(
                             thickness = 0.2.dp,
                             color = IgOffColor.copy(alpha = 0.2f)
                         )
+
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()

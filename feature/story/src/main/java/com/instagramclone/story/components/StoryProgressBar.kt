@@ -42,6 +42,7 @@ fun StoryProgressBar(
     isLongPressed: Boolean,
     isFirstStory: Boolean,
     modifier: Modifier = Modifier,
+    stopProgress: Boolean = false,
     onFinish: () -> Unit
 ) {
     Row(
@@ -59,19 +60,19 @@ fun StoryProgressBar(
             if (isFirstStory) animateProgress.snapTo(0f) // If switched back to first story from next then set progress to 0
         }
 
-        LaunchedEffect(key1 = inFocus, key2 = isLongPressed) {
+        LaunchedEffect(key1 = inFocus, key2 = isLongPressed, key3 = stopProgress) {
             launch(Dispatchers.Default) {
                 if (inFocus) {
-                    if (!isLongPressed) {
+                    if (!isLongPressed && !stopProgress) {
                         val currentTime = System.currentTimeMillis()
-                        if (lastTime == 0L) lastTime = System.currentTimeMillis()
+                        if (lastTime == 0L) lastTime = System.currentTimeMillis() // Previously elapsed time
                         val remainingTime =
                             currentTime - lastTime // Calculating remaining time to avoid animation slow down
 
                         animateProgress.animateTo(
                             targetValue = 1f,
                             animationSpec = tween(
-                                durationMillis = (4500 - remainingTime.toInt()).coerceAtLeast(600),
+                                durationMillis = (4500 - remainingTime.toInt()).coerceAtLeast(800),
                                 easing = LinearEasing
                             ),
                             block = { if (value >= 1f) onFinish() } // On progress complete

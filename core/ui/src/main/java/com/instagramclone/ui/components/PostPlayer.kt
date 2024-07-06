@@ -75,7 +75,8 @@ fun PostPlayer(
             if (isPlaying && exoPlayer.isPlaying) {
                 IGPlayer(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .height(600.dp),
                     exoPlayer = exoPlayer,
                     enableTouchResponse = false
                 )

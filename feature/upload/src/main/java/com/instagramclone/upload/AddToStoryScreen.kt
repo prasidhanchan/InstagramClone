@@ -1,5 +1,6 @@
 package com.instagramclone.upload
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,12 +11,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import com.instagramclone.ui.R
 import com.instagramclone.upload.components.story.AddToStoryAppBar
 import com.instagramclone.upload.components.story.SelectedStoryCard
-import com.instagramclone.upload.components.story.YourStoryCard
+import com.instagramclone.upload.components.story.YourStoryButton
 import com.instagramclone.util.constants.Utils.IgBackground
 import com.instagramclone.util.models.Media
 import com.instagramclone.util.test.TestPlayer
@@ -31,6 +34,8 @@ fun AddToStoryScreen(
     onAddStoryClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = IgBackground
@@ -54,9 +59,16 @@ fun AddToStoryScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.BottomCenter
             ) {
-                YourStoryCard(
+                YourStoryButton(
                     profileImage = profileImage,
-                    onYourStoryClick = onAddStoryClick
+                    onYourStoryClick = {
+                        if (uiState.selectedMedia?.mimeType != "video/mp4") onAddStoryClick()
+                        else Toast.makeText(
+                            context,
+                            context.getString(R.string.video_stories_not_supported),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 )
             }
         }

@@ -59,13 +59,7 @@ fun StoryCard(
         label = "storyCardAnimation"
     )
 
-    val isAllStoryViewed by remember {
-        mutableStateOf(
-            if (userStory.stories.isNotEmpty())
-                userStory.stories.last().views.contains(currentUserId)
-            else false
-        )
-    }
+    val isAllStoryViewed = userStory.stories.last().views.contains(currentUserId)
 
     Box(
         modifier = Modifier

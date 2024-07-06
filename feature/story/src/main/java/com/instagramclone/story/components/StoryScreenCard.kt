@@ -3,11 +3,13 @@ package com.instagramclone.story.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,9 +32,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -59,10 +64,13 @@ import com.instagramclone.util.models.UserStory
 @Composable
 fun StoryScreenCard(
     userStory: UserStory,
+    currentUserId: String,
     currentStoryIndex: Int,
     modifier: Modifier = Modifier,
     inFocus: Boolean,
     isLongPressed: Boolean,
+    stopProgress: Boolean = false,
+    onDeleteStoryClick: (Story) -> Unit,
     onFinish: () -> Unit = { }
 ) {
     var imageLoaded by remember { mutableStateOf(false) }
@@ -80,83 +88,112 @@ fun StoryScreenCard(
         label = "animatedColor"
     )
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = Modifier
+            .padding(vertical = 30.dp)
+            .fillMaxSize()
+            .then(modifier),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Surface(
+        Box(
             modifier = Modifier
-                .padding(vertical = 30.dp)
                 .fillMaxSize()
-                .then(modifier),
-            shape = RoundedCornerShape(12.dp),
-            color = animateColor
+                .weight(1f),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
+            Surface(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                shape = RoundedCornerShape(12.dp),
+                color = animateColor
             ) {
-                if (userStory.stories.isNotEmpty()) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(userStory.stories[currentStoryIndex].image)
-                            .crossfade(true)
-                            .allowHardware(false)
-                            .listener(
-                                onStart = { imageLoaded = false },
-                                onSuccess = { _, result ->
-                                    imageLoaded = true
-
-                                    Palette.Builder(result.drawable.toBitmap()).generate { palette ->
-                                        palette.let { mPalette ->
-                                            color = Color(mPalette?.getDominantColor(igBackground.toArgb()) ?: 1)
-                                        }
-                                    }
-                                }
-                            )
-                            .build(),
-                        contentScale = ContentScale.Crop,
-                        contentDescription = stringResource(id = R.string.user_story, userStory.username)
-                    )
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(animatedAlpha),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.Start
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 5.dp)
-                            .fillMaxWidth()
-                            .height(15.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        userStory.stories.forEach { story ->
-                            val isFirstStory = currentStoryIndex == 0
+                    if (userStory.stories.isNotEmpty()) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(userStory.stories[currentStoryIndex].image)
+                                .crossfade(true)
+                                .allowHardware(false)
+                                .listener(
+                                    onStart = { imageLoaded = false },
+                                    onSuccess = { _, result ->
+                                        imageLoaded = true
 
-                            StoryProgressBar(
-                                inFocus = inFocus && currentStoryIndex == userStory.stories.indexOf(story) && imageLoaded,
-                                isLongPressed = isLongPressed,
-                                isFirstStory = isFirstStory,
-                                modifier = Modifier.weight(1f),
-                                onFinish = onFinish
+                                        Palette.Builder(result.drawable.toBitmap())
+                                            .generate { palette ->
+                                                palette.let { mPalette ->
+                                                    color = Color(
+                                                        mPalette?.getDominantColor(igBackground.toArgb())
+                                                            ?: 1
+                                                    )
+                                                }
+                                            }
+                                    }
+                                )
+                                .build(),
+                            contentScale = ContentScale.Fit,
+                            contentDescription = stringResource(
+                                id = R.string.user_story,
+                                userStory.username
                             )
-                        }
+                        )
                     }
 
-                    StoryScreenHeader(
-                        userStory = userStory,
-                        currentStoryIndex = currentStoryIndex
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .alpha(animatedAlpha),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp)
+                                .fillMaxWidth()
+                                .height(15.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            userStory.stories.forEach { story ->
+                                val isFirstStory = currentStoryIndex == 0
+
+                                StoryProgressBar(
+                                    inFocus = inFocus &&
+                                            currentStoryIndex == userStory.stories.indexOf(story) &&
+                                            imageLoaded,
+                                    isLongPressed = isLongPressed,
+                                    isFirstStory = isFirstStory,
+                                    modifier = Modifier.weight(1f),
+                                    stopProgress = stopProgress,
+                                    onFinish = onFinish
+                                )
+                            }
+                        }
+
+                        StoryScreenHeader(
+                            userStory = userStory,
+                            currentUserId = currentUserId,
+                            currentStoryIndex = currentStoryIndex
+                        )
+
+                    }
                 }
             }
+
+            StoryLoader(loading = !imageLoaded)
         }
 
-        StoryLoader(loading = !imageLoaded)
+        if (imageLoaded && userStory.userId == currentUserId) {
+            StoryCardBottomBar(
+                story = userStory.stories[currentStoryIndex],
+                onDeleteStoryClick = onDeleteStoryClick
+            )
+        } else {
+            Spacer(modifier = Modifier.height(60.dp))
+        }
     }
 }
 
@@ -170,6 +207,7 @@ fun StoryScreenCard(
 @Composable
 fun StoryScreenHeader(
     userStory: UserStory,
+    currentUserId: String,
     currentStoryIndex: Int,
     modifier: Modifier = Modifier
 ) {
@@ -191,7 +229,7 @@ fun StoryScreenHeader(
         )
 
         Text(
-            text = userStory.username,
+            text = if (userStory.userId != currentUserId) userStory.username else stringResource(id = R.string.your_story),
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
@@ -212,11 +250,77 @@ fun StoryScreenHeader(
     }
 }
 
+@Composable
+fun StoryCardBottomBar(
+    story: Story,
+    modifier: Modifier = Modifier,
+    onDeleteStoryClick: (Story) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .padding(top = 20.dp, start = 20.dp, end = 20.dp)
+            .fillMaxWidth()
+            .height(40.dp)
+            .then(modifier),
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        StoryActionIcon(
+            text = "${story.views.size} views",
+            icon = painterResource(id = R.drawable.views)
+        )
+
+        StoryActionIcon(
+            text = "Delete story",
+            icon = painterResource(id = R.drawable.delete_story),
+            enabled = true,
+            onClick = { onDeleteStoryClick(story) }
+        )
+    }
+}
+
+@Composable
+fun StoryActionIcon(
+    text: String,
+    icon: Painter,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = false,
+    onClick: () -> Unit = { }
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .clickable(
+                enabled = enabled,
+                onClick = onClick
+            )
+            .then(modifier),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            painter = icon,
+            tint = MaterialTheme.colorScheme.onBackground,
+            contentDescription = stringResource(id = R.string.views)
+        )
+
+        Text(
+            text = text,
+            style = TextStyle(
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun StoryScreenCardPreview() {
     StoryScreenCard(
         userStory = UserStory(
+            userId = "1",
             username = "pra_sidh_22",
             stories = listOf(
                 Story(
@@ -227,8 +331,10 @@ private fun StoryScreenCardPreview() {
                 )
             )
         ),
+        currentUserId = "1",
         currentStoryIndex = 0,
         inFocus = true,
-        isLongPressed = false
+        isLongPressed = false,
+        onDeleteStoryClick = { }
     )
 }

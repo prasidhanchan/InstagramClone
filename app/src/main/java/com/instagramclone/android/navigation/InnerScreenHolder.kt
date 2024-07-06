@@ -11,7 +11,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.instagramclone.profile.ProfileViewModel
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
 
 @UnstableApi
 @Composable
@@ -35,7 +35,7 @@ fun InnerScreenHolder(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Utils.IgBackground,
+        containerColor = IgBackground,
         bottomBar = {
             if (showBottomBar) {
                 IGBottomBar(

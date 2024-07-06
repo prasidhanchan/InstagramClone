@@ -140,25 +140,21 @@ class ProfileRepositoryImpl @Inject constructor(
         onError: (String) -> Unit
     ) {
         if (currentUser != null) {
-            try {
-                dbPostRef.child("${post.userId}-${post.timeStamp}")
-                    .removeValue()
-                    .addOnSuccessListener {
-                        storageRefPost.child("Posts").child("${post.userId}-${post.timeStamp}")
-                            .delete()
-                            .addOnSuccessListener {
-                                onSuccess()
-                            }
-                            .addOnFailureListener { error ->
-                                onError(error.message.toString())
-                            }
-                    }
-                    .addOnFailureListener { error ->
-                        onError(error.message.toString())
-                    }
-            } catch (e: Exception) {
-                onError(e.message.toString())
-            }
+            dbPostRef.child("${post.userId}-${post.timeStamp}")
+                .removeValue()
+                .addOnSuccessListener {
+                    storageRefPost.child("Posts").child("${post.userId}-${post.timeStamp}")
+                        .delete()
+                        .addOnSuccessListener {
+                            onSuccess()
+                        }
+                        .addOnFailureListener { error ->
+                            onError(error.message.toString())
+                        }
+                }
+                .addOnFailureListener { error ->
+                    onError(error.message.toString())
+                }
         }
     }
 
@@ -166,61 +162,54 @@ class ProfileRepositoryImpl @Inject constructor(
         val dataOrException: MutableStateFlow<DataOrException<List<Post>, Boolean, Exception>> =
             MutableStateFlow(DataOrException(isLoading = true))
 
-        try {
-            val valueEventListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    dataOrException.update {
-                        it.copy(
-                            data = snapshot.children.map { dataSnap ->
-                                dataSnap.getValue<Post>()!!
-                            }
-                                .filter { post -> post.userId == currentUser?.uid }
-                                .sortedByDescending { post -> post.timeStamp }
-                        )
-                    }
-                    dataOrException.update { it.copy(isLoading = false) }
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                dataOrException.update {
+                    it.copy(
+                        data = snapshot.children.map { dataSnap ->
+                            dataSnap.getValue<Post>()!!
+                        }
+                            .filter { post -> post.userId == currentUser?.uid }
+                            .sortedByDescending { post -> post.timeStamp }
+                    )
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                    throw error.toException()
+                dataOrException.update { it.copy(isLoading = false) }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                dataOrException.update {
+                    it.copy(
+                        e = error.toException(),
+                        isLoading = false
+                    )
                 }
             }
-            dbPostRef.addValueEventListener(valueEventListener)
-        } catch (e: Exception) {
-            dataOrException.update {
-                it.copy(
-                    e = e,
-                    isLoading = false
-                )
-            }
         }
+
+        dbPostRef.addValueEventListener(valueEventListener)
+
         return dataOrException
     }
 
     override suspend fun getUserProfile(userId: String): DataOrException<IGUser, Boolean, Exception> {
         val dataOrException: DataOrException<IGUser, Boolean, Exception> = DataOrException()
 
-        try {
-            dataOrException.isLoading = true
-            queryUser.get()
-                .addOnSuccessListener { querySnap ->
-                    dataOrException.data = querySnap.documents.map { docSnap ->
-                        docSnap.toObject(IGUser::class.java)
-                    }
-                        .first { it?.userId == userId }
-                    dataOrException.isLoading = false
+        dataOrException.isLoading = true
+        queryUser.get()
+            .addOnSuccessListener { querySnap ->
+                dataOrException.data = querySnap.documents.map { docSnap ->
+                    docSnap.toObject(IGUser::class.java)
                 }
-                .addOnFailureListener {
-                    dataOrException.e = it
-                    dataOrException.isLoading = false
-                }
-                .await()
-                .asFlow()
-
-        } catch (e: Exception) {
-            dataOrException.e = e
-            dataOrException.isLoading = false
-        }
+                    .first { it?.userId == userId }
+                dataOrException.isLoading = false
+            }
+            .addOnFailureListener {
+                dataOrException.e = it
+                dataOrException.isLoading = false
+            }
+            .await()
+            .asFlow()
 
         return dataOrException
     }
@@ -229,34 +218,31 @@ class ProfileRepositoryImpl @Inject constructor(
         val dataOrException: MutableStateFlow<DataOrException<List<Post>, Boolean, Exception>> =
             MutableStateFlow(DataOrException())
 
-        try {
-            val valueEventListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    dataOrException.update {
-                        it.copy(
-                            data = snapshot.children.map { dataSnap ->
-                                dataSnap.getValue<Post>()!!
-                            }
-                                .filter { post -> post.userId == userId }
-                                .sortedByDescending { post -> post.timeStamp },
-                            isLoading = false
-                        )
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    throw error.toException()
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                dataOrException.update {
+                    it.copy(
+                        data = snapshot.children.map { dataSnap ->
+                            dataSnap.getValue<Post>()!!
+                        }
+                            .filter { post -> post.userId == userId }
+                            .sortedByDescending { post -> post.timeStamp },
+                        isLoading = false
+                    )
                 }
             }
-            dbPostRef.addValueEventListener(valueEventListener)
-        } catch (e: Exception) {
-            dataOrException.update {
-                it.copy(
-                    e = e,
-                    isLoading = false
-                )
+
+            override fun onCancelled(error: DatabaseError) {
+                dataOrException.update {
+                    it.copy(
+                        e = error.toException(),
+                        isLoading = false
+                    )
+                }
             }
         }
+
+        dbPostRef.addValueEventListener(valueEventListener)
 
         return dataOrException
     }
@@ -363,6 +349,7 @@ class ProfileRepositoryImpl @Inject constructor(
                     post?.likes?.forEach { userId ->
                         likes.add(userId)
                     }
+
                     likes.remove(currentUser.uid)
                     ref.updateChildren(mapOf("likes" to likes))
                         .addOnSuccessListener {

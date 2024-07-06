@@ -151,5 +151,9 @@
     <string name="no_posts">No Posts!</string>
     <string name="follow_someone">Follow someone to see their posts</string>
     <string name="user_story">%1$s\'s story</string>
+    <string name="views">views</string>
+    <string name="video_stories_not_supported">Video stories are not supported!</string>
+    <string name="delete_story">Delete story</string>
+    <string name="delete_this_story_permanently">Are you sure you want to delete this story permanently?</string>
 
 </resources>

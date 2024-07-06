@@ -36,7 +36,7 @@ fun StoryLoader(
     ) {
         Surface(
             modifier = modifier
-                .padding(vertical = 30.dp)
+                .padding(top = 55.dp)
                 .fillMaxSize(),
             shape = RoundedCornerShape(12.dp),
             color = IgOffBackground

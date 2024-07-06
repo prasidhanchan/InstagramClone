@@ -30,13 +30,13 @@ import com.instagramclone.util.constants.Utils.IgBackground
 import com.instagramclone.util.constants.Utils.IgOffBackground
 
 /**
- * Your Story card composable card to display a Your Story button.
+ * Your Story button composable to display a Your Story button.
  * @param profileImage The profile image of the user.
- * @param modifier The modifier to be applied to the card.
- * @param onYourStoryClick The callback function to be invoked when the card is clicked.
+ * @param modifier The modifier to be applied to the button.
+ * @param onYourStoryClick The callback function to be invoked when the button is clicked.
  */
 @Composable
-fun YourStoryCard(
+fun YourStoryButton(
     profileImage: String,
     modifier: Modifier = Modifier,
     onYourStoryClick: () -> Unit
@@ -96,7 +96,7 @@ fun ProfileImage(
 @Preview
 @Composable
 private fun YourStoryCardPreview() {
-    YourStoryCard(
+    YourStoryButton(
         profileImage = "",
         onYourStoryClick = { }
     )

@@ -5,9 +5,11 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.instagramclone.remote.repository.AuthRepositoryImpl
 import com.instagramclone.remote.repository.HomeRepositoryImpl
 import com.instagramclone.remote.repository.ProfileRepositoryImpl
+import com.instagramclone.remote.repository.StoryRepositoryImpl
 import com.instagramclone.remote.repository.UploadContentRepositoryImpl
 import com.instagramclone.upload.util.ContentResolver
 import dagger.Module
@@ -57,4 +59,11 @@ object AppModule {
             .setDeviceVolumeControlEnabled(true)
             .build()
     }
+
+    @Singleton
+    @Provides
+    fun provideStoryRepository() = StoryRepositoryImpl(
+        dbStory = FirebaseDatabase.getInstance().getReference("Stories"),
+        storageRefStory = FirebaseStorage.getInstance().getReference("Stories")
+    )
 }

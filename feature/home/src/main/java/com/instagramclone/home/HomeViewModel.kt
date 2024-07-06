@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.instagramclone.remote.repository.HomeRepositoryImpl
+import com.instagramclone.remote.repository.StoryRepositoryImpl
+import com.instagramclone.util.models.Story
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -17,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeRepository: HomeRepositoryImpl
+    private val homeRepository: HomeRepositoryImpl,
+    private val storyRepository: StoryRepositoryImpl
 ) : ViewModel() {
 
     var uiState = MutableStateFlow(UiState())
@@ -75,7 +78,14 @@ class HomeViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     if (result.e == null && !result.isLoading!!) {
                         uiState.update {
-                            it.copy(userStories = result.data!!)
+                            it.copy(
+                                userStories = result.data?.filter { userStory ->
+                                    userStory.userId != currentUser.uid
+                                } ?: emptyList(), // Filtering other stories
+                                myStories = result.data?.filter { userStory -> // Filtering my stories
+                                    userStory.userId == currentUser.uid
+                                } ?: emptyList()
+                            )
                         }
                     } else {
                         uiState.update {
@@ -85,6 +95,44 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun deleteStory(
+        story: Story,
+        onSuccess: () -> Unit
+    ) {
+        if (currentUser != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                storyRepository.deleteStory(
+                    story = story,
+                    currentUserId = currentUser.uid,
+                    onSuccess = onSuccess,
+                    onError = { error ->
+                        uiState.update {
+                            it.copy(error = error)
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    fun updateStoryViews(story: Story) {
+        if (currentUser != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                storyRepository.updateStoryViews(
+                    story = story,
+                    currentUserId = currentUser.uid,
+                    onError = { error ->
+                        uiState.update { it.copy(error = error) }
+                    }
+                )
+            }
+        }
+    }
+
+    fun setShowStoryScreen(value: Boolean) {
+        uiState.update { it.copy(showStoryScreen = value) }
     }
 
     private fun clearUiState() {
