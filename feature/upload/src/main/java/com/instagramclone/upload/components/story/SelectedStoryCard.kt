@@ -11,16 +11,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.instagramclone.ui.components.IGPlayer
@@ -42,13 +49,16 @@ fun SelectedStoryCard(
     exoPlayer: ExoPlayer,
     isUploading: Boolean
 ) {
+    val igOffBackground = IgOffBackground
+    var color by remember { mutableStateOf(igOffBackground) }
+
     Surface(
         modifier = modifier
             .padding(vertical = 10.dp)
             .fillMaxWidth()
             .fillMaxHeight(0.8f),
         shape = RoundedCornerShape(30.dp),
-        color = IgOffBackground
+        color = color
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -59,9 +69,20 @@ fun SelectedStoryCard(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(selectedMedia.data)
                         .crossfade(true)
+                        .allowHardware(false)
+                        .listener(
+                            onSuccess = { _, result ->
+                                Palette.Builder(result.drawable.toBitmap()).generate { palette ->
+                                    palette?.let { mPalette ->
+                                        color =
+                                            Color(mPalette.getDominantColor(igOffBackground.toArgb()))
+                                    }
+                                }
+                            }
+                        )
                         .build(),
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
                     contentDescription = selectedMedia.name
                 )
             } else {

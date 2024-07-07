@@ -59,6 +59,8 @@ import com.instagramclone.util.models.UserStory
  * @param modifier Modifier to be applied to the Card.
  * @param inFocus Whether the story is in focus or not.
  * @param isLongPressed Whether the story is long pressed or not.
+ * @param stopProgress Boolean indicator to pause the progress.
+ * @param onDeleteStoryClick Callback invoked when the delete story button is clicked.
  * @param onFinish Callback invoked when the current story is finished, i.e when the progress is complete.
  */
 @Composable
@@ -118,17 +120,18 @@ fun StoryScreenCard(
                                 .crossfade(true)
                                 .allowHardware(false)
                                 .listener(
-                                    onStart = { imageLoaded = false },
+                                    onStart = {
+                                        imageLoaded = false
+                                        color = igBackground
+                                    },
                                     onSuccess = { _, result ->
                                         imageLoaded = true
 
                                         Palette.Builder(result.drawable.toBitmap())
                                             .generate { palette ->
-                                                palette.let { mPalette ->
-                                                    color = Color(
-                                                        mPalette?.getDominantColor(igBackground.toArgb())
-                                                            ?: 1
-                                                    )
+                                                palette?.let { mPalette ->
+                                                    color =
+                                                        Color(mPalette.getDominantColor(igBackground.toArgb()))
                                                 }
                                             }
                                     }

@@ -207,7 +207,7 @@ fun HomeScreenPreview() {
     val userStories = listOf(
         UserStory(
             username = "android",
-            profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2F20240210_170809.jpg?alt=media&token=4e68b3db-5759-462f-9814-b28212fd5604",
+            profileImage = "",
             stories = listOf(
                 Story(
                     userId = "android"
@@ -216,7 +216,7 @@ fun HomeScreenPreview() {
         ),
         UserStory(
             username = "virat.kohli",
-            profileImage = "https://firebasestorage.googleapis.com/v0/b/instagram-clone-3eeaf.appspot.com/o/ProfileImage%2FEPSUNyR3_400x400.jpg?alt=media&token=39c92864-418f-4724-9998-4ad44697c3b3",
+            profileImage = "",
             stories = listOf(
                 Story(
                     userId = "virat.kohli"
@@ -225,7 +225,7 @@ fun HomeScreenPreview() {
         ),
         UserStory(
             username = "youtubeindia",
-            profileImage = "https://imgs.search.brave.com/7J12IIN_wYv0GWQHLDlpj5PZDJb2JKGPN-OuJW1sqyc/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9saDMu/Z29vZ2xldXNlcmNv/bnRlbnQuY29tL3o2/U2w0ajl6UTg4b1VL/TnkwRzNQQU1pVnd5/OER6UUxoX3lneXZC/WHYwelZOVVpfd1FQ/Tl9uN0VBUjJCeTNk/aG9VcFg3a1RwYUhq/UlBuaTFNSHdLcGFC/SmJwTnFkRXNIWnNI/NHE",
+            profileImage = "",
             stories = listOf(
                 Story(
                     userId = "youtubeindia",
@@ -234,7 +234,7 @@ fun HomeScreenPreview() {
         ),
         UserStory(
             username = "googlefordevs",
-            profileImage = "https://imgs.search.brave.com/eYgUjaUBhnrYuDAX5uIvRKn0Qv6eTtxljMLuI77i53Q/rs:fit:860:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAzLzA4LzU0LzM3/LzM2MF9GXzMwODU0/Mzc4N19EbVBvMUlF/THRLWTloRzhFOEds/VzhLSEVzUkM3SmlE/Ti5qcGc",
+            profileImage = "",
             stories = listOf(
                 Story(
                     userId = "googlefordevs"

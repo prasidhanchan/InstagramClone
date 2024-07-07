@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
  * @param isLongPressed Whether the story is long pressed or not, i.e to pause the progress.
  * @param isFirstStory Whether the story is the first story or not.
  * @param modifier Modifier to be applied to the Progress bar.
+ * @param stopProgress Whether the progress should be stopped or not.
  * @param onFinish Callback to be invoked when the progress is complete.
  */
 @Composable
