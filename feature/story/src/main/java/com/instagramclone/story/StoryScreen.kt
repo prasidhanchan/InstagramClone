@@ -87,7 +87,10 @@ fun StoryScreen(
 
         LaunchedEffect(key1 = storyIndex) {
             state.scrollToPage(page = storyIndex)
-            updateViews(userStories()[storyIndex].stories[currentStoryIndex])
+        }
+
+        LaunchedEffect(key1 = state.settledPage, key2 = currentStoryIndex) {
+            updateViews(userStories()[state.currentPage].stories[currentStoryIndex])
         }
 
         val scope = rememberCoroutineScope()
