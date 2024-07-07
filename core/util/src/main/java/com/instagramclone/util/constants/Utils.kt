@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 
 object Utils {
 
-    //Colors
+    // Colors
     /**
      * Adaptive background color for Dark and Light mode.
      */
@@ -38,7 +38,7 @@ object Utils {
     val IgOffColor: Color
         @Composable
         @ReadOnlyComposable
-        get() = if (isSystemInDarkTheme()) Color(0xFFEED4D4) else Color(0xFF2A2B2C)
+        get() = if (isSystemInDarkTheme()) Color(0xFF2A2B2C) else Color(0xFFEED4D4)
 
     val IgBlack = Color(0XFF000000)
     val IgBlue = Color(0xFF2196F3)
@@ -82,4 +82,12 @@ object Utils {
     val IgAccountsCenterCardColor: Color
         @Composable
         get() = if (isSystemInDarkTheme()) Color(0x92383131) else Color(0xFFFFFFFF)
+
+    /**
+     * Adaptive font color for Dark and Light mode.
+     */
+    val IgFontColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = if (isSystemInDarkTheme()) Color(0xFFE7DDDD) else Color(0xFF272829)
 }

@@ -2,7 +2,6 @@ package com.instagramclone.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,7 +30,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -114,23 +111,16 @@ fun StoryCard(
                     .border(width = 5.dp, color = IgBackground, shape = CircleShape),
                 color = IgOffBackground
             ) {
-                if (userStory.profileImage.isNotEmpty()) {
-                    AsyncImage(
-                        modifier = Modifier.fillMaxSize(),
-                        model = userStory.profileImage,
-                        contentScale = ContentScale.Crop,
-                        filterQuality = FilterQuality.None,
-                        contentDescription = stringResource(
-                            R.string.story_placeholder,
-                            userStory.username
-                        )
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = userStory.profileImage,
+                    contentScale = ContentScale.Crop,
+                    filterQuality = FilterQuality.None,
+                    contentDescription = stringResource(
+                        R.string.story_placeholder,
+                        userStory.username
                     )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.profile),
-                        contentDescription = userStory.username
-                    )
-                }
+                )
             }
 
             Text(

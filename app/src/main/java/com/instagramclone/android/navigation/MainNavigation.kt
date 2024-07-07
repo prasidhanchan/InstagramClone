@@ -22,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import com.facebook.CallbackManager
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
+import com.instagramclone.android.BuildConfig.IG_AVATAR
 import com.instagramclone.android.SplashScreen
 import com.instagramclone.auth.AuthViewModel
 import com.instagramclone.auth.login.LoginScreen
@@ -127,7 +128,8 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                             igUser = IGUser(
                                 username = displayName!!,
                                 email = currentUser.email!!,
-                                password = context.getString(R.string.facebook_login)
+                                password = context.getString(R.string.facebook_login),
+                                profileImage = IG_AVATAR
                             ),
                             onSuccess = {
                                 navController.popBackStack()
@@ -406,7 +408,8 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                                 igUser = IGUser(
                                     username = uiState.username.trim(),
                                     email = uiState.email.trim(),
-                                    password = uiState.password.trim()
+                                    password = uiState.password.trim(),
+                                    profileImage = IG_AVATAR
                                 ),
                                 onSuccess = {
                                     navController.navigate(Routes.AddProfileScreen.route)
@@ -529,7 +532,8 @@ fun MainNavigation(viewModel: AuthViewModel = hiltViewModel()) {
                             igUser = IGUser(
                                 email = currentUser?.email!!,
                                 password = context.getString(R.string.facebook_login),
-                                username = displayName!!
+                                username = displayName!!,
+                                profileImage = IG_AVATAR
                             ),
                             onSuccess = {
                                 navController.navigate(Routes.InnerScreenHolder.route) {

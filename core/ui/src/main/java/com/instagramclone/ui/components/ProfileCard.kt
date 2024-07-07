@@ -1,7 +1,6 @@
 package com.instagramclone.ui.components
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -86,22 +85,15 @@ fun ProfileCard(
                 shape = CircleShape,
                 color = IgOffBackground
             ) {
-                if (profileImage.isNotEmpty()) {
-                    AsyncImage(
-                        modifier = Modifier.fillMaxSize(),
-                        model = profileImage,
-                        contentScale = ContentScale.Crop,
-                        contentDescription = stringResource(id = R.string.profile_image)
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.profile),
-                        contentDescription = stringResource(id = R.string.profile_image)
-                    )
-                }
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = profileImage,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = stringResource(id = R.string.profile_image)
+                )
             }
 
-            /** Posts */
+            // Posts
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -114,6 +106,7 @@ fun ProfileCard(
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 )
+
                 Text(
                     text = stringResource(R.string.posts),
                     style = TextStyle(
@@ -124,7 +117,7 @@ fun ProfileCard(
                 )
             }
 
-            /** Followers */
+            // Followers
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -137,6 +130,7 @@ fun ProfileCard(
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 )
+
                 Text(
                     text = stringResource(R.string.followers),
                     style = TextStyle(
@@ -147,7 +141,7 @@ fun ProfileCard(
                 )
             }
 
-            /** Following */
+            // Following
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -170,6 +164,7 @@ fun ProfileCard(
                 )
             }
         }
+
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -183,6 +178,7 @@ fun ProfileCard(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+
         if (bio.isNotEmpty()) {
             Text(
                 modifier = Modifier
@@ -199,6 +195,7 @@ fun ProfileCard(
                 overflow = TextOverflow.Ellipsis
             )
         }
+
         if (links.isNotEmpty()) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -211,6 +208,7 @@ fun ProfileCard(
                     tint = IgLinkBlue,
                     contentDescription = stringResource(R.string.link)
                 )
+                
                 Text(
                     modifier = Modifier
                         .padding(horizontal = 5.dp)
@@ -228,7 +226,7 @@ fun ProfileCard(
             }
         }
 
-        /** Buttons */
+        // Buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -261,7 +259,7 @@ fun ProfileCard(
                         MaterialTheme.colorScheme.onBackground else Color.White,
                     fontColorDisabled = if (isFollowing)
                         MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f) else
-                            Color.White.copy(alpha = 0.5f),
+                        Color.White.copy(alpha = 0.5f),
                     text = if (isFollowing) stringResource(R.string.following) else stringResource(R.string.follow),
                     isLoading = false,
                     onClick = {
@@ -269,6 +267,7 @@ fun ProfileCard(
                         if (isFollowing) onUnFollowClick() else onFollowClick()
                     }
                 )
+
                 IGButton(
                     modifier = Modifier
                         .padding(start = 4.dp)

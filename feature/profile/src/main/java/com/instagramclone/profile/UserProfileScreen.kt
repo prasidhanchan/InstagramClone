@@ -15,17 +15,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,12 +33,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.instagramclone.remote.models.IGUser
 import com.instagramclone.profile.components.IGUserProfileAppBar
+import com.instagramclone.remote.models.IGUser
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.IGLoader
 import com.instagramclone.ui.components.ProfileCard
-import com.instagramclone.util.constants.Utils
+import com.instagramclone.util.constants.Utils.IgBackground
+import com.instagramclone.util.constants.Utils.IgOffBackground
 import com.instagramclone.util.models.Post
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,14 +55,13 @@ fun UserProfileScreen(
     setIsFollowing: (Boolean) -> Unit,
     onBackClick: () -> Unit
 ) {
-    var showSheet by remember { mutableStateOf(false) }
     var currentFollower by remember { mutableIntStateOf(0) }
     var currentFollowing by remember { mutableIntStateOf(0) }
 
     if (!uiState.isLoading) {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = Utils.IgBackground
+            color = IgBackground
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
@@ -80,7 +77,7 @@ fun UserProfileScreen(
                 ) {
                     IGUserProfileAppBar(
                         username = uiState.selectedUserProfile.username,
-                        onMoreClick = { showSheet = true },
+                        onMoreClick = { },
                         onBackClick = onBackClick
                     )
                 }
@@ -129,6 +126,7 @@ fun UserProfileScreen(
                             tint = MaterialTheme.colorScheme.onBackground,
                             contentDescription = stringResource(com.instagramclone.profile.R.string.posts)
                         )
+
                         HorizontalDivider(
                             modifier = Modifier.padding(bottom = 2.dp),
                             thickness = 1.dp,
@@ -146,7 +144,7 @@ fun UserProfileScreen(
                             modifier = Modifier
                                 .padding(1.dp)
                                 .size(120.dp)
-                                .background(color = Utils.IgOffBackground)
+                                .background(color = IgOffBackground)
                                 .clickable(
                                     onClick = {
                                         navigateToPostsWithPostIndex(
@@ -167,29 +165,6 @@ fun UserProfileScreen(
                             )
                         }
                     }
-                }
-            }
-        }
-
-        if (showSheet) {
-            ModalBottomSheet(
-                dragHandle = {
-                    BottomSheetDefaults.DragHandle(
-                        width = 40.dp,
-                        color = Utils.IgOffColor
-                    )
-                },
-                containerColor = Utils.IgOffBackground,
-                onDismissRequest = { showSheet = false }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 5.dp)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
                 }
             }
         }

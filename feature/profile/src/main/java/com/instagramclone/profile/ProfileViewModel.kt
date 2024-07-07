@@ -395,7 +395,7 @@ class ProfileViewModel @Inject constructor(
     fun like(
         userId: String,
         timeStamp: Long,
-        onSuccess: () -> Unit
+        onSuccess: () -> Unit = { }
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             profileRepository.like(
@@ -419,7 +419,7 @@ class ProfileViewModel @Inject constructor(
     fun unLike(
         userId: String,
         timeStamp: Long,
-        onSuccess: () -> Unit
+        onSuccess: () -> Unit = { }
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             profileRepository.unLike(

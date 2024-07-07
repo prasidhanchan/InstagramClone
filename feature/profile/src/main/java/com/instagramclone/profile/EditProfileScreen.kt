@@ -8,7 +8,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -38,10 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.instagramclone.profile.components.IGBottomSheetProfile
 import com.instagramclone.ui.R
 import com.instagramclone.ui.components.AccountsCenter
 import com.instagramclone.ui.components.EditTextBox
-import com.instagramclone.profile.components.IGBottomSheetProfile
 import com.instagramclone.ui.components.IGLoader
 import com.instagramclone.ui.components.IGRegularAppBar
 import com.instagramclone.ui.components.IGWaitDialog
@@ -98,18 +96,11 @@ fun EditProfileScreen(
                 shape = CircleShape,
                 color = Utils.IgOffBackground
             ) {
-                if (uiState.profileImage.isNotEmpty()) {
-                    AsyncImage(
-                        modifier = Modifier.fillMaxSize(),
-                        model = uiState.profileImage,
-                        contentDescription = stringResource(id = R.string.profile_image)
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.profile),
-                        contentDescription = stringResource(id = R.string.profile_image)
-                    )
-                }
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = uiState.profileImage,
+                    contentDescription = stringResource(id = R.string.profile_image)
+                )
             }
 
             Text(

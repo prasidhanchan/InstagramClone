@@ -33,6 +33,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
+import com.instagramclone.android.BuildConfig.IG_AVATAR
 import com.instagramclone.home.HomeScreen
 import com.instagramclone.home.HomeViewModel
 import com.instagramclone.home.VideoPlayerViewModel
@@ -116,19 +117,13 @@ fun InnerScreenNavigation(
                 onLikeClick = { post ->
                     viewModelProfile.like(
                         userId = post.userId,
-                        timeStamp = post.timeStamp,
-                        onSuccess = {
-
-                        }
+                        timeStamp = post.timeStamp
                     )
                 },
                 onUnLikeClick = { post ->
                     viewModelProfile.unLike(
                         userId = post.userId,
-                        timeStamp = post.timeStamp,
-                        onSuccess = {
-
-                        }
+                        timeStamp = post.timeStamp
                     )
                 },
                 onSendClick = { },
@@ -137,18 +132,13 @@ fun InnerScreenNavigation(
                 onDeletePostClick = { post ->
                     viewModelProfile.deletePost(
                         post = post,
-                        onSuccess = {
-                            viewModelProfile.getMyData()
-                        }
+                        onSuccess = { viewModelProfile.getMyData() }
                     )
                 },
                 onDeleteStoryClick = { story ->
                     viewModelHome.deleteStory(
                         story = story,
-                        onSuccess = {
-                            viewModelHome.setShowStoryScreen(false)
-                            Toast.makeText(context, "Story Deleted", Toast.LENGTH_LONG).show()
-                        }
+                        onSuccess = { viewModelHome.setShowStoryScreen(false) }
                     )
                 },
                 setSelectedPost = { post -> viewModelProfile.setSelectedPost(post) },
@@ -419,7 +409,7 @@ fun InnerScreenNavigation(
                 onDeleteProfileClick = {
                     viewModelProfile.updateUserDetails(
                         text = context.getString(R.string.profileimage),
-                        value = "",
+                        value = IG_AVATAR,
                         context = context,
                         onSuccess = {
                             viewModelProfile.setIsUserDetailChanged(true)

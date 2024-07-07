@@ -25,11 +25,12 @@ android {
         }
 
         val properties = Properties()
-        properties.load(project.rootProject.file("gradle.properties").inputStream())
+        properties.load(project.rootProject.file("local.properties").inputStream())
 
         resValue("string", "facebook_app_id", "\"${properties.getProperty("facebook_app_id")}\"")
         resValue("string", "facebook_login_protocol_scheme", "\"${properties.getProperty("facebook_login_protocol_scheme")}\"")
         resValue("string", "facebook_client_token", "\"${properties.getProperty("facebook_client_token")}\"")
+        buildConfigField("String", "IG_AVATAR", "\"${properties.getProperty("IG_AVATAR")}\"")
     }
 
 

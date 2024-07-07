@@ -1,7 +1,6 @@
 package com.instagramclone.android.navigation
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +37,7 @@ import com.instagramclone.util.constants.Utils.IgOffBackground
 
 @Composable
 fun IGBottomBar(
-    profileImage: String?,
+    profileImage: String,
     navHostController: NavHostController
 ) {
     val items = Routes.Items.list
@@ -61,9 +60,9 @@ fun IGBottomBar(
             items.forEach { item ->
                 IGBottomBarItem(
                     isSelected = currentScreen?.hierarchy?.any { it.route == item.route } == true,
+                    item = item,
                     isProfile = item.route == Routes.MyProfileScreen.route,
                     profileImage = profileImage,
-                    item = item,
                     onClick = {
                         val route =
                             if (item.route == Routes.UploadContentScreen.route) "${item.route}/POST" else item.route
@@ -83,7 +82,7 @@ fun IGBottomBarItem(
     isSelected: Boolean,
     item: Routes,
     isProfile: Boolean = false,
-    profileImage: String? = null,
+    profileImage: String,
     onClick: (Routes) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -93,9 +92,7 @@ fun IGBottomBarItem(
             modifier = Modifier.clickable(
                 indication = null,
                 interactionSource = interactionSource,
-                onClick = {
-                    onClick(item)
-                }
+                onClick = { onClick(item) }
             ),
             contentAlignment = Alignment.Center,
             content = {
@@ -131,19 +128,12 @@ fun IGBottomBarItem(
                 width = 1.5.dp
             )
         ) {
-            if (profileImage?.isNotEmpty() == true) {
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = profileImage,
-                    contentScale = ContentScale.Crop,
-                    contentDescription = stringResource(id = R.string.profile_image)
-                )
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.profile),
-                    contentDescription = stringResource(id = R.string.profile_image)
-                )
-            }
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = profileImage,
+                contentScale = ContentScale.Crop,
+                contentDescription = stringResource(id = R.string.profile_image)
+            )
         }
     }
 }
