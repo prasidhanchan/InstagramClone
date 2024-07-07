@@ -30,6 +30,7 @@ import androidx.media3.common.C.VOLUME_FLAG_PLAY_SOUND
 import androidx.media3.common.C.VOLUME_FLAG_REMOVE_SOUND_AND_VIBRATE
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
 import coil.compose.AsyncImage
 import com.instagramclone.ui.R
 import com.instagramclone.util.constants.Utils.IgBlack
@@ -78,6 +79,7 @@ fun PostPlayer(
                         .fillMaxWidth()
                         .height(600.dp),
                     exoPlayer = exoPlayer,
+                    resize = AspectRatioFrameLayout.RESIZE_MODE_FILL,
                     enableTouchResponse = false
                 )
             } else {

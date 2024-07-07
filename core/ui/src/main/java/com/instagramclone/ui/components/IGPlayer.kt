@@ -44,7 +44,7 @@ fun IGPlayer(
 
     AndroidView(
         modifier = if (enableTouchResponse) {
-            modifier
+            Modifier
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onLongPress = { onLongPress() },
@@ -52,6 +52,7 @@ fun IGPlayer(
                         onDoubleTap = { onDoubleTap() }
                     )
                 }
+                .then(modifier)
         } else {
             modifier
         },
